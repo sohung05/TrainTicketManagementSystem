@@ -28,7 +28,7 @@ public class Header extends javax.swing.JPanel {
 
         cmdMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/menu/icon/menu.png"))); // NOI18N
 
-        pic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/menu/icon/profile.jpg"))); // NOI18N
+        pic.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/menu/icon/profile.png"))); // NOI18N
 
         lbUserName.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         lbUserName.setForeground(new java.awt.Color(127, 127, 127));

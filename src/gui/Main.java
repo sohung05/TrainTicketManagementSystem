@@ -1,4 +1,4 @@
-package gui.menu.main;
+package gui;
 
 import gui.menu.component.Header;
 import gui.menu.component.Menu;
@@ -47,7 +47,9 @@ public class Main extends javax.swing.JFrame {
         menu.addEvent(new EventMenuSelected() {
             @Override
             public void menuSelected(int menuIndex, int subMenuIndex) {
-                System.out.println("Menu Index : " + menuIndex + " SubMenu Index " + subMenuIndex);
+                System.out.println("Menu Index : " + menuIndex + " SubMenu Index : " + subMenuIndex);
+
+                // 0 - Trang chủ
                 if (menuIndex == 0) {
                     if (subMenuIndex == 0) {
                         main.showForm(new Form_Home());
@@ -55,8 +57,23 @@ public class Main extends javax.swing.JFrame {
                         main.showForm(new Form1());
                     }
                 }
+
+                // 1 - Vé
+                else if (menuIndex == 1) {
+                    if (subMenuIndex == 1) {
+                        main.showForm(new TraVe());
+                    }
+                }
+
+                // 3 - Nhân viên
+                else if (menuIndex == 3) {
+                    main.showForm(new QuanLiNhanVien());
+                    main.revalidate();
+                    main.repaint();
+                }
             }
         });
+
         menu.addEventShowPopup(new EventShowPopupMenu() {
             @Override
             public void showPopup(Component com) {
@@ -109,7 +126,7 @@ public class Main extends javax.swing.JFrame {
             }
         });
         //  Init google icon font
-     //   IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
+        //   IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
         //  Start with this form
         IconFontSwing.register(
                 GoogleMaterialDesignIcons.getIconFont(),
@@ -134,23 +151,23 @@ public class Main extends javax.swing.JFrame {
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
-            bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1366, Short.MAX_VALUE)
+                bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 1366, Short.MAX_VALUE)
         );
         bgLayout.setVerticalGroup(
-            bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 783, Short.MAX_VALUE)
+                bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 783, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(bg)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(bg)
         );
 
         pack();
@@ -161,7 +178,7 @@ public class Main extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

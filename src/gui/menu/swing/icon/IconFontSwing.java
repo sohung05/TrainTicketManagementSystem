@@ -10,6 +10,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ public final class IconFontSwing {
 
     private static List<IconFont> fonts = new ArrayList<>();
 
-    public static synchronized void register(IconFont iconFont) {
+    public static synchronized void register(IconFont iconFont, InputStream resourceAsStream) {
         if (IconFontSwing.fonts.contains(iconFont) == false) {
             IconFontSwing.fonts.add(iconFont);
         }

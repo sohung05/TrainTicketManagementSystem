@@ -9,7 +9,8 @@ import gui.menu.swing.MenuItem;
 import gui.menu.swing.scrollbar.ScrollBarCustom;
 
 import java.awt.Component;
-import javax.swing.ImageIcon;
+import javax.swing.*;
+
 import net.miginfocom.swing.MigLayout;
 
 public class Menu extends javax.swing.JPanel {
@@ -48,18 +49,36 @@ public class Menu extends javax.swing.JPanel {
         layout = new MigLayout("wrap, fillx, insets 0", "[fill]", "[]50[]");
         panel.setLayout(layout);
     }
+    private ImageIcon resizeIcon(String path, int width, int height) {
+        ImageIcon icon = new ImageIcon(getClass().getResource(path));
+        java.awt.Image img = icon.getImage();
+        java.awt.Image scaled = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
 
     public void initMenuItem() {
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/1.png")), "Dashboard"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/2.png")), "Vé", "Bán Vé", "Trả Vé", "Đổi Vé"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/3.png")), "Khách Hàng"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/4.png")), "Nhân Viên"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/5.png")), "Khuyễn Mãi", "Khuyễn mãi theo hóa đơn", "Khuyến mãi theo đối tượng"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/6.png")), "Thống Kê", "Doanh Thu", "Lượt Vé"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/7.png")), "Trợ Giúp"));
-        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/8.png")), "Đăng Xuất"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/dashboard.png")), "Dashboard"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/Ve.png")), "Vé", "Bán Vé", "Trả Vé", "Đổi Vé"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/KhachHang.png")), "Khách Hàng"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/NhanVien.png")), "Nhân viên"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/KhuyenMai.png")), "Khuyến Mãi", "Khuyễn mãi theo hóa đơn", "Khuyến mãi theo đối tượng"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/ThongKe.png")), "Thống Kê", "Doanh Thu", "Lượt Vé"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/TroGiup.png")), "Trợ Giúp"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/gui/menu/icon/DangXuat.png")), "Đăng Xuất"));
 
+
+
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/1.png", 32, 32), "Dashboard"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/2.png", 32, 32), "Vé", "Bán Vé", "Trả Vé", "Đổi Vé"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/3.png", 32, 32), "Khách Hàng"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/NhanVien.png", 32, 32), "Nhân Viên"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/KhachHang.png", 32, 32), "Khuyễn Mãi", "Khuyễn mãi theo hóa đơn", "Khuyến mãi theo đối tượng"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/6.png", 32, 32), "Thống Kê", "Doanh Thu", "Lượt Vé"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/7.png", 32, 32), "Trợ Giúp"));
+//        addMenu(new ModelMenu(resizeIcon("/gui/menu/icon/8.png", 32, 32), "Đăng Xuất"));
     }
+
+
 
     private void addMenu(ModelMenu menu) {
         panel.add(new MenuItem(menu, getEventMenu(), event, panel.getComponentCount()), "h 40!");
@@ -164,3 +183,4 @@ public class Menu extends javax.swing.JPanel {
     private javax.swing.JScrollPane sp;
     // End of variables declaration//GEN-END:variables
 }
+
