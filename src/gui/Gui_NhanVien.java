@@ -41,11 +41,11 @@ public class Gui_NhanVien extends javax.swing.JPanel {
         lblTrangThai = new javax.swing.JLabel();
         txtMaNV = new javax.swing.JTextField();
         dcNgaySinh = new com.toedter.calendar.JDateChooser();
-        rbNam = new javax.swing.JRadioButton();
-        rbNu = new javax.swing.JRadioButton();
+        radNam = new javax.swing.JRadioButton();
+        radNu = new javax.swing.JRadioButton();
         txtCCCD = new javax.swing.JTextField();
         txtHoTen = new javax.swing.JTextField();
-        cbTrangThai = new javax.swing.JComboBox<>();
+        cmbTrangThai = new javax.swing.JComboBox<>();
         txtDiaChi = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
         txtSoDienThoai = new javax.swing.JTextField();
@@ -110,9 +110,9 @@ public class Gui_NhanVien extends javax.swing.JPanel {
         lblTrangThai.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         lblTrangThai.setText("Trạng thái:\n");
 
-        rbNam.setText("Nam");
+        radNam.setText("Nam");
 
-        rbNu.setText("Nữ");
+        radNu.setText("Nữ");
 
         txtHoTen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -120,7 +120,7 @@ public class Gui_NhanVien extends javax.swing.JPanel {
             }
         });
 
-        cbTrangThai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Đang làm", "Nghỉ làm" }));
+        cmbTrangThai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Đang làm", "Nghỉ làm" }));
 
         javax.swing.GroupLayout pnlThongTinLayout = new javax.swing.GroupLayout(pnlThongTin);
         pnlThongTin.setLayout(pnlThongTinLayout);
@@ -147,7 +147,7 @@ public class Gui_NhanVien extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(pnlThongTinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtSoDienThoai, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cbTrangThai, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(cmbTrangThai, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(pnlThongTinLayout.createSequentialGroup()
                         .addGroup(pnlThongTinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblCCCD)
@@ -161,9 +161,9 @@ public class Gui_NhanVien extends javax.swing.JPanel {
                             .addComponent(txtHoTen, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtCCCD, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(pnlThongTinLayout.createSequentialGroup()
-                                .addComponent(rbNam)
+                                .addComponent(radNam)
                                 .addGap(52, 52, 52)
-                                .addComponent(rbNu)))))
+                                .addComponent(radNu)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlThongTinLayout.setVerticalGroup(
@@ -188,8 +188,8 @@ public class Gui_NhanVien extends javax.swing.JPanel {
                         .addGap(22, 22, 22)
                         .addGroup(pnlThongTinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblGioiTinh)
-                            .addComponent(rbNam)
-                            .addComponent(rbNu))
+                            .addComponent(radNam)
+                            .addComponent(radNu))
                         .addGap(18, 18, 18)
                         .addGroup(pnlThongTinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblDiaChi)
@@ -206,7 +206,7 @@ public class Gui_NhanVien extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(pnlThongTinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblTrangThai)
-                    .addComponent(cbTrangThai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbTrangThai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
@@ -331,7 +331,7 @@ public class Gui_NhanVien extends javax.swing.JPanel {
     private javax.swing.JButton btnTimKiem;
     private javax.swing.JButton btnXoaTrang;
     private javax.swing.JButton btnXuatExcel;
-    private javax.swing.JComboBox<String> cbTrangThai;
+    private javax.swing.JComboBox<String> cmbTrangThai;
     private com.toedter.calendar.JDateChooser dcNgaySinh;
     private javax.swing.JLabel lblCCCD;
     private javax.swing.JLabel lblDiaChi;
@@ -344,8 +344,8 @@ public class Gui_NhanVien extends javax.swing.JPanel {
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblTrangThai;
     private javax.swing.JPanel pnlThongTin;
-    private javax.swing.JRadioButton rbNam;
-    private javax.swing.JRadioButton rbNu;
+    private javax.swing.JRadioButton radNam;
+    private javax.swing.JRadioButton radNu;
     private javax.swing.JScrollPane scrollNhanVien;
     private javax.swing.JTable tblNhanVien;
     private javax.swing.JTextField txtCCCD;

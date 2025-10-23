@@ -164,7 +164,7 @@
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="txtSoDienThoai" alignment="1" min="-2" pref="170" max="-2" attributes="0"/>
-                                      <Component id="cbTrangThai" alignment="1" min="-2" pref="170" max="-2" attributes="0"/>
+                                      <Component id="cmbTrangThai" alignment="1" min="-2" pref="170" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -183,9 +183,9 @@
                               <Component id="txtHoTen" alignment="0" min="-2" pref="170" max="-2" attributes="0"/>
                               <Component id="txtCCCD" min="-2" pref="170" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="rbNam" min="-2" max="-2" attributes="0"/>
+                                  <Component id="radNam" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
-                                  <Component id="rbNu" min="-2" max="-2" attributes="0"/>
+                                  <Component id="radNu" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -219,8 +219,8 @@
                           <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="lblGioiTinh" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="rbNam" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="rbNu" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="radNam" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="radNu" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -243,7 +243,7 @@
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="lblTrangThai" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbTrangThai" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="cmbTrangThai" min="-2" pref="30" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="19" max="32767" attributes="0"/>
               </Group>
@@ -327,12 +327,12 @@
         </Component>
         <Component class="com.toedter.calendar.JDateChooser" name="dcNgaySinh">
         </Component>
-        <Component class="javax.swing.JRadioButton" name="rbNam">
+        <Component class="javax.swing.JRadioButton" name="radNam">
           <Properties>
             <Property name="text" type="java.lang.String" value="Nam"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="rbNu">
+        <Component class="javax.swing.JRadioButton" name="radNu">
           <Properties>
             <Property name="text" type="java.lang.String" value="N&#x1eef;"/>
           </Properties>
@@ -344,7 +344,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtHoTenActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JComboBox" name="cbTrangThai">
+        <Component class="javax.swing.JComboBox" name="cmbTrangThai">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="3">

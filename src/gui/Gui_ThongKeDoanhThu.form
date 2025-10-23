@@ -149,7 +149,7 @@
                   <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
                   <Component id="lblThang" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="cbThang" min="-2" max="-2" attributes="0"/>
+                  <Component id="cmbThang" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="92" max="-2" attributes="0"/>
                   <Component id="lblNam" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -166,7 +166,7 @@
                       <Component id="lblThang" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lblNam" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="spNam" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cbThang" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="cmbThang" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="19" max="32767" attributes="0"/>
               </Group>
@@ -186,7 +186,7 @@
         </Component>
         <Component class="javax.swing.JSpinner" name="spNam">
         </Component>
-        <Component class="javax.swing.JComboBox" name="cbThang">
+        <Component class="javax.swing.JComboBox" name="cmbThang">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="13">

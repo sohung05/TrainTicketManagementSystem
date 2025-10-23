@@ -38,7 +38,7 @@ public class Gui_KhachHang extends javax.swing.JPanel {
         txtHoTen = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
         txtSoDienThoai = new javax.swing.JTextField();
-        cbDoiTuong = new javax.swing.JComboBox<>();
+        cmbDoiTuong = new javax.swing.JComboBox<>();
         pnlThongTin = new javax.swing.JScrollPane();
         tblKhachHang = new javax.swing.JTable();
         btnCapNhat = new javax.swing.JButton();
@@ -84,7 +84,7 @@ public class Gui_KhachHang extends javax.swing.JPanel {
             }
         });
 
-        cbDoiTuong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "  ", "Trẻ em", "Người lớn", "Sinh viên", "Người cao tuổi" }));
+        cmbDoiTuong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "  ", "Trẻ em", "Người lớn", "Sinh viên", "Người cao tuổi" }));
 
         javax.swing.GroupLayout scrollKhachHangLayout = new javax.swing.GroupLayout(scrollKhachHang);
         scrollKhachHang.setLayout(scrollKhachHangLayout);
@@ -115,7 +115,7 @@ public class Gui_KhachHang extends javax.swing.JPanel {
                             .addComponent(txtSoDienThoai, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(33, 39, Short.MAX_VALUE))
                     .addGroup(scrollKhachHangLayout.createSequentialGroup()
-                        .addComponent(cbDoiTuong, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmbDoiTuong, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         scrollKhachHangLayout.setVerticalGroup(
@@ -140,7 +140,7 @@ public class Gui_KhachHang extends javax.swing.JPanel {
                 .addGap(27, 27, 27)
                 .addGroup(scrollKhachHangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDoiTuong)
-                    .addComponent(cbDoiTuong, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbDoiTuong, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(26, Short.MAX_VALUE))
         );
 
@@ -231,7 +231,7 @@ public class Gui_KhachHang extends javax.swing.JPanel {
     private javax.swing.JButton btnTimKiem;
     private javax.swing.JButton btnXoaTrang;
     private javax.swing.JButton btnXuatExcel;
-    private javax.swing.JComboBox<String> cbDoiTuong;
+    private javax.swing.JComboBox<String> cmbDoiTuong;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblCCCD;
     private javax.swing.JLabel lblDoiTuong;

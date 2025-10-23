@@ -34,7 +34,7 @@ public class Gui_ThongKeDoanhThu extends javax.swing.JPanel {
         lblThang = new javax.swing.JLabel();
         lblNam = new javax.swing.JLabel();
         spNam = new javax.swing.JSpinner();
-        cbThang = new javax.swing.JComboBox<>();
+        cmbThang = new javax.swing.JComboBox<>();
         pnlThongTinChiTiet = new javax.swing.JPanel();
         lblDoanhThuThang = new javax.swing.JLabel();
         lblSoHoaDonThang = new javax.swing.JLabel();
@@ -85,7 +85,7 @@ public class Gui_ThongKeDoanhThu extends javax.swing.JPanel {
 
         lblNam.setText("Năm:");
 
-        cbThang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", " " }));
+        cmbThang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", " " }));
 
         javax.swing.GroupLayout pnlLocLayout = new javax.swing.GroupLayout(pnlLoc);
         pnlLoc.setLayout(pnlLocLayout);
@@ -95,7 +95,7 @@ public class Gui_ThongKeDoanhThu extends javax.swing.JPanel {
                 .addGap(59, 59, 59)
                 .addComponent(lblThang)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(cbThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cmbThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(92, 92, 92)
                 .addComponent(lblNam)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -110,7 +110,7 @@ public class Gui_ThongKeDoanhThu extends javax.swing.JPanel {
                     .addComponent(lblThang)
                     .addComponent(lblNam)
                     .addComponent(spNam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbThang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
@@ -265,7 +265,7 @@ public class Gui_ThongKeDoanhThu extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> cbThang;
+    private javax.swing.JComboBox<String> cmbThang;
     private javax.swing.JLabel lblDoanhThuThang;
     private javax.swing.JLabel lblNam;
     private javax.swing.JLabel lblSoHoaDonThang;
