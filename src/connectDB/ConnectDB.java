@@ -8,9 +8,9 @@ public class ConnectDB {
     private static Connection con = null;
     private static ConnectDB instance = new ConnectDB();
 
-    private final String url = "jdbc:sqlserver://localhost:1433;databaseName=QuanLyNhaHang;encrypt=false;trustServerCertificate=true";
+    private final String url = "jdbc:sqlserver://localhost:1433;databaseName=HTQLVT;encrypt=false;trustServerCertificate=true";
     private final String user = "sa";
-    private final String pass = "11111";
+    private final String pass = "sapassword";
 
     // Singleton instance
     public static ConnectDB getInstance() {

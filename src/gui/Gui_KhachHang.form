@@ -48,9 +48,9 @@
                                   <Component id="btnCapNhat" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="btnXuatExcel" max="32767" attributes="0"/>
-                                  <Component id="btnXoaTrang" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="btnXoaTrang" min="-2" pref="120" max="-2" attributes="0"/>
+                                  <Component id="btnThem" min="-2" pref="118" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                           </Group>
@@ -77,8 +77,8 @@
                       </Group>
                       <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnXuatExcel" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
                           <Component id="btnCapNhat" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
+                          <Component id="btnThem" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="144" max="32767" attributes="0"/>
                   </Group>
@@ -230,16 +230,10 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtCCCD">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtCCCDActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txtHoTen">
         </Component>
         <Component class="javax.swing.JTextField" name="txtEmail">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtEmailActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txtSoDienThoai">
         </Component>
@@ -271,13 +265,51 @@
         <Component class="javax.swing.JTable" name="tblKhachHang">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="5" rowCount="0">
-                <Column editable="true" title="CCCD" type="java.lang.Object"/>
+              <Table columnCount="6" rowCount="0">
+                <Column editable="true" title="Ma&#x303; kha&#x301;ch ha&#x300;ng" type="java.lang.Object"/>
                 <Column editable="true" title="H&#x1ecd; t&#xea;n" type="java.lang.Object"/>
                 <Column editable="true" title="Email" type="java.lang.Object"/>
                 <Column editable="true" title="S&#x1ed1; &#x111;i&#x1ec7;n tho&#x1ea1;i" type="java.lang.Object"/>
+                <Column editable="true" title="CCCD" type="java.lang.Object"/>
                 <Column editable="true" title="&#x110;&#x1ed1;i t&#x1b0;&#x1ee3;ng" type="java.lang.Object"/>
               </Table>
+            </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
+            </Property>
+            <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+              <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
         </Component>
@@ -290,6 +322,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="C&#x1ead;p nh&#x1ead;t"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCapNhatActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnTimKiem">
       <Properties>
@@ -298,14 +333,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="T&#xec;m ki&#x1ebf;m"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="btnXuatExcel">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/icon/excel.png"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Xu&#x1ea5;t Excel"/>
-      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTimKiemActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnXoaTrang">
       <Properties>
@@ -314,6 +344,20 @@
         </Property>
         <Property name="text" type="java.lang.String" value="X&#xf3;a tr&#x1eaf;ng"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnXoaTrangActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnThem">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/icon/add.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Th&#xea;m"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnThemActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

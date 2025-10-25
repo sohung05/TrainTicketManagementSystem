@@ -4,18 +4,117 @@
  */
 package gui;
 
+import dao.KhachHangDAO;
+import entity.KhachHang;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import java.util.Objects;
+
 /**
  *
  * @author PC
  */
 public class Gui_KhachHang extends javax.swing.JPanel {
 
+    private DefaultTableModel modelKhachHang;
+    private KhachHangDAO khachHangDAO = new KhachHangDAO();
+    private String maKHChon = null;
+
     /**
      * Creates new form Gui_KhachHang
      */
     public Gui_KhachHang() {
         initComponents();
+        modelKhachHang = (DefaultTableModel) tblKhachHang.getModel();
+        loadData();
+        addTableSelectionListener();
     }
+
+    // Sự kiện chọn dòng trong bảng để hiển thị dữ liệu lên form
+    private void addTableSelectionListener() {
+        tblKhachHang.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = tblKhachHang.getSelectedRow();
+                if (row != -1) {
+                    int modelRow = tblKhachHang.convertRowIndexToModel(row);
+                    maKHChon = modelKhachHang.getValueAt(modelRow, 0).toString(); // lấy mã khách hàng
+                    txtCCCD.setText(modelKhachHang.getValueAt(modelRow, 1).toString());
+                    txtHoTen.setText(modelKhachHang.getValueAt(modelRow, 2).toString());
+                    txtEmail.setText(modelKhachHang.getValueAt(modelRow, 3).toString());
+                    txtSoDienThoai.setText(modelKhachHang.getValueAt(modelRow, 4).toString());
+                    cmbDoiTuong.setSelectedItem(modelKhachHang.getValueAt(modelRow, 5).toString());
+                }
+            }
+        });
+    }
+
+
+
+    private void loadData() {
+        modelKhachHang.setRowCount(0);
+        List<KhachHang> ds = khachHangDAO.getAll();
+        for (KhachHang kh : ds) {
+            modelKhachHang.addRow(new Object[]{
+                    kh.getMaKH(),
+                    kh.getHoTen(),
+                    kh.getEmail(),
+                    kh.getSDT(),
+                    kh.getCCCD(),
+                    kh.getDoiTuong()
+            });
+        }
+    }
+
+
+    private void clearForm() {
+        txtCCCD.setText("");
+        txtHoTen.setText("");
+        txtEmail.setText("");
+        txtSoDienThoai.setText("");
+        cmbDoiTuong.setSelectedIndex(0);
+        tblKhachHang.clearSelection();
+    }
+
+    private String generateMaKH(String cccd) {
+        String base = "KH" + cccd.substring(Math.max(0, cccd.length() - 4));
+        String ma = base;
+        int i = 1;
+        while (khachHangDAO.exists(ma)) {
+            ma = base + "_" + i;
+            i++;
+        }
+        return ma;
+    }
+
+
+    private KhachHang getKhachHangFromForm() {
+        String cccd = txtCCCD.getText().trim();
+        String hoTen = txtHoTen.getText().trim();
+        String email = txtEmail.getText().trim();
+        String soDienThoai = txtSoDienThoai.getText().trim();
+        String doiTuong = Objects.requireNonNull(cmbDoiTuong.getSelectedItem()).toString();
+
+        if (cccd.isEmpty() || hoTen.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ CCCD và họ tên!");
+            return null;
+        }
+        if (cmbDoiTuong.getSelectedIndex() == -1 || cmbDoiTuong.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn đối tượng khách hàng!");
+            return null;
+        }
+
+        String maKH;
+        if (maKHChon != null) {
+            maKH = maKHChon;
+        } else {
+            maKH = generateMaKH(cccd);
+        }
+
+        return new KhachHang(maKH, cccd, hoTen, email, soDienThoai, doiTuong);
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -43,8 +142,8 @@ public class Gui_KhachHang extends javax.swing.JPanel {
         tblKhachHang = new javax.swing.JTable();
         btnCapNhat = new javax.swing.JButton();
         btnTimKiem = new javax.swing.JButton();
-        btnXuatExcel = new javax.swing.JButton();
         btnXoaTrang = new javax.swing.JButton();
+        btnThem = new javax.swing.JButton();
 
         jLabel2.setText("jLabel2");
 
@@ -71,18 +170,6 @@ public class Gui_KhachHang extends javax.swing.JPanel {
 
         lblDoiTuong.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         lblDoiTuong.setText("Đối tượng:");
-
-        txtCCCD.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCCCDActionPerformed(evt);
-            }
-        });
-
-        txtEmail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtEmailActionPerformed(evt);
-            }
-        });
 
         cmbDoiTuong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "  ", "Trẻ em", "Người lớn", "Sinh viên", "Người cao tuổi" }));
 
@@ -149,22 +236,42 @@ public class Gui_KhachHang extends javax.swing.JPanel {
 
             },
             new String [] {
-                "CCCD", "Họ tên", "Email", "Số điện thoại", "Đối tượng"
+                "Mã khách hàng", "Họ tên", "Email", "Số điện thoại", "CCCD", "Đối tượng"
             }
         ));
         pnlThongTin.setViewportView(tblKhachHang);
 
         btnCapNhat.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/update.png"))); // NOI18N
         btnCapNhat.setText("Cập nhật");
+        btnCapNhat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCapNhatActionPerformed(evt);
+            }
+        });
 
         btnTimKiem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/TimKiem.png"))); // NOI18N
         btnTimKiem.setText("Tìm kiếm");
-
-        btnXuatExcel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/excel.png"))); // NOI18N
-        btnXuatExcel.setText("Xuất Excel");
+        btnTimKiem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTimKiemActionPerformed(evt);
+            }
+        });
 
         btnXoaTrang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/clear.png"))); // NOI18N
         btnXoaTrang.setText("Xóa trắng");
+        btnXoaTrang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaTrangActionPerformed(evt);
+            }
+        });
+
+        btnThem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/add.png"))); // NOI18N
+        btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -187,9 +294,9 @@ public class Gui_KhachHang extends javax.swing.JPanel {
                                     .addComponent(btnTimKiem)
                                     .addComponent(btnCapNhat))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(btnXuatExcel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnXoaTrang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnXoaTrang, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(48, 48, 48)))))
                 .addContainerGap())
         );
@@ -208,8 +315,8 @@ public class Gui_KhachHang extends javax.swing.JPanel {
                             .addComponent(btnXoaTrang, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnXuatExcel, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCapNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnCapNhat, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnThem, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 144, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(pnlThongTin)
@@ -217,20 +324,76 @@ public class Gui_KhachHang extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtCCCDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCCCDActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtCCCDActionPerformed
+    private void btnXoaTrangActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        clearForm();
+        loadData();
+    }
 
-    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtEmailActionPerformed
+    private void btnTimKiemActionPerformed(java.awt.event.ActionEvent evt) {
+        String cccd = txtCCCD.getText().trim();
+        String hoTen = txtHoTen.getText().trim();
+        String email = txtEmail.getText().trim();
+        String sdt = txtSoDienThoai.getText().trim();
+        String doiTuong = (String) cmbDoiTuong.getSelectedItem();
 
+        if (doiTuong != null && doiTuong.trim().isEmpty()) {
+            doiTuong = null; // bỏ qua nếu người dùng để trống
+        }
+
+        // Gọi DAO để tìm kiếm
+        List<KhachHang> ds = khachHangDAO.timKiem(cccd, hoTen, email, sdt, doiTuong);
+
+        // Cập nhật lại bảng
+        DefaultTableModel model = (DefaultTableModel) tblKhachHang.getModel();
+        model.setRowCount(0); // xóa dữ liệu cũ
+
+        for (KhachHang kh : ds) {
+            model.addRow(new Object[]{
+                    kh.getMaKH(),
+                    kh.getHoTen(),
+                    kh.getEmail(),
+                    kh.getSDT(),
+                    kh.getCCCD(),
+                    kh.getDoiTuong()
+            });
+        }
+
+        // Nếu không có kết quả
+        if (ds.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng phù hợp!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void btnCapNhatActionPerformed(java.awt.event.ActionEvent evt) {                                           
+        KhachHang kh = getKhachHangFromForm();
+        if (kh != null) {
+            if (khachHangDAO.sua(kh)) {
+                JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
+                loadData();
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng để cập nhật!");
+            }
+        }
+    }
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        KhachHang kh = getKhachHangFromForm();
+        if (kh != null) {
+            if (khachHangDAO.them(kh)) {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");
+                loadData();
+                clearForm();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại! Có thể CCCD hoặc mã đã tồn tại.");
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCapNhat;
+    private javax.swing.JButton btnThem;
     private javax.swing.JButton btnTimKiem;
     private javax.swing.JButton btnXoaTrang;
-    private javax.swing.JButton btnXuatExcel;
     private javax.swing.JComboBox<String> cmbDoiTuong;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblCCCD;
