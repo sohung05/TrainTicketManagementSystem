@@ -3,7 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package gui;
-
+import dao.HoaDon_DAO;
+import dao.Ve_DAO;
+import entity.HoaDon;
+import entity.Ve;
+import connectDB.connectDB;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
 /**
  *
  * @author PC
@@ -13,8 +19,20 @@ public class Gui_TraVe extends javax.swing.JPanel {
     /**
      * Creates new form Gui_TraVe
      */
+    private final HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
+    private final Ve_DAO veDAO = new Ve_DAO();
+    private DefaultTableModel modelHoaDon, modelVe;
+
     public Gui_TraVe() {
         initComponents();
+
+        try { connectDB.getInstance().connect(); } catch (Exception e) { e.printStackTrace(); }
+
+        modelHoaDon = (DefaultTableModel) tblHoaDon.getModel();
+        modelVe     = (DefaultTableModel) tblVe.getModel();
+
+        loadHoaDonTable();
+        loadVeTable();
     }
 
     /**
@@ -358,6 +376,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
     }//GEN-LAST:event_btnInTapVeActionPerformed
 
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInHoaDon;
     private javax.swing.JButton btnInTapVe;
@@ -393,4 +412,28 @@ public class Gui_TraVe extends javax.swing.JPanel {
     private javax.swing.JTextField txtSoDT_HD;
     private javax.swing.JTextField txtTenKH_HD;
     // End of variables declaration//GEN-END:variables
+
+    private void loadHoaDonTable() {
+        modelHoaDon.setRowCount(0);
+        List<HoaDon> list = hoaDonDAO.findAll();
+        for (HoaDon hd : list) {
+            modelHoaDon.addRow(new Object[]{
+                    hd.getMaHoaDon(), hd.getMaNhanVien(), hd.getCccd(), hd.getTenKhachHang(),
+                    hd.getSdt(), hd.getKhuyenMai(), hd.getNgayTao(), hd.getGioTao(), hd.getTongTien()
+            });
+        }
+    }
+
+    private void loadVeTable() {
+        modelVe.setRowCount(0);
+        List<Ve> list = veDAO.findAll();
+        for (Ve v : list) {
+            modelVe.addRow(new Object[]{
+                    v.getMaVe(), v.getCccd(), v.getTenKhachHang(), v.getDoiTuong(),
+                    v.getGaDi(), v.getGaDen(), v.getMaTau(), v.getSoToa(),
+                    v.getViTriCho(), v.getThoiGianLenTau(), v.getGia()
+            });
+        }
+    }
+
 }
