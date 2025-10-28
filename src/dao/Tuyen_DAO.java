@@ -6,6 +6,7 @@
 
 package dao;
 
+import connectDB.connectDB;
 import entity.Tuyen;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,13 +18,13 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class Tuyen_DAO extends BaseDAO {
+public class Tuyen_DAO {
 
     // Lấy tất cả tuyến
     public List<Tuyen> findAll() {
         String sql = "SELECT * FROM Tuyen ORDER BY tenTuyen";
         List<Tuyen> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -42,7 +43,7 @@ public class Tuyen_DAO extends BaseDAO {
     // Tìm tuyến theo mã
     public Tuyen findByMaTuyen(String maTuyen) {
         String sql = "SELECT * FROM Tuyen WHERE maTuyen = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maTuyen);
             try (ResultSet rs = ps.executeQuery()) {
@@ -63,7 +64,7 @@ public class Tuyen_DAO extends BaseDAO {
     // Thêm tuyến mới
     public boolean insert(Tuyen tuyen) {
         String sql = "INSERT INTO Tuyen (maTuyen, tenTuyen, doDai) VALUES (?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, tuyen.getMaTuyen());
             ps.setString(2, tuyen.getTenTuyen());
@@ -78,7 +79,7 @@ public class Tuyen_DAO extends BaseDAO {
     // Cập nhật tuyến
     public boolean update(Tuyen tuyen) {
         String sql = "UPDATE Tuyen SET tenTuyen=?, doDai=? WHERE maTuyen=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, tuyen.getTenTuyen());
             ps.setDouble(2, tuyen.getDoDai());
@@ -93,7 +94,7 @@ public class Tuyen_DAO extends BaseDAO {
     // Xóa tuyến
     public boolean delete(String maTuyen) {
         String sql = "DELETE FROM Tuyen WHERE maTuyen = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maTuyen);
             return ps.executeUpdate() > 0;

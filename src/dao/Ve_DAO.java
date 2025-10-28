@@ -12,12 +12,13 @@ package dao;
  * @date: 10/25/2025
  * @version:    1.0
  */
+import connectDB.connectDB;
 import entity.Ve;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Ve_DAO extends BaseDAO {
+public class Ve_DAO {
 
     // Lấy danh sách vé (đầy đủ thông tin)
     public List<Ve> findAll() {
@@ -29,7 +30,7 @@ public class Ve_DAO extends BaseDAO {
                         "ORDER BY v.thoiGianLenTau DESC";
 
         List<Ve> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -71,7 +72,7 @@ public class Ve_DAO extends BaseDAO {
             "LEFT JOIN Toa toa ON cn.maToa = toa.maToa " +
             "WHERE v.maVe = ? AND v.trangThai = 1";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maVe);
             try (ResultSet rs = ps.executeQuery()) {
@@ -160,7 +161,7 @@ public class Ve_DAO extends BaseDAO {
         String sql = "INSERT INTO Ve (maVe, maLoaiVe, maVach, thoiGianLenTau, giaVe, " +
                 "maKH, maChoNgoi, maLichTrinh, trangThai, tenKhachHang, soCCCD) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ve.getMaVe());
             ps.setString(2, ve.getLoaiVe() != null ? ve.getLoaiVe().getMaLoaiVe() : null);
@@ -186,7 +187,7 @@ public class Ve_DAO extends BaseDAO {
         String sql = "UPDATE Ve SET maLoaiVe=?, maVach=?, thoiGianLenTau=?, giaVe=?, " +
                 "maKH=?, maChoNgoi=?, maLichTrinh=?, trangThai=?, tenKhachHang=?, soCCCD=? " +
                 "WHERE maVe=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ve.getLoaiVe() != null ? ve.getLoaiVe().getMaLoaiVe() : null);
             ps.setString(2, ve.getMaVach());
@@ -210,7 +211,7 @@ public class Ve_DAO extends BaseDAO {
     // Xóa vé (soft delete - đổi trạng thái)
     public boolean delete(String maVe) {
         String sql = "UPDATE Ve SET trangThai = 0 WHERE maVe = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maVe);
             return ps.executeUpdate() > 0;
@@ -228,7 +229,7 @@ public class Ve_DAO extends BaseDAO {
      */
     public boolean kiemTraGheDaDat(String maChoNgoi, String maLichTrinh) {
         String sql = "SELECT COUNT(*) FROM Ve WHERE maChoNgoi = ? AND maLichTrinh = ? AND trangThai = 1";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maChoNgoi);
             ps.setString(2, maLichTrinh);
@@ -251,7 +252,7 @@ public class Ve_DAO extends BaseDAO {
     public java.util.Set<String> layDanhSachGheDaDat(String maLichTrinh) {
         String sql = "SELECT maChoNgoi FROM Ve WHERE maLichTrinh = ? AND trangThai = 1";
         java.util.Set<String> gheDaDat = new java.util.HashSet<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maLichTrinh);
             try (ResultSet rs = ps.executeQuery()) {
@@ -293,7 +294,7 @@ public class Ve_DAO extends BaseDAO {
             "ORDER BY v.thoiGianLenTau DESC";
         
         java.util.List<Ve> list = new java.util.ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             String searchPattern = "%" + keyword + "%";

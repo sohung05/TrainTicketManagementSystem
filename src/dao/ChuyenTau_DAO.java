@@ -5,6 +5,7 @@
  */
 
 package dao;
+import connectDB.connectDB;
 
 import entity.ChuyenTau;
 import entity.LoaiTau;
@@ -19,7 +20,7 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class ChuyenTau_DAO extends BaseDAO {
+public class ChuyenTau_DAO {
 
     // Lấy tất cả chuyến tàu
     public List<ChuyenTau> findAll() {
@@ -28,7 +29,7 @@ public class ChuyenTau_DAO extends BaseDAO {
                      "LEFT JOIN LoaiTau lt ON lt.maLoaiTau = ct.maLoaiTau " +
                      "ORDER BY ct.soHieuTau";
         List<ChuyenTau> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -58,7 +59,7 @@ public class ChuyenTau_DAO extends BaseDAO {
                      "FROM ChuyenTau ct " +
                      "LEFT JOIN LoaiTau lt ON lt.maLoaiTau = ct.maLoaiTau " +
                      "WHERE ct.soHieuTau = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, soHieuTau);
             try (ResultSet rs = ps.executeQuery()) {
@@ -87,7 +88,7 @@ public class ChuyenTau_DAO extends BaseDAO {
     public boolean insert(ChuyenTau ct) {
         String sql = "INSERT INTO ChuyenTau (soHieuTau, tocDo, maLoaiTau, namSanXuat) " +
                      "VALUES (?, ?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ct.getSoHieuTau());
             ps.setDouble(2, ct.getTocDo());
@@ -108,7 +109,7 @@ public class ChuyenTau_DAO extends BaseDAO {
     public boolean update(ChuyenTau ct) {
         String sql = "UPDATE ChuyenTau SET tocDo=?, maLoaiTau=?, namSanXuat=? " +
                      "WHERE soHieuTau=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setDouble(1, ct.getTocDo());
             ps.setString(2, ct.getLoaiTau() != null ? ct.getLoaiTau().getMaLoaiTau() : null);
@@ -128,7 +129,7 @@ public class ChuyenTau_DAO extends BaseDAO {
     // Xóa chuyến tàu
     public boolean delete(String soHieuTau) {
         String sql = "DELETE FROM ChuyenTau WHERE soHieuTau = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, soHieuTau);
             return ps.executeUpdate() > 0;

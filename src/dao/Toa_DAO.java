@@ -6,6 +6,7 @@
 
 package dao;
 
+import connectDB.connectDB;
 import entity.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class Toa_DAO extends BaseDAO {
+public class Toa_DAO {
 
     // Lấy tất cả toa của một chuyến tàu (cho giao diện chọn toa)
     public List<Toa> getToaBySoHieuTau(String soHieuTau) {
@@ -31,7 +32,7 @@ public class Toa_DAO extends BaseDAO {
                      "ORDER BY t.soToa";
 
         List<Toa> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, soHieuTau);
             try (ResultSet rs = ps.executeQuery()) {
@@ -57,7 +58,7 @@ public class Toa_DAO extends BaseDAO {
                      "ORDER BY t.soHieuTau, t.soToa";
 
         List<Toa> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -80,7 +81,7 @@ public class Toa_DAO extends BaseDAO {
                      "JOIN LoaiToa lt ON lt.maLoaiToa = t.maLoaiToa " +
                      "WHERE t.maToa = ?";
 
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maToa);
             try (ResultSet rs = ps.executeQuery()) {
@@ -118,7 +119,7 @@ public class Toa_DAO extends BaseDAO {
     // Thêm toa mới
     public boolean insert(Toa toa) {
         String sql = "INSERT INTO Toa (maToa, soHieuTau, soToa, maLoaiToa) VALUES (?, ?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, toa.getMaToa());
             ps.setString(2, toa.getChuyenTau() != null ? toa.getChuyenTau().getSoHieuTau() : null);
@@ -134,7 +135,7 @@ public class Toa_DAO extends BaseDAO {
     // Cập nhật toa
     public boolean update(Toa toa) {
         String sql = "UPDATE Toa SET soHieuTau=?, soToa=?, maLoaiToa=? WHERE maToa=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, toa.getChuyenTau() != null ? toa.getChuyenTau().getSoHieuTau() : null);
             ps.setInt(2, toa.getSoToa());
@@ -150,7 +151,7 @@ public class Toa_DAO extends BaseDAO {
     // Xóa toa
     public boolean delete(String maToa) {
         String sql = "DELETE FROM Toa WHERE maToa = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maToa);
             return ps.executeUpdate() > 0;

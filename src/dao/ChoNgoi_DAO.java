@@ -5,6 +5,7 @@
  */
 
 package dao;
+import connectDB.connectDB;
 
 import entity.*;
 import java.sql.*;
@@ -17,7 +18,7 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class ChoNgoi_DAO extends BaseDAO {
+public class ChoNgoi_DAO {
 
     // Lấy tất cả chỗ ngồi của một toa (cho giao diện sơ đồ ghế)
     public List<ChoNgoi> getChoNgoiByMaToa(String maToa) {
@@ -28,7 +29,7 @@ public class ChoNgoi_DAO extends BaseDAO {
                      "ORDER BY cn.viTri";
 
         List<ChoNgoi> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maToa);
             try (ResultSet rs = ps.executeQuery()) {
@@ -47,7 +48,7 @@ public class ChoNgoi_DAO extends BaseDAO {
     public boolean kiemTraChoNgoiDaDat(String maChoNgoi, String maLichTrinh) {
         String sql = "SELECT COUNT(*) FROM Ve " +
                      "WHERE maChoNgoi = ? AND maLichTrinh = ? AND trangThai = 1";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maChoNgoi);
             ps.setString(2, maLichTrinh);
@@ -77,7 +78,7 @@ public class ChoNgoi_DAO extends BaseDAO {
                      "ORDER BY cn.viTri";
 
         List<ChoNgoi> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maToa);
             ps.setString(2, maLichTrinh);
@@ -101,7 +102,7 @@ public class ChoNgoi_DAO extends BaseDAO {
                      "ORDER BY t.soHieuTau, t.soToa, cn.viTri";
 
         List<ChoNgoi> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -121,7 +122,7 @@ public class ChoNgoi_DAO extends BaseDAO {
                      "JOIN Toa t ON t.maToa = cn.maToa " +
                      "WHERE cn.maChoNgoi = ?";
 
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maChoNgoi);
             try (ResultSet rs = ps.executeQuery()) {
@@ -162,7 +163,7 @@ public class ChoNgoi_DAO extends BaseDAO {
     public boolean insert(ChoNgoi cn) {
         String sql = "INSERT INTO ChoNgoi (maChoNgoi, maToa, moTa, viTri, gia) " +
                      "VALUES (?, ?, ?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, cn.getMaChoNgoi());
             ps.setString(2, cn.getToa() != null ? cn.getToa().getMaToa() : null);
@@ -180,7 +181,7 @@ public class ChoNgoi_DAO extends BaseDAO {
     public boolean update(ChoNgoi cn) {
         String sql = "UPDATE ChoNgoi SET maToa=?, moTa=?, viTri=?, gia=? " +
                      "WHERE maChoNgoi=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, cn.getToa() != null ? cn.getToa().getMaToa() : null);
             ps.setString(2, cn.getMoTa());
@@ -197,7 +198,7 @@ public class ChoNgoi_DAO extends BaseDAO {
     // Xóa chỗ ngồi
     public boolean delete(String maChoNgoi) {
         String sql = "DELETE FROM ChoNgoi WHERE maChoNgoi = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maChoNgoi);
             return ps.executeUpdate() > 0;

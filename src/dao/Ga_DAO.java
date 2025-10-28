@@ -6,6 +6,7 @@
 
 package dao;
 
+import connectDB.connectDB;
 import entity.Ga;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,13 +18,13 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class Ga_DAO extends BaseDAO {
+public class Ga_DAO {
 
     // Lấy tất cả ga
     public List<Ga> findAll() {
         String sql = "SELECT * FROM Ga ORDER BY tenGa";
         List<Ga> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -44,7 +45,7 @@ public class Ga_DAO extends BaseDAO {
     // Tìm ga theo mã
     public Ga findByMaGa(String maGa) {
         String sql = "SELECT * FROM Ga WHERE maGa = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maGa);
             try (ResultSet rs = ps.executeQuery()) {
@@ -68,7 +69,7 @@ public class Ga_DAO extends BaseDAO {
     public List<Ga> findByTenGa(String tenGa) {
         String sql = "SELECT * FROM Ga WHERE tenGa LIKE ? ORDER BY tenGa";
         List<Ga> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, "%" + tenGa + "%");
             try (ResultSet rs = ps.executeQuery()) {
@@ -91,7 +92,7 @@ public class Ga_DAO extends BaseDAO {
     // Thêm ga mới
     public boolean insert(Ga ga) {
         String sql = "INSERT INTO Ga (maGa, tenGa, viTri, gaDi, gaDen) VALUES (?, ?, ?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ga.getMaGa());
             ps.setString(2, ga.getTenGa());
@@ -108,7 +109,7 @@ public class Ga_DAO extends BaseDAO {
     // Cập nhật thông tin ga
     public boolean update(Ga ga) {
         String sql = "UPDATE Ga SET tenGa=?, viTri=?, gaDi=?, gaDen=? WHERE maGa=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ga.getTenGa());
             ps.setString(2, ga.getViTri());
@@ -125,7 +126,7 @@ public class Ga_DAO extends BaseDAO {
     // Xóa ga
     public boolean delete(String maGa) {
         String sql = "DELETE FROM Ga WHERE maGa = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maGa);
             return ps.executeUpdate() > 0;

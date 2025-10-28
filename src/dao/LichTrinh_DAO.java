@@ -5,6 +5,7 @@
  */
 
 package dao;
+import connectDB.connectDB;
 
 import entity.*;
 import java.sql.*;
@@ -19,7 +20,7 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class LichTrinh_DAO extends BaseDAO {
+public class LichTrinh_DAO {
 
     // Tìm lịch trình theo ga đi, ga đến và ngày (cho chức năng tìm vé)
     public List<LichTrinh> timLichTrinh(String tenGaDi, String tenGaDen, LocalDate ngayDi) {
@@ -42,7 +43,7 @@ public class LichTrinh_DAO extends BaseDAO {
                      "ORDER BY lt.gioKhoiHanh";
 
         List<LichTrinh> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, "%" + tenGaDi + "%");
             ps.setString(2, "%" + tenGaDen + "%");
@@ -77,7 +78,7 @@ public class LichTrinh_DAO extends BaseDAO {
                      "ORDER BY lt.gioKhoiHanh DESC";
 
         List<LichTrinh> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -106,7 +107,7 @@ public class LichTrinh_DAO extends BaseDAO {
                      "JOIN Ga gaDen ON gaDen.maGa = lt.maGaDen " +
                      "WHERE lt.maLichTrinh = ?";
 
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maLichTrinh);
             try (ResultSet rs = ps.executeQuery()) {
@@ -175,7 +176,7 @@ public class LichTrinh_DAO extends BaseDAO {
     public boolean insert(LichTrinh lt) {
         String sql = "INSERT INTO LichTrinh (maLichTrinh, soHieuTau, maTuyen, maGaDi, maGaDen, " +
                      "gioKhoiHanh, gioDenDuKien, trangThai) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, lt.getMaLichTrinh());
             ps.setString(2, lt.getChuyenTau() != null ? lt.getChuyenTau().getSoHieuTau() : null);
@@ -196,7 +197,7 @@ public class LichTrinh_DAO extends BaseDAO {
     public boolean update(LichTrinh lt) {
         String sql = "UPDATE LichTrinh SET soHieuTau=?, maTuyen=?, maGaDi=?, maGaDen=?, " +
                      "gioKhoiHanh=?, gioDenDuKien=?, trangThai=? WHERE maLichTrinh=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, lt.getChuyenTau() != null ? lt.getChuyenTau().getSoHieuTau() : null);
             ps.setString(2, lt.getTuyen() != null ? lt.getTuyen().getMaTuyen() : null);
@@ -216,7 +217,7 @@ public class LichTrinh_DAO extends BaseDAO {
     // Xóa lịch trình (soft delete)
     public boolean delete(String maLichTrinh) {
         String sql = "UPDATE LichTrinh SET trangThai = 0 WHERE maLichTrinh = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maLichTrinh);
             return ps.executeUpdate() > 0;

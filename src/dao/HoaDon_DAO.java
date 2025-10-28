@@ -12,6 +12,7 @@ package dao;
  * @date: 10/25/2025
  * @version:    1.0
  */
+import connectDB.connectDB;
 import entity.HoaDon;
 import entity.NhanVien;
 import entity.KhachHang;
@@ -19,7 +20,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoaDon_DAO extends BaseDAO {
+public class HoaDon_DAO {
 
     public List<HoaDon> findAll() {
         // ✅ Query đơn giản hơn - Đọc tongTien trực tiếp từ database
@@ -35,7 +36,7 @@ public class HoaDon_DAO extends BaseDAO {
                         "ORDER BY hd.ngayTao DESC, hd.gioTao DESC";
 
         List<HoaDon> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -81,7 +82,7 @@ public class HoaDon_DAO extends BaseDAO {
         String sql = "INSERT INTO HoaDon (maHoaDon, maNhanVien, maKH, ngayTao, gioTao, tongTien, trangThai) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, hoaDon.getMaHoaDon());
@@ -112,7 +113,7 @@ public class HoaDon_DAO extends BaseDAO {
     public boolean updateTongTien(String maHoaDon, double tongTien) {
         String sql = "UPDATE HoaDon SET tongTien = ? WHERE maHoaDon = ?";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setDouble(1, tongTien);
@@ -143,7 +144,7 @@ public class HoaDon_DAO extends BaseDAO {
             ") " +
             "WHERE maHoaDon = ?";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, maHoaDon);
@@ -171,7 +172,7 @@ public class HoaDon_DAO extends BaseDAO {
                 "JOIN KhachHang kh ON kh.maKH = hd.maKH " +
                 "WHERE hd.maHoaDon = ?";
 
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, maHoaDon);
@@ -232,7 +233,7 @@ public class HoaDon_DAO extends BaseDAO {
                 "ORDER BY hd.ngayTao DESC, hd.gioTao DESC";
 
         List<HoaDon> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             String searchPattern = "%" + keyword + "%";
@@ -290,7 +291,7 @@ public class HoaDon_DAO extends BaseDAO {
                     ") " +
                     "WHERE maHoaDon = ?";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maHoaDon);
             ps.setString(2, maHoaDon);

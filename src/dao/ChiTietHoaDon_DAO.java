@@ -5,6 +5,7 @@
  */
 
 package dao;
+import connectDB.connectDB;
 
 import entity.ChiTietHoaDon;
 import java.sql.*;
@@ -17,7 +18,7 @@ import java.util.List;
  * @date 10/28/2025
  * @version 1.0
  */
-public class ChiTietHoaDon_DAO extends BaseDAO {
+public class ChiTietHoaDon_DAO {
 
     /**
      * Lấy danh sách chi tiết hóa đơn theo mã hóa đơn
@@ -26,7 +27,7 @@ public class ChiTietHoaDon_DAO extends BaseDAO {
         String sql = "SELECT * FROM ChiTietHoaDon WHERE maHoaDon = ?";
         List<ChiTietHoaDon> list = new ArrayList<>();
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, maHoaDon);
@@ -55,7 +56,7 @@ public class ChiTietHoaDon_DAO extends BaseDAO {
         String sql = "INSERT INTO ChiTietHoaDon (maHoaDon, maVe, soLuong, giaVe, mucGiam) " +
                      "VALUES (?, ?, ?, ?, ?)";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, cthd.getMaHoaDon());
@@ -78,7 +79,7 @@ public class ChiTietHoaDon_DAO extends BaseDAO {
     public boolean delete(String maHoaDon, String maVe) {
         String sql = "DELETE FROM ChiTietHoaDon WHERE maHoaDon = ? AND maVe = ?";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, maHoaDon);
@@ -98,7 +99,7 @@ public class ChiTietHoaDon_DAO extends BaseDAO {
     public boolean deleteByMaHoaDon(String maHoaDon) {
         String sql = "DELETE FROM ChiTietHoaDon WHERE maHoaDon = ?";
         
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             ps.setString(1, maHoaDon);

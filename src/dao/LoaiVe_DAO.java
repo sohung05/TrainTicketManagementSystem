@@ -6,6 +6,7 @@
 
 package dao;
 
+import connectDB.connectDB;
 import entity.LoaiVe;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,13 +18,13 @@ import java.util.List;
  * @date: 10/26/2025
  * @version: 1.0
  */
-public class LoaiVe_DAO extends BaseDAO {
+public class LoaiVe_DAO {
 
     // Lấy tất cả loại vé
     public List<LoaiVe> findAll() {
         String sql = "SELECT * FROM LoaiVe ORDER BY tenLoaiVe";
         List<LoaiVe> list = new ArrayList<>();
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -42,7 +43,7 @@ public class LoaiVe_DAO extends BaseDAO {
     // Tìm loại vé theo mã
     public LoaiVe findByMaLoaiVe(String maLoaiVe) {
         String sql = "SELECT * FROM LoaiVe WHERE maLoaiVe = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maLoaiVe);
             try (ResultSet rs = ps.executeQuery()) {
@@ -63,7 +64,7 @@ public class LoaiVe_DAO extends BaseDAO {
     // Tìm loại vé theo tên
     public LoaiVe findByTenLoaiVe(String tenLoaiVe) {
         String sql = "SELECT * FROM LoaiVe WHERE tenLoaiVe = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, tenLoaiVe);
             try (ResultSet rs = ps.executeQuery()) {
@@ -84,7 +85,7 @@ public class LoaiVe_DAO extends BaseDAO {
     // Thêm loại vé mới
     public boolean insert(LoaiVe lv) {
         String sql = "INSERT INTO LoaiVe (maLoaiVe, tenLoaiVe, mucGiamGia) VALUES (?, ?, ?)";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, lv.getMaLoaiVe());
             ps.setString(2, lv.getTenLoaiVe());
@@ -99,7 +100,7 @@ public class LoaiVe_DAO extends BaseDAO {
     // Cập nhật loại vé
     public boolean update(LoaiVe lv) {
         String sql = "UPDATE LoaiVe SET tenLoaiVe=?, mucGiamGia=? WHERE maLoaiVe=?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, lv.getTenLoaiVe());
             ps.setFloat(2, lv.getMucGiamGia());
@@ -114,7 +115,7 @@ public class LoaiVe_DAO extends BaseDAO {
     // Xóa loại vé
     public boolean delete(String maLoaiVe) {
         String sql = "DELETE FROM LoaiVe WHERE maLoaiVe = ?";
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maLoaiVe);
             return ps.executeUpdate() > 0;
