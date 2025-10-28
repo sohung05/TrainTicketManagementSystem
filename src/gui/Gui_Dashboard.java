@@ -6,9 +6,9 @@ import gui.menu.swing.icon.IconFontSwing;
 import java.awt.Color;
 import javax.swing.Icon;
 
-public class Gui_Dasboard extends javax.swing.JPanel {
+public class Gui_Dashboard extends javax.swing.JPanel {
 
-    public Gui_Dasboard() {
+    public Gui_Dashboard() {
         initComponents();
         setOpaque(false);
         initCardData();      // chỉ còn card
@@ -102,3 +102,7 @@ public class Gui_Dasboard extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
+
+
+
+

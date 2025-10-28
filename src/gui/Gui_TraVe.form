@@ -37,7 +37,7 @@
                               </Group>
                               <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="btnInTapVe" max="32767" attributes="0"/>
+                                  <Component id="btnTraTapVe" max="32767" attributes="0"/>
                                   <Component id="btnXoaTrangHD" pref="133" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -86,7 +86,7 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnInHoaDon" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
-                          <Component id="btnInTapVe" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="btnTraTapVe" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="scrollHoaDon" min="-2" pref="332" max="-2" attributes="0"/>
@@ -453,15 +453,15 @@
         <Property name="text" type="java.lang.String" value="X&#xf3;a tr&#x1eaf;ng"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="btnInTapVe">
+    <Component class="javax.swing.JButton" name="btnTraTapVe">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/icon/documents.png"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="In t&#x1ead;p v&#xe9;"/>
+        <Property name="text" type="java.lang.String" value="Tr&#x1ea3; T&#x1ead;p V&#xe9;"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInTapVeActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTraTapVeActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnTimVe">

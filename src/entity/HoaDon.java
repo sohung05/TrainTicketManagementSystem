@@ -7,65 +7,145 @@
 package entity;
 
 /*
- * @description:
+ * @description: Entity Hóa Đơn
  * @author: Truong Tran Hung
  * @date: 10/25/2025
- * @version:    1.0
+ * @version: 1.0
  */
 import java.time.LocalDateTime;
+
 public class HoaDon {
     private String maHoaDon;
-    private String maNhanVien;
-    private String cccd;          // mã định danh khách hàng
-    private String tenKhachHang;
-    private String sdt;
-    private String khuyenMai;     // chuỗi tên khuyến mãi gộp (nếu có)
-    private LocalDateTime ngayTao;
+    private NhanVien nhanVien;
+    private KhachHang khachHang;
     private LocalDateTime gioTao;
-    private double tongTien;
+    private LocalDateTime ngayTao;
+    private boolean trangThai;
 
     // --- Constructor rỗng ---
     public HoaDon() {}
 
-    // --- Constructor đầy đủ (nếu cần) ---
-    public HoaDon(String maHoaDon, String maNhanVien, String cccd, String tenKhachHang, String sdt,
-                  String khuyenMai, LocalDateTime ngayTao, LocalDateTime gioTao, double tongTien) {
+    // --- Constructor đầy đủ ---
+    public HoaDon(String maHoaDon, NhanVien nhanVien, KhachHang khachHang,
+                  LocalDateTime gioTao, LocalDateTime ngayTao, boolean trangThai) {
         this.maHoaDon = maHoaDon;
-        this.maNhanVien = maNhanVien;
-        this.cccd = cccd;
-        this.tenKhachHang = tenKhachHang;
-        this.sdt = sdt;
-        this.khuyenMai = khuyenMai;
-        this.ngayTao = ngayTao;
+        this.nhanVien = nhanVien;
+        this.khachHang = khachHang;
         this.gioTao = gioTao;
-        this.tongTien = tongTien;
+        this.ngayTao = ngayTao;
+        this.trangThai = trangThai;
     }
 
     // --- Getters / Setters ---
-    public String getMaHoaDon() { return maHoaDon; }
-    public void setMaHoaDon(String maHoaDon) { this.maHoaDon = maHoaDon; }
+    public String getMaHoaDon() {
+        return maHoaDon;
+    }
 
-    public String getMaNhanVien() { return maNhanVien; }
-    public void setMaNhanVien(String maNhanVien) { this.maNhanVien = maNhanVien; }
+    public void setMaHoaDon(String maHoaDon) {
+        this.maHoaDon = maHoaDon;
+    }
 
-    public String getCccd() { return cccd; }
-    public void setCccd(String cccd) { this.cccd = cccd; }
+    public NhanVien getNhanVien() {
+        return nhanVien;
+    }
 
-    public String getTenKhachHang() { return tenKhachHang; }
-    public void setTenKhachHang(String tenKhachHang) { this.tenKhachHang = tenKhachHang; }
+    public void setNhanVien(NhanVien nhanVien) {
+        this.nhanVien = nhanVien;
+    }
 
-    public String getSdt() { return sdt; }
-    public void setSdt(String sdt) { this.sdt = sdt; }
+    public KhachHang getKhachHang() {
+        return khachHang;
+    }
 
-    public String getKhuyenMai() { return khuyenMai; }
-    public void setKhuyenMai(String khuyenMai) { this.khuyenMai = khuyenMai; }
+    public void setKhachHang(KhachHang khachHang) {
+        this.khachHang = khachHang;
+    }
 
-    public LocalDateTime getNgayTao() { return ngayTao; }
-    public void setNgayTao(LocalDateTime ngayTao) { this.ngayTao = ngayTao; }
+    public LocalDateTime getGioTao() {
+        return gioTao;
+    }
 
-    public LocalDateTime getGioTao() { return gioTao; }
-    public void setGioTao(LocalDateTime gioTao) { this.gioTao = gioTao; }
+    public void setGioTao(LocalDateTime gioTao) {
+        this.gioTao = gioTao;
+    }
 
-    public double getTongTien() { return tongTien; }
-    public void setTongTien(double tongTien) { this.tongTien = tongTien; }
+    public LocalDateTime getNgayTao() {
+        return ngayTao;
+    }
+
+    public void setNgayTao(LocalDateTime ngayTao) {
+        this.ngayTao = ngayTao;
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    @Override
+    public String toString() {
+        return "HoaDon{" +
+                "maHoaDon='" + maHoaDon + '\'' +
+                ", nhanVien=" + nhanVien +
+                ", khachHang=" + khachHang +
+                ", gioTao=" + gioTao +
+                ", ngayTao=" + ngayTao +
+                ", trangThai=" + trangThai +
+                '}';
+    }
+
+    // --- Helper methods cho backward compatibility ---
+    public String getMaNhanVien() {
+        return nhanVien != null ? nhanVien.getMaNhanVien() : null;
+    }
+
+    public String getCccd() {
+        return khachHang != null ? khachHang.getCccd() : null;
+    }
+
+    public String getTenKhachHang() {
+        return khachHang != null ? khachHang.getHoTen() : null;
+    }
+
+    public String getSdt() {
+        return khachHang != null ? khachHang.getSdt() : null;
+    }
+
+    // Temporary fields for loading from DAO (will be removed after refactoring)
+    private String khuyenMai;
+    private double tongTien;
+
+    public String getKhuyenMai() {
+        return khuyenMai;
+    }
+
+    public void setKhuyenMai(String khuyenMai) {
+        this.khuyenMai = khuyenMai;
+    }
+
+    public double getTongTien() {
+        return tongTien;
+    }
+
+    public void setTongTien(double tongTien) {
+        this.tongTien = tongTien;
+    }
+
+    // --- Phương thức tính tổng tiền và tổng giảm giá ---
+    public double hinhTongTien() {
+        // TODO: Tính từ ChiTietHoaDon
+        return tongTien;
+    }
+
+    public double hinhTongGiamGia() {
+        // TODO: Tính từ ChiTietKhuyenMai
+        return 0.0;
+    }
+
+    public double hinhThanhTien() {
+        return hinhTongTien() - hinhTongGiamGia();
+    }
 }

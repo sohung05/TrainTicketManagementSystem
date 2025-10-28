@@ -28,7 +28,7 @@ public class connectDB {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
             // Thêm encrypt=true & trustServerCertificate=true để tránh lỗi SSL
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=HTQLBVT;encrypt=true;trustServerCertificate=true";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=HTQLVT;encrypt=true;trustServerCertificate=true";
             String user = "sa";
             String password = "sapassword";
 

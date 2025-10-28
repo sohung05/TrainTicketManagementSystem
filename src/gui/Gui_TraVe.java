@@ -32,7 +32,23 @@ public class Gui_TraVe extends javax.swing.JPanel {
         modelVe     = (DefaultTableModel) tblVe.getModel();
 
         loadHoaDonTable();
-        loadVeTable();
+        // KHÔNG load vé ngay - chỉ load khi click vào hóa đơn
+        
+        // Thêm listener cho table hóa đơn
+        tblHoaDon.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                onHoaDonSelected();
+            }
+        });
+        
+        // Thêm listener cho nút Xóa trắng
+        btnXoaTrangHD.addActionListener(e -> btnXoaTrangHDActionPerformed(e));
+        
+        // Thêm listener cho nút In vé
+        btnInVe.addActionListener(e -> btnInVeActionPerformed(e));
+        
+        // Thêm listener cho nút Trả vé
+        btnTraVe.addActionListener(e -> btnTraVeActionPerformed(e));
     }
 
     /**
@@ -73,7 +89,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
         btnTimHoaDon = new javax.swing.JButton();
         btnInHoaDon = new javax.swing.JButton();
         btnXoaTrangHD = new javax.swing.JButton();
-        btnInTapVe = new javax.swing.JButton();
+        btnTraTapVe = new javax.swing.JButton();
         btnTimVe = new javax.swing.JButton();
         btnInVe = new javax.swing.JButton();
         btnTraVe = new javax.swing.JButton();
@@ -260,11 +276,11 @@ public class Gui_TraVe extends javax.swing.JPanel {
         btnXoaTrangHD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/clear.png"))); // NOI18N
         btnXoaTrangHD.setText("Xóa trắng");
 
-        btnInTapVe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/documents.png"))); // NOI18N
-        btnInTapVe.setText("In tập vé");
-        btnInTapVe.addActionListener(new java.awt.event.ActionListener() {
+        btnTraTapVe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/documents.png"))); // NOI18N
+        btnTraTapVe.setText("Trả Tập Vé");
+        btnTraTapVe.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInTapVeActionPerformed(evt);
+                btnTraTapVeActionPerformed(evt);
             }
         });
 
@@ -301,7 +317,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
                                     .addComponent(btnInHoaDon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(45, 45, 45)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(btnInTapVe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnTraTapVe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(btnXoaTrangHD, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -337,7 +353,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnInHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnInTapVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnTraTapVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(scrollHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
                 .addComponent(lblBangVeTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -364,25 +380,582 @@ public class Gui_TraVe extends javax.swing.JPanel {
     }//GEN-LAST:event_txtMaVeActionPerformed
 
     private void btnTimHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimHoaDonActionPerformed
-        // TODO add your handling code here:
+        // Lấy từ khóa tìm kiếm từ form
+        String maHD = txtMaHD.getText().trim();
+        String cccd = txtCCCD_HD.getText().trim();
+        String sdt = txtSoDT_HD.getText().trim();
+        
+        // Xác định từ khóa tìm kiếm (ưu tiên Mã HD > CCCD > SĐT)
+        String keyword = "";
+        if (!maHD.isEmpty()) {
+            keyword = maHD;
+        } else if (!cccd.isEmpty()) {
+            keyword = cccd;
+        } else if (!sdt.isEmpty()) {
+            keyword = sdt;
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vui lòng nhập Mã hóa đơn, CCCD hoặc SĐT để tìm kiếm!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Tìm hóa đơn
+        List<HoaDon> danhSachHD = hoaDonDAO.searchHoaDon(keyword);
+        
+        if (danhSachHD.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không tìm thấy hóa đơn nào phù hợp!",
+                "Thông báo",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        
+        // Hiển thị kết quả lên bảng
+        modelHoaDon.setRowCount(0);
+        for (HoaDon hd : danhSachHD) {
+            modelHoaDon.addRow(new Object[]{
+                hd.getMaHoaDon(), 
+                hd.getNhanVien() != null ? hd.getNhanVien().getMaNhanVien() : "",
+                hd.getKhachHang() != null ? hd.getKhachHang().getCccd() : "",
+                hd.getKhachHang() != null ? hd.getKhachHang().getHoTen() : "",
+                hd.getKhachHang() != null ? hd.getKhachHang().getSdt() : "",
+                hd.getKhuyenMai(), 
+                hd.getNgayTao(), 
+                hd.getGioTao(), 
+                hd.getTongTien()
+            });
+        }
+        
+        // Xóa bảng vé (vì chưa chọn hóa đơn cụ thể)
+        modelVe.setRowCount(0);
+        
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Tìm thấy " + danhSachHD.size() + " hóa đơn!",
+            "Kết quả tìm kiếm",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnTimHoaDonActionPerformed
 
+    private void btnXoaTrangHDActionPerformed(java.awt.event.ActionEvent evt) {
+        // Xóa tất cả thông tin trên form hóa đơn
+        clearThongTinHoaDon();
+        
+        // Bỏ chọn dòng trong bảng hóa đơn
+        tblHoaDon.clearSelection();
+        
+        // Xóa bảng vé
+        modelVe.setRowCount(0);
+        
+        // Reload lại toàn bộ hóa đơn
+        loadHoaDonTable();
+    }
+
     private void btnTimVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimVeActionPerformed
-        // TODO add your handling code here:
+        // Lấy từ khóa từ form
+        String maVe = txtMaVe.getText().trim();
+        String cccd = txtCCCD_Ve.getText().trim();
+        
+        // Xác định từ khóa (ưu tiên Mã vé > CCCD)
+        String keyword = "";
+        if (!maVe.isEmpty()) {
+            keyword = maVe;
+        } else if (!cccd.isEmpty()) {
+            keyword = cccd;
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vui lòng nhập Mã vé hoặc CCCD để tìm kiếm!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Tìm vé
+        List<Ve> danhSachVe = veDAO.searchVe(keyword);
+        
+        if (danhSachVe.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không tìm thấy vé nào phù hợp!",
+                "Thông báo",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        
+        // Hiển thị kết quả lên bảng
+        modelVe.setRowCount(0);
+        for (Ve ve : danhSachVe) {
+            modelVe.addRow(new Object[]{
+                ve.getMaVe(), 
+                ve.getSoCCCD(), 
+                ve.getTenKhachHang(), 
+                ve.getLoaiVe() != null ? ve.getLoaiVe().getTenLoaiVe() : "",
+                ve.getLichTrinh() != null && ve.getLichTrinh().getGaDi() != null ? ve.getLichTrinh().getGaDi().getTenGa() : "",
+                ve.getLichTrinh() != null && ve.getLichTrinh().getGaDen() != null ? ve.getLichTrinh().getGaDen().getTenGa() : "",
+                ve.getLichTrinh() != null && ve.getLichTrinh().getChuyenTau() != null ? ve.getLichTrinh().getChuyenTau().getSoHieuTau() : "",
+                ve.getChoNgoi() != null && ve.getChoNgoi().getToa() != null ? ve.getChoNgoi().getToa().getSoToa() : "",
+                ve.getChoNgoi() != null ? ve.getChoNgoi().getViTri() : "",
+                ve.getThoiGianLenTau(),
+                ve.getGiaVe()
+            });
+        }
+        
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Tìm thấy " + danhSachVe.size() + " vé!",
+            "Kết quả tìm kiếm",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnTimVeActionPerformed
 
-    private void btnInTapVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInTapVeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnInTapVeActionPerformed
+    private void btnInHoaDonActionPerformed(java.awt.event.ActionEvent evt) {
+        // Kiểm tra xem có hóa đơn nào được chọn không
+        int selectedRow = tblHoaDon.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn hóa đơn cần in!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Lấy mã hóa đơn từ dòng được chọn
+        String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
+        
+        // Mở Dialog_HoaDon với constructor load từ database
+        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        Dialog_HoaDon dialogHoaDon = new Dialog_HoaDon(parentFrame, true, maHoaDon);
+        dialogHoaDon.setVisible(true);
+    }
+    
+    private void btnInVeActionPerformed(java.awt.event.ActionEvent evt) {
+        // Kiểm tra xem có vé nào được chọn không
+        int selectedRow = tblVe.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn vé cần in!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Lấy mã vé từ dòng được chọn
+        String maVe = modelVe.getValueAt(selectedRow, 0).toString();
+        
+        // Load thông tin vé từ database
+        Ve ve = veDAO.findByMaVe(maVe);
+        
+        if (ve == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không tìm thấy thông tin vé: " + maVe,
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Mở Dialog_Ve với thông tin vé
+        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        Dialog_Ve dialogVe = new Dialog_Ve(parentFrame, true, ve);
+        dialogVe.setVisible(true);
+    }
+    
+    /**
+     * Xử lý trả vé với các ràng buộc:
+     * - Vé cá nhân: dưới 4h không trả, 4-24h hoàn 80%, ≥24h hoàn 90%
+     * - Vé tập thể: dưới 24h không trả, 24-72h hoàn 80%, ≥72h hoàn 90%
+     */
+    private void btnTraVeActionPerformed(java.awt.event.ActionEvent evt) {
+        // 1. Kiểm tra đã chọn vé
+        int selectedRow = tblVe.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn vé cần trả!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 2. Lấy thông tin vé
+        String maVe = modelVe.getValueAt(selectedRow, 0).toString();
+        Ve ve = veDAO.findByMaVe(maVe);
+        
+        if (ve == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không tìm thấy thông tin vé: " + maVe,
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // 3. Kiểm tra thời gian còn lại đến giờ khởi hành
+        if (ve.getLichTrinh() == null || ve.getLichTrinh().getGioKhoiHanh() == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không xác định được giờ khởi hành!",
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        java.time.LocalDateTime gioKhoiHanh = ve.getLichTrinh().getGioKhoiHanh();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        long soGioConLai = java.time.Duration.between(now, gioKhoiHanh).toHours();
+        
+        // Kiểm tra vé đã quá giờ khởi hành chưa
+        if (soGioConLai < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vé đã quá giờ khởi hành, không thể trả vé!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 4. Xác định loại vé (cá nhân hay tập thể) dựa trên số vé trong hóa đơn
+        int soVeTrongHoaDon = modelVe.getRowCount(); // Số vé hiển thị trong bảng = số vé trong hóa đơn
+        boolean laVeTapThe = soVeTrongHoaDon > 1;
+        
+        // 5. Tính % hoàn tiền
+        double giaVe = ve.getGiaVe();
+        double phanTramHoan = 0;
+        String lyDoKhongTra = null;
+        
+        if (laVeTapThe) {
+            // ===== VÉ TẬP THỂ =====
+            if (soGioConLai < 24) {
+                lyDoKhongTra = "Vé tập thể không được trả trong vòng 24 giờ trước giờ khởi hành!";
+            } else if (soGioConLai < 72) { // 24 đến < 72 giờ
+                phanTramHoan = 80; // Thu 20%, hoàn 80%
+            } else { // ≥ 72 giờ
+                phanTramHoan = 90; // Thu 10%, hoàn 90%
+            }
+        } else {
+            // ===== VÉ CÁ NHÂN =====
+            if (soGioConLai < 4) {
+                lyDoKhongTra = "Vé cá nhân không được trả trong vòng 4 giờ trước giờ khởi hành!";
+            } else if (soGioConLai < 24) { // 4 đến < 24 giờ
+                phanTramHoan = 80; // Thu 20%, hoàn 80%
+            } else { // ≥ 24 giờ
+                phanTramHoan = 90; // Thu 10%, hoàn 90%
+            }
+        }
+        
+        // Nếu không cho trả vé
+        if (lyDoKhongTra != null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                lyDoKhongTra,
+                "Không thể trả vé",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 6. Tính số tiền hoàn lại (tối thiểu 10.000đ)
+        double tienHoan = (giaVe * phanTramHoan / 100.0);
+        double phiTra = giaVe - tienHoan;
+        
+        // Phí trả tối thiểu 10.000đ
+        if (phiTra < 10000 && phiTra > 0) {
+            phiTra = 10000;
+            tienHoan = giaVe - phiTra;
+        }
+        
+        // Format tiền
+        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN"));
+        
+        // 7. Hiển thị dialog xác nhận
+        String message = String.format(
+            "Số tiền hoàn lại cho khách hàng là %sVNĐ. Xem quy định trả vé tại mục 3 phần hỗ trợ",
+            currencyFormat.format(tienHoan)
+        );
+        
+        int choice = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            message,
+            "Xác nhận",
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.QUESTION_MESSAGE
+        );
+        
+        // 8. Nếu user chọn "Yes" → Xử lý trả vé
+        if (choice == javax.swing.JOptionPane.YES_OPTION) {
+            xuLyTraVe(ve, tienHoan, phiTra);
+        }
+    }
+    
+    /**
+     * Xử lý trả vé: Xóa vé, cập nhật ghế, reload UI
+     */
+    private void xuLyTraVe(Ve ve, double tienHoan, double phiTra) {
+        try {
+            // TODO: Implement logic xóa vé và cập nhật database
+            // 1. Xóa vé khỏi database (hoặc đánh dấu đã trả)
+            // 2. Cập nhật trạng thái ghế về trống
+            // 3. Tạo phiếu hoàn tiền (nếu cần)
+            // 4. Reload bảng vé
+            
+            boolean success = veDAO.delete(ve.getMaVe());
+            
+            if (success) {
+                // Cập nhật lại TongTien của hóa đơn
+                String maHoaDon = txtMaHD.getText().trim();
+                if (!maHoaDon.isEmpty()) {
+                    hoaDonDAO.capNhatTongTien(maHoaDon);
+                }
+                
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "Trả vé thành công!\nSố tiền hoàn: " + 
+                    java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN")).format(tienHoan) + " VNĐ",
+                    "Thành công",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+                // Reload bảng vé
+                if (!maHoaDon.isEmpty()) {
+                    loadVeByMaHoaDon(maHoaDon);
+                    
+                    // Đếm số vé còn lại
+                    int soVeConLai = modelVe.getRowCount();
+                    
+                    // Reload bảng hóa đơn để cập nhật TongTien
+                    loadHoaDonTable();
+                    
+                    // Nếu không còn vé nào → Clear form
+                    if (soVeConLai == 0) {
+                        javax.swing.JOptionPane.showMessageDialog(this,
+                            "Hóa đơn không còn vé nào!\nVui lòng chọn hóa đơn khác.",
+                            "Thông báo",
+                            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                        clearThongTinHoaDon();
+                        modelVe.setRowCount(0);
+                    }
+                }
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "Lỗi khi trả vé! Vui lòng thử lại.",
+                    "Lỗi",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Lỗi khi xử lý trả vé: " + e.getMessage(),
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Trả TẬP VÉ - Trả tất cả vé trong hóa đơn
+     * Áp dụng quy định vé tập thể:
+     * - Dưới 24h: KHÔNG cho trả
+     * - 24-72h: Thu 20% (hoàn 80%)
+     * - ≥72h: Thu 10% (hoàn 90%)
+     */
+    private void btnTraTapVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTraTapVeActionPerformed
+        // 1. Kiểm tra đã chọn hóa đơn chưa
+        int selectedRow = tblHoaDon.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn hóa đơn cần trả vé!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 2. Kiểm tra có vé nào trong bảng không
+        if (modelVe.getRowCount() == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không có vé nào để trả!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 3. Lấy danh sách tất cả vé trong hóa đơn
+        String maHoaDon = txtMaHD.getText().trim();
+        java.util.List<Ve> danhSachVe = new java.util.ArrayList<>();
+        
+        for (int i = 0; i < modelVe.getRowCount(); i++) {
+            String maVe = modelVe.getValueAt(i, 0).toString();
+            Ve ve = veDAO.findByMaVe(maVe);
+            if (ve != null) {
+                danhSachVe.add(ve);
+            }
+        }
+        
+        if (danhSachVe.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không tìm thấy thông tin vé!",
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // 4. Kiểm tra thời gian còn lại (dựa vào vé đầu tiên - cùng lịch trình)
+        Ve veDauTien = danhSachVe.get(0);
+        if (veDauTien.getLichTrinh() == null || veDauTien.getLichTrinh().getGioKhoiHanh() == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Không xác định được giờ khởi hành!",
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        java.time.LocalDateTime gioKhoiHanh = veDauTien.getLichTrinh().getGioKhoiHanh();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        long soGioConLai = java.time.Duration.between(now, gioKhoiHanh).toHours();
+        
+        // Kiểm tra vé đã quá giờ khởi hành chưa
+        if (soGioConLai < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Vé đã quá giờ khởi hành, không thể trả vé!",
+                "Thông báo",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 5. Áp dụng quy định VÉ TẬP THỂ
+        double phanTramHoan = 0;
+        String lyDoKhongTra = null;
+        
+        if (soGioConLai < 24) {
+            lyDoKhongTra = "Vé tập thể không được trả trong vòng 24 giờ trước giờ khởi hành!";
+        } else if (soGioConLai < 72) { // 24 đến < 72 giờ
+            phanTramHoan = 80; // Thu 20%, hoàn 80%
+        } else { // ≥ 72 giờ
+            phanTramHoan = 90; // Thu 10%, hoàn 90%
+        }
+        
+        // Nếu không cho trả vé
+        if (lyDoKhongTra != null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                lyDoKhongTra,
+                "Không thể trả vé",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // 6. Tính tổng tiền hoàn lại
+        double tongGiaVe = 0;
+        for (Ve ve : danhSachVe) {
+            tongGiaVe += ve.getGiaVe();
+        }
+        
+        double tongTienHoan = (tongGiaVe * phanTramHoan / 100.0);
+        double tongPhiTra = tongGiaVe - tongTienHoan;
+        
+        // Format tiền
+        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN"));
+        
+        // 7. Hiển thị dialog xác nhận
+        String message = String.format(
+            "Trả %d vé trong hóa đơn %s\n\n" +
+            "Tổng giá vé: %s VNĐ\n" +
+            "Phí trả vé: %s VNĐ (%.0f%%)\n" +
+            "Số tiền hoàn lại: %s VNĐ\n\n" +
+            "Xem quy định trả vé tại mục 3 phần hỗ trợ",
+            danhSachVe.size(),
+            maHoaDon,
+            currencyFormat.format(tongGiaVe),
+            currencyFormat.format(tongPhiTra),
+            (100 - phanTramHoan),
+            currencyFormat.format(tongTienHoan)
+        );
+        
+        int choice = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            message,
+            "Xác nhận",
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.QUESTION_MESSAGE
+        );
+        
+        // 8. Nếu user chọn "Yes" → Xử lý trả tập vé
+        if (choice == javax.swing.JOptionPane.YES_OPTION) {
+            xuLyTraTapVe(danhSachVe, tongTienHoan, tongPhiTra, maHoaDon);
+        }
+    }//GEN-LAST:event_btnTraTapVeActionPerformed
+    
+    /**
+     * Xử lý trả tập vé: Xóa tất cả vé trong danh sách
+     */
+    private void xuLyTraTapVe(java.util.List<Ve> danhSachVe, double tongTienHoan, double tongPhiTra, String maHoaDon) {
+        try {
+            int soVeThanhCong = 0;
+            int soVeThatBai = 0;
+            
+            // Xóa từng vé
+            for (Ve ve : danhSachVe) {
+                boolean success = veDAO.delete(ve.getMaVe());
+                if (success) {
+                    soVeThanhCong++;
+                } else {
+                    soVeThatBai++;
+                }
+            }
+            
+            // Cập nhật lại TongTien của hóa đơn
+            hoaDonDAO.capNhatTongTien(maHoaDon);
+            
+            // Hiển thị kết quả
+            if (soVeThatBai == 0) {
+                // Tất cả vé đều trả thành công
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    String.format(
+                        "Trả tập vé thành công!\n\n" +
+                        "Số vé đã trả: %d\n" +
+                        "Số tiền hoàn: %s VNĐ",
+                        soVeThanhCong,
+                        java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN")).format(tongTienHoan)
+                    ),
+                    "Thành công",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+                // Reload bảng vé (sẽ rỗng vì đã xóa hết)
+                loadVeByMaHoaDon(maHoaDon);
+                
+                // Clear thông tin hóa đơn và reload danh sách hóa đơn
+                clearThongTinHoaDon();
+                modelVe.setRowCount(0);
+                loadHoaDonTable();
+                
+            } else {
+                // Có vé trả thất bại
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    String.format(
+                        "Trả vé hoàn tất với một số lỗi:\n\n" +
+                        "Thành công: %d vé\n" +
+                        "Thất bại: %d vé\n\n" +
+                        "Vui lòng kiểm tra lại!",
+                        soVeThanhCong,
+                        soVeThatBai
+                    ),
+                    "Cảnh báo",
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                
+                // Reload bảng vé và bảng hóa đơn
+                loadVeByMaHoaDon(maHoaDon);
+                loadHoaDonTable();
+                
+                // Kiểm tra xem còn vé nào không
+                int soVeConLai = modelVe.getRowCount();
+                if (soVeConLai == 0) {
+                    clearThongTinHoaDon();
+                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Lỗi khi xử lý trả tập vé: " + e.getMessage(),
+                "Lỗi",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInHoaDon;
-    private javax.swing.JButton btnInTapVe;
     private javax.swing.JButton btnInVe;
     private javax.swing.JButton btnTimHoaDon;
     private javax.swing.JButton btnTimVe;
+    private javax.swing.JButton btnTraTapVe;
     private javax.swing.JButton btnTraVe;
     private javax.swing.JButton btnXoaTrangHD;
     private javax.swing.JLabel lblBangVeTitle;
@@ -434,6 +1007,79 @@ public class Gui_TraVe extends javax.swing.JPanel {
                     v.getViTriCho(), v.getThoiGianLenTau(), v.getGia()
             });
         }
+    }
+    
+    /**
+     * Xử lý khi click vào hóa đơn trong table
+     */
+    private void onHoaDonSelected() {
+        int selectedRow = tblHoaDon.getSelectedRow();
+        if (selectedRow < 0) {
+            // Không có dòng nào được chọn → Xóa bảng vé
+            modelVe.setRowCount(0);
+            clearThongTinHoaDon();
+            return;
+        }
+        
+        // Lấy mã hóa đơn từ dòng được chọn
+        String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
+        
+        // Hiển thị thông tin hóa đơn lên form
+        txtMaHD.setText(maHoaDon);
+        txtMaNV.setText(modelHoaDon.getValueAt(selectedRow, 1).toString());
+        txtCCCD_HD.setText(modelHoaDon.getValueAt(selectedRow, 2).toString());
+        txtTenKH_HD.setText(modelHoaDon.getValueAt(selectedRow, 3).toString());
+        txtSoDT_HD.setText(modelHoaDon.getValueAt(selectedRow, 4).toString());
+        
+        // Load vé của hóa đơn này
+        loadVeByMaHoaDon(maHoaDon);
+    }
+    
+    /**
+     * Load vé theo mã hóa đơn
+     */
+    private void loadVeByMaHoaDon(String maHoaDon) {
+        modelVe.setRowCount(0);
+        
+        try {
+            // Lấy danh sách mã vé từ ChiTietHoaDon
+            dao.ChiTietHoaDon_DAO chiTietDAO = new dao.ChiTietHoaDon_DAO();
+            List<entity.ChiTietHoaDon> danhSachCTHD = chiTietDAO.findByMaHoaDon(maHoaDon);
+            
+            // Load thông tin vé
+            for (entity.ChiTietHoaDon cthd : danhSachCTHD) {
+                Ve ve = veDAO.findByMaVe(cthd.getMaVe());
+                if (ve != null) {
+                    modelVe.addRow(new Object[]{
+                        ve.getMaVe(), 
+                        ve.getSoCCCD(), 
+                        ve.getTenKhachHang(), 
+                        ve.getLoaiVe() != null ? ve.getLoaiVe().getTenLoaiVe() : "",
+                        ve.getLichTrinh() != null && ve.getLichTrinh().getGaDi() != null ? ve.getLichTrinh().getGaDi().getTenGa() : "",
+                        ve.getLichTrinh() != null && ve.getLichTrinh().getGaDen() != null ? ve.getLichTrinh().getGaDen().getTenGa() : "",
+                        ve.getLichTrinh() != null && ve.getLichTrinh().getChuyenTau() != null ? ve.getLichTrinh().getChuyenTau().getSoHieuTau() : "",
+                        ve.getChoNgoi() != null && ve.getChoNgoi().getToa() != null ? ve.getChoNgoi().getToa().getSoToa() : "",
+                        ve.getChoNgoi() != null ? ve.getChoNgoi().getViTri() : "",
+                        ve.getThoiGianLenTau(),
+                        ve.getGiaVe()
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Lỗi load vé: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Xóa thông tin hóa đơn trên form
+     */
+    private void clearThongTinHoaDon() {
+        txtMaHD.setText("");
+        txtMaNV.setText("");
+        txtCCCD_HD.setText("");
+        txtTenKH_HD.setText("");
+        txtSoDT_HD.setText("");
     }
 
 }
