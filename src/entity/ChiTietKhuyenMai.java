@@ -1,38 +1,21 @@
-/*
- * @ (#) ChiTietKhuyenMai.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package entity;
 
-/**
- * @description: Entity Chi Tiết Khuyến Mãi
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 1.0
- */
 public class ChiTietKhuyenMai {
-    private HoaDon hoaDon;
     private KhuyenMai khuyenMai;
+    private HoaDon hoaDon;
     private String dieuKien;
     private double chietKhau;
 
-    public ChiTietKhuyenMai() {}
-
-    public ChiTietKhuyenMai(HoaDon hoaDon, KhuyenMai khuyenMai, String dieuKien, double chietKhau) {
-        this.hoaDon = hoaDon;
+    public ChiTietKhuyenMai(KhuyenMai khuyenMai, HoaDon hoaDon, String dieuKien, double chietKhau) {
+        super();
         this.khuyenMai = khuyenMai;
+        this.hoaDon = hoaDon;
         this.dieuKien = dieuKien;
         this.chietKhau = chietKhau;
     }
 
-    public HoaDon getHoaDon() {
-        return hoaDon;
-    }
-
-    public void setHoaDon(HoaDon hoaDon) {
-        this.hoaDon = hoaDon;
+    public ChiTietKhuyenMai() {
+        this(null, null,"", 0);
     }
 
     public KhuyenMai getKhuyenMai() {
@@ -41,6 +24,14 @@ public class ChiTietKhuyenMai {
 
     public void setKhuyenMai(KhuyenMai khuyenMai) {
         this.khuyenMai = khuyenMai;
+    }
+
+    public HoaDon getHoaDon() {
+        return hoaDon;
+    }
+
+    public void setHoaDon(HoaDon hoaDon) {
+        this.hoaDon = hoaDon;
     }
 
     public String getDieuKien() {
@@ -59,17 +50,6 @@ public class ChiTietKhuyenMai {
         this.chietKhau = chietKhau;
     }
 
-    @Override
-    public String toString() {
-        return "ChiTietKhuyenMai{" +
-                "hoaDon=" + hoaDon +
-                ", khuyenMai=" + khuyenMai +
-                ", dieuKien='" + dieuKien + '\'' +
-                ", chietKhau=" + chietKhau +
-                '}';
-    }
+
 }
-
-
-
 

@@ -1,27 +1,16 @@
-/*
- * @ (#) ChiTietHoaDon.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package entity;
 
-/**
- * @description: Entity Chi Tiết Hóa Đơn
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 1.0
- */
 public class ChiTietHoaDon {
+    private String maCTHD;
     private HoaDon hoaDon;
     private Ve ve;
     private int soLuong;
     private double giaVe;
     private double mucGiam;
 
-    public ChiTietHoaDon() {}
-
-    public ChiTietHoaDon(HoaDon hoaDon, Ve ve, int soLuong, double giaVe, double mucGiam) {
+    // ✅ Constructor đầy đủ
+    public ChiTietHoaDon(String maCTHD, HoaDon hoaDon, Ve ve, int soLuong, double giaVe, double mucGiam) {
+        this.maCTHD = maCTHD;
         this.hoaDon = hoaDon;
         this.ve = ve;
         this.soLuong = soLuong;
@@ -29,7 +18,25 @@ public class ChiTietHoaDon {
         this.mucGiam = mucGiam;
     }
 
-    // Getters and Setters
+    // ✅ Constructor phụ (dùng khi chỉ có thông tin cơ bản)
+    public ChiTietHoaDon(String maVe, double giaVe, int soLuong, double mucGiam) {
+        this("", null, null, soLuong, giaVe, mucGiam);
+    }
+
+    // ✅ Constructor mặc định (THÊM ĐỂ KHỎI LỖI DAO)
+    public ChiTietHoaDon() {
+        this("", null, null, 0, 0.0, 0.0);
+    }
+
+    // Getter / Setter
+    public String getMaCTHD() {
+        return maCTHD;
+    }
+
+    public void setMaCTHD(String maCTHD) {
+        this.maCTHD = maCTHD;
+    }
+
     public HoaDon getHoaDon() {
         return hoaDon;
     }
@@ -69,65 +76,24 @@ public class ChiTietHoaDon {
     public void setMucGiam(double mucGiam) {
         this.mucGiam = mucGiam;
     }
-    
-    // ===== HELPER METHODS cho DAO =====
-    
-    /**
-     * Lấy mã hóa đơn dưới dạng String
-     */
-    public String getMaHoaDon() {
-        return hoaDon != null ? hoaDon.getMaHoaDon() : null;
-    }
-    
-    /**
-     * Set hóa đơn bằng mã hóa đơn (tạo object HoaDon tạm)
-     */
-    public void setMaHoaDon(String maHoaDon) {
-        if (this.hoaDon == null) {
-            this.hoaDon = new HoaDon();
-        }
-        this.hoaDon.setMaHoaDon(maHoaDon);
-    }
-    
-    /**
-     * Lấy mã vé dưới dạng String
-     */
-    public String getMaVe() {
-        return ve != null ? ve.getMaVe() : null;
-    }
-    
-    /**
-     * Set vé bằng mã vé (tạo object Ve tạm)
-     */
-    public void setMaVe(String maVe) {
-        if (this.ve == null) {
-            this.ve = new Ve();
-        }
-        this.ve.setMaVe(maVe);
+
+    // ✅ Tính giá vé sau khi giảm
+    public double tinhTienVe() {
+        return giaVe - (giaVe * mucGiam / 100);
     }
 
-    // Tính tổng tiền (Giá vé * Số lượng - Mức giảm)
-    public double tinhTongTien() {
-        return (giaVe * soLuong) - mucGiam;
-    }
-
-    // Tính tổng tiền giảm giá
-    public double hinhTongGiamGia() {
-        return mucGiam;
+    // ✅ Tính tổng thành tiền cho vé
+    public double tinhThanhTien() {
+        return tinhTienVe() * soLuong;
     }
 
     @Override
     public String toString() {
-        return "ChiTietHoaDon{" +
-                "hoaDon=" + hoaDon +
-                ", ve=" + ve +
-                ", soLuong=" + soLuong +
-                ", giaVe=" + giaVe +
-                ", mucGiam=" + mucGiam +
-                '}';
+        return "ChiTietHoaDon [maCTHD=" + maCTHD
+                + ", ve=" + (ve != null ? ve.getMaVe() : "null")
+                + ", soLuong=" + soLuong
+                + ", giaVe=" + giaVe
+                + ", mucGiam=" + mucGiam
+                + ", thanhTien=" + tinhThanhTien() + "]";
     }
 }
-
-
-
-

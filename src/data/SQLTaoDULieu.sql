@@ -1,4 +1,4 @@
-
+﻿
 USE master;
 GO
 IF DB_ID('HTQLVT') IS NOT NULL
@@ -82,15 +82,13 @@ CREATE TABLE LichTrinh(
   maLichTrinh  NVARCHAR(20) PRIMARY KEY,
   soHieuTau    NVARCHAR(20) NOT NULL,
   maTuyen      NVARCHAR(20) NOT NULL,
-  maGaDi       NVARCHAR(20) NOT NULL,
-  maGaDen      NVARCHAR(20) NOT NULL,
+  maGa         NVARCHAR(20) NOT NULL,
   gioKhoiHanh  DATETIME2(0) NOT NULL,
   gioDenDuKien DATETIME2(0) NULL,
   trangThai    BIT NOT NULL DEFAULT 1,
   FOREIGN KEY (soHieuTau) REFERENCES ChuyenTau(soHieuTau),
   FOREIGN KEY (maTuyen)   REFERENCES Tuyen(maTuyen),
-  FOREIGN KEY (maGaDi)    REFERENCES Ga(maGa),
-  FOREIGN KEY (maGaDen)   REFERENCES Ga(maGa)
+  FOREIGN KEY (maGa)      REFERENCES Ga(maGa)
 );
 
 /* ============================================
@@ -103,82 +101,84 @@ CREATE TABLE NhanVien(
   SDT NVARCHAR(20) NULL,
   email NVARCHAR(150) NULL,
   diaChi NVARCHAR(250) NULL,
-  chucVu BIT NOT NULL DEFAULT 1,
+  loaiNV NVARCHAR(50) NULL,
+  trangThai BIT NOT NULL DEFAULT 1,
   ngaySinh DATE NULL,
   ngayVaoLam DATE NULL,
-  trangThai BIT NOT NULL DEFAULT 1
+  gioiTinh NVARCHAR(10) NULL
 );
 
 CREATE TABLE TaiKhoan(
-  userName   NVARCHAR(50) PRIMARY KEY,
-  passWord   NVARCHAR(200) NOT NULL,
+  tenTaiKhoan NVARCHAR(50) PRIMARY KEY,
+  matKhau NVARCHAR(200) NOT NULL,
   maNhanVien NVARCHAR(20) NOT NULL UNIQUE,
   FOREIGN KEY (maNhanVien) REFERENCES NhanVien(maNhanVien)
 );
 
 CREATE TABLE KhachHang(
-  maKH     NVARCHAR(20) PRIMARY KEY,
-  CCCD     NVARCHAR(20) NULL,
-  hoTen    NVARCHAR(150) NOT NULL,
-  email    NVARCHAR(150) NULL,
-  SDT      NVARCHAR(20) NULL,
+  maKH NVARCHAR(20) PRIMARY KEY,
+  CCCD NVARCHAR(20) NULL,
+  hoTen NVARCHAR(150) NOT NULL,
+  email NVARCHAR(150) NULL,
+  SDT NVARCHAR(20) NULL,
   doiTuong NVARCHAR(30) NULL
 );
 
 /* ============================================
-   💰 HÓA ĐƠN / VÉ
+   💵 HÓA ĐƠN / VÉ / KHUYẾN MÃI
 ============================================ */
 CREATE TABLE HoaDon(
-  maHoaDon   NVARCHAR(20) PRIMARY KEY,
+  maHoaDon NVARCHAR(20) PRIMARY KEY,
   maNhanVien NVARCHAR(20) NOT NULL,
-  maKH       NVARCHAR(20) NOT NULL,
-  gioTao     DATETIME2(0) NOT NULL,
-  ngayTao    DATETIME2(0) NULL,
-  tongTien   DECIMAL(18,4) NULL,
-  trangThai  BIT NOT NULL DEFAULT 1,
+  maKH NVARCHAR(20) NOT NULL,
+  gioTao DATETIME2(0) NOT NULL,
+  ngayTao DATETIME2(0) NULL,
+  trangThai BIT NOT NULL DEFAULT 1,
   FOREIGN KEY (maNhanVien) REFERENCES NhanVien(maNhanVien),
   FOREIGN KEY (maKH)       REFERENCES KhachHang(maKH)
 );
 
-CREATE TABLE Ve(
-  maVe           NVARCHAR(30) PRIMARY KEY,
-  maLoaiVe       NVARCHAR(20) NOT NULL,
-  maVach         NVARCHAR(50) NULL,
-  thoiGianLenTau DATETIME2(0) NOT NULL,
-  giaVe          DECIMAL(18,2) NOT NULL,
-  maKH           NVARCHAR(20) NULL,
-  maChoNgoi      NVARCHAR(30) NULL,
-  maLichTrinh    NVARCHAR(20) NULL,
-  trangThai      BIT NOT NULL DEFAULT 1,
-  tenKhachHang   NVARCHAR(150) NULL,
-  soCCCD         NVARCHAR(20) NULL,
-  FOREIGN KEY (maLoaiVe)     REFERENCES LoaiVe(maLoaiVe),
-  FOREIGN KEY (maKH)         REFERENCES KhachHang(maKH),
-  FOREIGN KEY (maChoNgoi)    REFERENCES ChoNgoi(maChoNgoi),
-  FOREIGN KEY (maLichTrinh)  REFERENCES LichTrinh(maLichTrinh)
+CREATE TABLE KhuyenMai(
+  maKhuyenMai NVARCHAR(20) PRIMARY KEY,
+  tenKhuyenMai NVARCHAR(150) NOT NULL,
+  loaiKhuyenMai NVARCHAR(50) NULL,
+  thoiGianBatDau DATETIME2(0) NOT NULL,
+  thoiGianKetThuc DATETIME2(0) NOT NULL,
+  trangThai BIT NOT NULL DEFAULT 1
 );
 
+CREATE TABLE Ve(
+  maVe NVARCHAR(30) PRIMARY KEY,
+  maLoaiVe NVARCHAR(20) NOT NULL,
+  maVach NVARCHAR(50) NULL,
+  thoiGianLenTau DATETIME2(0) NOT NULL,
+  giaVe DECIMAL(18,2) NOT NULL,
+  maKH NVARCHAR(20) NULL,
+  maChoNgoi NVARCHAR(30) NULL,
+  maLichTrinh NVARCHAR(20) NULL,
+  maToa NVARCHAR(20) NULL,
+  trangThai BIT NOT NULL DEFAULT 1,
+  tenKhachHang NVARCHAR(150) NULL,
+  soCCCD NVARCHAR(20) NULL,
+  FOREIGN KEY (maLoaiVe)   REFERENCES LoaiVe(maLoaiVe),
+  FOREIGN KEY (maKH)       REFERENCES KhachHang(maKH),
+  FOREIGN KEY (maChoNgoi)  REFERENCES ChoNgoi(maChoNgoi),
+  FOREIGN KEY (maLichTrinh) REFERENCES LichTrinh(maLichTrinh),
+  FOREIGN KEY (maToa)      REFERENCES Toa(maToa)
+);
+
+/* ============================================
+   📄 CHI TIẾT HÓA ĐƠN & KHUYẾN MÃI
+============================================ */
 CREATE TABLE ChiTietHoaDon(
   maHoaDon NVARCHAR(20) NOT NULL,
   maVe     NVARCHAR(30) NOT NULL,
   soLuong  INT NOT NULL DEFAULT 1,
   giaVe    DECIMAL(18,2) NOT NULL,
   mucGiam  DECIMAL(18,2) NOT NULL DEFAULT 0,
-  PRIMARY KEY (maHoaDon, maVe),
-  FOREIGN KEY (maHoaDon) REFERENCES HoaDon(maHoaDon),
+  CONSTRAINT PK_CTHD PRIMARY KEY (maHoaDon, maVe),
+  FOREIGN KEY (maHoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
   FOREIGN KEY (maVe)     REFERENCES Ve(maVe)
-);
-
-/* ============================================
-   🎁 KHUYẾN MÃI
-============================================ */
-CREATE TABLE KhuyenMai(
-  maKhuyenMai     NVARCHAR(20) PRIMARY KEY,
-  tenKhuyenMai    NVARCHAR(150) NOT NULL,
-  loaiKhuyenMai   NVARCHAR(50) NULL,
-  thoiGianBatDau  DATETIME2(0) NOT NULL,
-  thoiGianKetThuc DATETIME2(0) NOT NULL,
-  trangThai       BIT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE ChiTietKhuyenMai(
@@ -186,9 +186,19 @@ CREATE TABLE ChiTietKhuyenMai(
   maKhuyenMai NVARCHAR(20) NOT NULL,
   dieuKien    NVARCHAR(200) NULL,
   chietKhau   DECIMAL(18,2) NOT NULL DEFAULT 0,
-  PRIMARY KEY (maHoaDon, maKhuyenMai),
-  FOREIGN KEY (maHoaDon)    REFERENCES HoaDon(maHoaDon),
+  CONSTRAINT PK_CTKM PRIMARY KEY (maHoaDon, maKhuyenMai),
+  FOREIGN KEY (maHoaDon)    REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
   FOREIGN KEY (maKhuyenMai) REFERENCES KhuyenMai(maKhuyenMai)
 );
-GO
 
+/* ============================================
+   ⚙️ INDEX TỐI ƯU TRUY VẤN
+============================================ */
+CREATE INDEX IX_Toa_Tau        ON Toa(soHieuTau);
+CREATE INDEX IX_ChoNgoi_Toa    ON ChoNgoi(maToa);
+CREATE INDEX IX_LT_TuyenTau    ON LichTrinh(maTuyen, soHieuTau);
+CREATE INDEX IX_Ve_LichTrinh   ON Ve(maLichTrinh);
+CREATE INDEX IX_Ve_KhachHang   ON Ve(maKH);
+CREATE INDEX IX_CTHD_Ve        ON ChiTietHoaDon(maVe);
+CREATE INDEX IX_CTKM_KM        ON ChiTietKhuyenMai(maKhuyenMai);
+GO

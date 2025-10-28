@@ -1,46 +1,37 @@
-/*
- * @ (#) NhanVien.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package entity;
 
 import java.time.LocalDate;
 
-/**
- * @description: Entity Nhân Viên
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 2.0 (Updated for SQLTaoDULieu.sql - chucVu BIT)
- */
 public class NhanVien {
     private String maNhanVien;
-    private String cccd;
+    private String CCCD;
     private String hoTen;
-    private String sdt;
+    private String SDT;
     private String email;
     private String diaChi;
-    private boolean chucVu;  // true = Nhân viên, false = Quản lý
+    private String loaiNV;
+    private boolean trangThai;
     private LocalDate ngaySinh;
     private LocalDate ngayVaoLam;
-    private boolean trangThai;
+    private String gioiTinh;
 
-    public NhanVien() {}
+    public NhanVien() {
+    }
 
-    public NhanVien(String maNhanVien, String cccd, String hoTen, String sdt, String email, 
-                    String diaChi, boolean chucVu, LocalDate ngaySinh, LocalDate ngayVaoLam, 
-                    boolean trangThai) {
+    public NhanVien(String maNhanVien, String CCCD, String hoTen, String SDT,
+                    String email, String diaChi, String loaiNV, boolean trangThai,
+                    LocalDate ngaySinh, LocalDate ngayVaoLam, String gioiTinh) {
         this.maNhanVien = maNhanVien;
-        this.cccd = cccd;
+        this.CCCD = CCCD;
         this.hoTen = hoTen;
-        this.sdt = sdt;
+        this.SDT = SDT;
         this.email = email;
         this.diaChi = diaChi;
-        this.chucVu = chucVu;
+        this.loaiNV = loaiNV;
+        this.trangThai = trangThai;
         this.ngaySinh = ngaySinh;
         this.ngayVaoLam = ngayVaoLam;
-        this.trangThai = trangThai;
+        this.gioiTinh = gioiTinh;
     }
 
     public String getMaNhanVien() {
@@ -51,12 +42,12 @@ public class NhanVien {
         this.maNhanVien = maNhanVien;
     }
 
-    public String getCccd() {
-        return cccd;
+    public String getCCCD() {
+        return CCCD;
     }
 
-    public void setCccd(String cccd) {
-        this.cccd = cccd;
+    public void setCCCD(String CCCD) {
+        this.CCCD = CCCD;
     }
 
     public String getHoTen() {
@@ -67,12 +58,12 @@ public class NhanVien {
         this.hoTen = hoTen;
     }
 
-    public String getSdt() {
-        return sdt;
+    public String getSDT() {
+        return SDT;
     }
 
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
+    public void setSDT(String SDT) {
+        this.SDT = SDT;
     }
 
     public String getEmail() {
@@ -91,12 +82,20 @@ public class NhanVien {
         this.diaChi = diaChi;
     }
 
-    public boolean isChucVu() {
-        return chucVu;
+    public String getLoaiNV() {
+        return loaiNV;
     }
 
-    public void setChucVu(boolean chucVu) {
-        this.chucVu = chucVu;
+    public void setLoaiNV(String loaiNV) {
+        this.loaiNV = loaiNV;
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
     }
 
     public LocalDate getNgaySinh() {
@@ -115,30 +114,21 @@ public class NhanVien {
         this.ngayVaoLam = ngayVaoLam;
     }
 
-    public boolean isTrangThai() {
-        return trangThai;
+    public String getGioiTinh() {
+        return gioiTinh;
     }
 
-    public void setTrangThai(boolean trangThai) {
-        this.trangThai = trangThai;
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
     }
 
     @Override
     public String toString() {
         return "NhanVien{" +
                 "maNhanVien='" + maNhanVien + '\'' +
-                ", cccd='" + cccd + '\'' +
                 ", hoTen='" + hoTen + '\'' +
-                ", sdt='" + sdt + '\'' +
-                ", email='" + email + '\'' +
-                ", diaChi='" + diaChi + '\'' +
-                ", chucVu=" + (chucVu ? "Nhân viên" : "Quản lý") +
-                ", ngaySinh=" + ngaySinh +
-                ", ngayVaoLam=" + ngayVaoLam +
-                ", trangThai=" + (trangThai ? "Đang làm" : "Đã nghỉ") +
+                ", loaiNV='" + loaiNV + '\'' +
+                ", trangThai=" + trangThai +
                 '}';
     }
 }
-
-
-

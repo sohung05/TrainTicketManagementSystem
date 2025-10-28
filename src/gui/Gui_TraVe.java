@@ -3,13 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package gui;
-import dao.HoaDon_DAO;
-import dao.Ve_DAO;
-import entity.HoaDon;
-import entity.Ve;
-import connectDB.connectDB;
-import javax.swing.table.DefaultTableModel;
-import java.util.List;
+
 /**
  *
  * @author PC
@@ -19,36 +13,8 @@ public class Gui_TraVe extends javax.swing.JPanel {
     /**
      * Creates new form Gui_TraVe
      */
-    private final HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
-    private final Ve_DAO veDAO = new Ve_DAO();
-    private DefaultTableModel modelHoaDon, modelVe;
-
     public Gui_TraVe() {
         initComponents();
-
-        try { connectDB.getInstance().connect(); } catch (Exception e) { e.printStackTrace(); }
-
-        modelHoaDon = (DefaultTableModel) tblHoaDon.getModel();
-        modelVe     = (DefaultTableModel) tblVe.getModel();
-
-        loadHoaDonTable();
-        // KHÔNG load vé ngay - chỉ load khi click vào hóa đơn
-        
-        // Thêm listener cho table hóa đơn
-        tblHoaDon.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                onHoaDonSelected();
-            }
-        });
-        
-        // Thêm listener cho nút Xóa trắng
-        btnXoaTrangHD.addActionListener(e -> btnXoaTrangHDActionPerformed(e));
-        
-        // Thêm listener cho nút In vé
-        btnInVe.addActionListener(e -> btnInVeActionPerformed(e));
-        
-        // Thêm listener cho nút Trả vé
-        btnTraVe.addActionListener(e -> btnTraVeActionPerformed(e));
     }
 
     /**
@@ -60,189 +26,189 @@ public class Gui_TraVe extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        pnlThongTinHoaDon = new javax.swing.JPanel();
-        lblMaHD = new javax.swing.JLabel();
-        lblMaNV = new javax.swing.JLabel();
-        lblCCCD_HD = new javax.swing.JLabel();
-        lblTenKH_HD = new javax.swing.JLabel();
-        lblSoDT_HD = new javax.swing.JLabel();
-        txtMaHD = new javax.swing.JTextField();
-        txtMaNV = new javax.swing.JTextField();
-        txtCCCD_HD = new javax.swing.JTextField();
-        txtTenKH_HD = new javax.swing.JTextField();
-        txtSoDT_HD = new javax.swing.JTextField();
-        pnlThongTinVe = new javax.swing.JPanel();
-        lblMaVe = new javax.swing.JLabel();
-        lblCCCD_Ve = new javax.swing.JLabel();
-        lblHoTen_Ve = new javax.swing.JLabel();
-        lblGiaVe = new javax.swing.JLabel();
-        txtMaVe = new javax.swing.JTextField();
-        txtCCCD_Ve = new javax.swing.JTextField();
-        txtHoTen_Ve = new javax.swing.JTextField();
-        txtGiaVe = new javax.swing.JTextField();
-        lblHoaDonTitle = new javax.swing.JLabel();
-        lblBangVeTitle = new javax.swing.JLabel();
-        scrollHoaDon = new javax.swing.JScrollPane();
-        tblHoaDon = new javax.swing.JTable();
-        scrollVe = new javax.swing.JScrollPane();
-        tblVe = new javax.swing.JTable();
-        btnTimHoaDon = new javax.swing.JButton();
-        btnInHoaDon = new javax.swing.JButton();
-        btnXoaTrangHD = new javax.swing.JButton();
-        btnTraTapVe = new javax.swing.JButton();
-        btnTimVe = new javax.swing.JButton();
-        btnInVe = new javax.swing.JButton();
-        btnTraVe = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jTextField3 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JTextField();
+        jTextField5 = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
+        jTextField7 = new javax.swing.JTextField();
+        jTextField8 = new javax.swing.JTextField();
+        jTextField9 = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(234, 243, 251));
 
-        pnlThongTinHoaDon.setBackground(new java.awt.Color(234, 243, 251));
-        pnlThongTinHoaDon.setBorder(javax.swing.BorderFactory.createTitledBorder("Thông tin hóa đơn"));
+        jPanel1.setBackground(new java.awt.Color(234, 243, 251));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Thông tin hóa đơn"));
 
-        lblMaHD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblMaHD.setText("Mã hóa đơn:");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("Mã hóa đơn:");
 
-        lblMaNV.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblMaNV.setText("Mã nhân viên:");
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setText("Mã nhân viên:");
 
-        lblCCCD_HD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblCCCD_HD.setText("CCCD:");
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setText("CCCD:");
 
-        lblTenKH_HD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblTenKH_HD.setText("Tên khách hàng:");
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel6.setText("Tên khách hàng:");
 
-        lblSoDT_HD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblSoDT_HD.setText("Số điện thoại:");
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel7.setText("Số điện thoại:");
 
-        txtMaNV.addActionListener(new java.awt.event.ActionListener() {
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtMaNVActionPerformed(evt);
+                jTextField2ActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout pnlThongTinHoaDonLayout = new javax.swing.GroupLayout(pnlThongTinHoaDon);
-        pnlThongTinHoaDon.setLayout(pnlThongTinHoaDonLayout);
-        pnlThongTinHoaDonLayout.setHorizontalGroup(
-            pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlThongTinHoaDonLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTenKH_HD)
-                    .addComponent(lblSoDT_HD)
-                    .addComponent(lblCCCD_HD)
-                    .addComponent(lblMaNV)
-                    .addComponent(lblMaHD))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlThongTinHoaDonLayout.createSequentialGroup()
-                        .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtMaNV, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtCCCD_HD, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(pnlThongTinHoaDonLayout.createSequentialGroup()
-                        .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtMaHD, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSoDT_HD, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTenKH_HD, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(42, Short.MAX_VALUE))))
         );
-        pnlThongTinHoaDonLayout.setVerticalGroup(
-            pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlThongTinHoaDonLayout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblMaHD)
-                    .addComponent(txtMaHD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblMaNV)
-                    .addComponent(txtMaNV, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCCCD_HD)
-                    .addComponent(txtCCCD_HD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTenKH_HD)
-                    .addComponent(txtTenKH_HD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlThongTinHoaDonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSoDT_HD)
-                    .addComponent(txtSoDT_HD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
-        pnlThongTinVe.setBackground(new java.awt.Color(234, 243, 251));
-        pnlThongTinVe.setBorder(javax.swing.BorderFactory.createTitledBorder("Thông tin vé"));
+        jPanel2.setBackground(new java.awt.Color(234, 243, 251));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Thông tin vé"));
 
-        lblMaVe.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblMaVe.setText("Mã vé:");
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setText("Mã vé:");
 
-        lblCCCD_Ve.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblCCCD_Ve.setText("CCCD:");
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel9.setText("CCCD:");
 
-        lblHoTen_Ve.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblHoTen_Ve.setText("Họ tên:");
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel10.setText("Họ tên:");
 
-        lblGiaVe.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblGiaVe.setText("Giá:");
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel11.setText("Giá:");
 
-        txtMaVe.addActionListener(new java.awt.event.ActionListener() {
+        jTextField6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtMaVeActionPerformed(evt);
+                jTextField6ActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout pnlThongTinVeLayout = new javax.swing.GroupLayout(pnlThongTinVe);
-        pnlThongTinVe.setLayout(pnlThongTinVeLayout);
-        pnlThongTinVeLayout.setHorizontalGroup(
-            pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlThongTinVeLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
-                .addGroup(pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblCCCD_Ve)
-                    .addComponent(lblMaVe)
-                    .addComponent(lblHoTen_Ve)
-                    .addComponent(lblGiaVe))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11))
                 .addGap(90, 90, 90)
-                .addGroup(pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtCCCD_Ve, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtGiaVe, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtMaVe, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtHoTen_Ve, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
-        pnlThongTinVeLayout.setVerticalGroup(
-            pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlThongTinVeLayout.createSequentialGroup()
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblMaVe)
-                    .addComponent(txtMaVe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(16, 16, 16)
-                .addGroup(pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblCCCD_Ve)
-                    .addComponent(txtCCCD_Ve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblHoTen_Ve)
-                    .addComponent(txtHoTen_Ve, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(pnlThongTinVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblGiaVe)
-                    .addComponent(txtGiaVe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        lblHoaDonTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
-        lblHoaDonTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblHoaDonTitle.setText("Hóa Đơn");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Hóa Đơn");
 
-        lblBangVeTitle.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
-        lblBangVeTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblBangVeTitle.setText("Bảng Vé");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Bảng Vé");
 
-        tblHoaDon.setModel(new javax.swing.table.DefaultTableModel(
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -250,9 +216,9 @@ public class Gui_TraVe extends javax.swing.JPanel {
                 "Mã hóa đơn", "Mã nhân viên", "CCCD", "Tên khách hàng", "Số điện thoại", "Khuyến mãi", "Ngày lập", "Giờ lập ", "Tổng tiền"
             }
         ));
-        scrollHoaDon.setViewportView(tblHoaDon);
+        jScrollPane1.setViewportView(jTable1);
 
-        tblVe.setModel(new javax.swing.table.DefaultTableModel(
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -260,826 +226,171 @@ public class Gui_TraVe extends javax.swing.JPanel {
                 "Mã vé ", "CCCD", "Tên khách hàng", "Đối tượng", "Ga đi ", "Ga đến ", "Mã tàu", "Số toa", "Vị trí chỗ ", "Giờ lên tàu", "Giá"
             }
         ));
-        scrollVe.setViewportView(tblVe);
+        jScrollPane2.setViewportView(jTable2);
 
-        btnTimHoaDon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/TimKiem.png"))); // NOI18N
-        btnTimHoaDon.setText("Tìm hóa đơn");
-        btnTimHoaDon.addActionListener(new java.awt.event.ActionListener() {
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/TimKiem.png"))); // NOI18N
+        jButton1.setText("Tìm hóa đơn");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTimHoaDonActionPerformed(evt);
+                jButton1ActionPerformed(evt);
             }
         });
 
-        btnInHoaDon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/print.png"))); // NOI18N
-        btnInHoaDon.setText("In Hóa Đơn");
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/print.png"))); // NOI18N
+        jButton2.setText("In Hóa Đơn");
 
-        btnXoaTrangHD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/clear.png"))); // NOI18N
-        btnXoaTrangHD.setText("Xóa trắng");
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/clear.png"))); // NOI18N
+        jButton3.setText("Xóa trắng");
 
-        btnTraTapVe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/documents.png"))); // NOI18N
-        btnTraTapVe.setText("Trả Tập Vé");
-        btnTraTapVe.addActionListener(new java.awt.event.ActionListener() {
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/documents.png"))); // NOI18N
+        jButton4.setText("In tập vé");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTraTapVeActionPerformed(evt);
+                jButton4ActionPerformed(evt);
             }
         });
 
-        btnTimVe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/TimKiem.png"))); // NOI18N
-        btnTimVe.setText("Tìm vé");
-        btnTimVe.addActionListener(new java.awt.event.ActionListener() {
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/TimKiem.png"))); // NOI18N
+        jButton5.setText("Tìm vé");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTimVeActionPerformed(evt);
+                jButton5ActionPerformed(evt);
             }
         });
 
-        btnInVe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/print.png"))); // NOI18N
-        btnInVe.setText("In vé");
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/print.png"))); // NOI18N
+        jButton6.setText("In vé");
 
-        btnTraVe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/exchange.png"))); // NOI18N
-        btnTraVe.setText("Trả vé");
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/exchange.png"))); // NOI18N
+        jButton7.setText("Trả vé");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblHoaDonTitle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblBangVeTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(scrollHoaDon)
+                        .addComponent(jScrollPane1)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(47, 47, 47)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(btnTimHoaDon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnInHoaDon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(45, 45, 45)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(btnTraTapVe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnXoaTrangHD, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)))
+                                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pnlThongTinHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(scrollVe, javax.swing.GroupLayout.DEFAULT_SIZE, 736, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 736, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pnlThongTinVe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(27, 27, 27)
-                                .addComponent(btnTimVe)
+                                .addComponent(jButton5)
                                 .addGap(27, 27, 27)
-                                .addComponent(btnInVe)
+                                .addComponent(jButton6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnTraVe)
+                                .addComponent(jButton7)
                                 .addGap(18, 18, 18)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(lblHoaDonTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(pnlThongTinHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnTimHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnXoaTrangHD, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnInHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnTraTapVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(scrollHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(12, 12, 12)
-                .addComponent(lblBangVeTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(pnlThongTinVe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(4, 4, 4)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnTimVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnInVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnTraVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(scrollVe, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtMaNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaNVActionPerformed
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtMaNVActionPerformed
+    }//GEN-LAST:event_jTextField2ActionPerformed
 
-    private void txtMaVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMaVeActionPerformed
+    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtMaVeActionPerformed
+    }//GEN-LAST:event_jTextField6ActionPerformed
 
-    private void btnTimHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimHoaDonActionPerformed
-        // Lấy từ khóa tìm kiếm từ form
-        String maHD = txtMaHD.getText().trim();
-        String cccd = txtCCCD_HD.getText().trim();
-        String sdt = txtSoDT_HD.getText().trim();
-        
-        // Xác định từ khóa tìm kiếm (ưu tiên Mã HD > CCCD > SĐT)
-        String keyword = "";
-        if (!maHD.isEmpty()) {
-            keyword = maHD;
-        } else if (!cccd.isEmpty()) {
-            keyword = cccd;
-        } else if (!sdt.isEmpty()) {
-            keyword = sdt;
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vui lòng nhập Mã hóa đơn, CCCD hoặc SĐT để tìm kiếm!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Tìm hóa đơn
-        List<HoaDon> danhSachHD = hoaDonDAO.searchHoaDon(keyword);
-        
-        if (danhSachHD.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không tìm thấy hóa đơn nào phù hợp!",
-                "Thông báo",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        
-        // Hiển thị kết quả lên bảng
-        modelHoaDon.setRowCount(0);
-        for (HoaDon hd : danhSachHD) {
-            modelHoaDon.addRow(new Object[]{
-                hd.getMaHoaDon(), 
-                hd.getNhanVien() != null ? hd.getNhanVien().getMaNhanVien() : "",
-                hd.getKhachHang() != null ? hd.getKhachHang().getCccd() : "",
-                hd.getKhachHang() != null ? hd.getKhachHang().getHoTen() : "",
-                hd.getKhachHang() != null ? hd.getKhachHang().getSdt() : "",
-                hd.getKhuyenMai(), 
-                hd.getNgayTao(), 
-                hd.getGioTao(), 
-                hd.getTongTien()
-            });
-        }
-        
-        // Xóa bảng vé (vì chưa chọn hóa đơn cụ thể)
-        modelVe.setRowCount(0);
-        
-        javax.swing.JOptionPane.showMessageDialog(this,
-            "Tìm thấy " + danhSachHD.size() + " hóa đơn!",
-            "Kết quả tìm kiếm",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_btnTimHoaDonActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void btnXoaTrangHDActionPerformed(java.awt.event.ActionEvent evt) {
-        // Xóa tất cả thông tin trên form hóa đơn
-        clearThongTinHoaDon();
-        
-        // Bỏ chọn dòng trong bảng hóa đơn
-        tblHoaDon.clearSelection();
-        
-        // Xóa bảng vé
-        modelVe.setRowCount(0);
-        
-        // Reload lại toàn bộ hóa đơn
-        loadHoaDonTable();
-    }
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void btnTimVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimVeActionPerformed
-        // Lấy từ khóa từ form
-        String maVe = txtMaVe.getText().trim();
-        String cccd = txtCCCD_Ve.getText().trim();
-        
-        // Xác định từ khóa (ưu tiên Mã vé > CCCD)
-        String keyword = "";
-        if (!maVe.isEmpty()) {
-            keyword = maVe;
-        } else if (!cccd.isEmpty()) {
-            keyword = cccd;
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vui lòng nhập Mã vé hoặc CCCD để tìm kiếm!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Tìm vé
-        List<Ve> danhSachVe = veDAO.searchVe(keyword);
-        
-        if (danhSachVe.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không tìm thấy vé nào phù hợp!",
-                "Thông báo",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        
-        // Hiển thị kết quả lên bảng
-        modelVe.setRowCount(0);
-        for (Ve ve : danhSachVe) {
-            modelVe.addRow(new Object[]{
-                ve.getMaVe(), 
-                ve.getSoCCCD(), 
-                ve.getTenKhachHang(), 
-                ve.getLoaiVe() != null ? ve.getLoaiVe().getTenLoaiVe() : "",
-                ve.getLichTrinh() != null && ve.getLichTrinh().getGaDi() != null ? ve.getLichTrinh().getGaDi().getTenGa() : "",
-                ve.getLichTrinh() != null && ve.getLichTrinh().getGaDen() != null ? ve.getLichTrinh().getGaDen().getTenGa() : "",
-                ve.getLichTrinh() != null && ve.getLichTrinh().getChuyenTau() != null ? ve.getLichTrinh().getChuyenTau().getSoHieuTau() : "",
-                ve.getChoNgoi() != null && ve.getChoNgoi().getToa() != null ? ve.getChoNgoi().getToa().getSoToa() : "",
-                ve.getChoNgoi() != null ? ve.getChoNgoi().getViTri() : "",
-                ve.getThoiGianLenTau(),
-                ve.getGiaVe()
-            });
-        }
-        
-        javax.swing.JOptionPane.showMessageDialog(this,
-            "Tìm thấy " + danhSachVe.size() + " vé!",
-            "Kết quả tìm kiếm",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_btnTimVeActionPerformed
-
-    private void btnInHoaDonActionPerformed(java.awt.event.ActionEvent evt) {
-        // Kiểm tra xem có hóa đơn nào được chọn không
-        int selectedRow = tblHoaDon.getSelectedRow();
-        if (selectedRow < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vui lòng chọn hóa đơn cần in!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Lấy mã hóa đơn từ dòng được chọn
-        String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
-        
-        // Mở Dialog_HoaDon với constructor load từ database
-        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        Dialog_HoaDon dialogHoaDon = new Dialog_HoaDon(parentFrame, true, maHoaDon);
-        dialogHoaDon.setVisible(true);
-    }
-    
-    private void btnInVeActionPerformed(java.awt.event.ActionEvent evt) {
-        // Kiểm tra xem có vé nào được chọn không
-        int selectedRow = tblVe.getSelectedRow();
-        if (selectedRow < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vui lòng chọn vé cần in!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Lấy mã vé từ dòng được chọn
-        String maVe = modelVe.getValueAt(selectedRow, 0).toString();
-        
-        // Load thông tin vé từ database
-        Ve ve = veDAO.findByMaVe(maVe);
-        
-        if (ve == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không tìm thấy thông tin vé: " + maVe,
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Mở Dialog_Ve với thông tin vé
-        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        Dialog_Ve dialogVe = new Dialog_Ve(parentFrame, true, ve);
-        dialogVe.setVisible(true);
-    }
-    
-    /**
-     * Xử lý trả vé với các ràng buộc:
-     * - Vé cá nhân: dưới 4h không trả, 4-24h hoàn 80%, ≥24h hoàn 90%
-     * - Vé tập thể: dưới 24h không trả, 24-72h hoàn 80%, ≥72h hoàn 90%
-     */
-    private void btnTraVeActionPerformed(java.awt.event.ActionEvent evt) {
-        // 1. Kiểm tra đã chọn vé
-        int selectedRow = tblVe.getSelectedRow();
-        if (selectedRow < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vui lòng chọn vé cần trả!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 2. Lấy thông tin vé
-        String maVe = modelVe.getValueAt(selectedRow, 0).toString();
-        Ve ve = veDAO.findByMaVe(maVe);
-        
-        if (ve == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không tìm thấy thông tin vé: " + maVe,
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // 3. Kiểm tra thời gian còn lại đến giờ khởi hành
-        if (ve.getLichTrinh() == null || ve.getLichTrinh().getGioKhoiHanh() == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không xác định được giờ khởi hành!",
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        java.time.LocalDateTime gioKhoiHanh = ve.getLichTrinh().getGioKhoiHanh();
-        java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        long soGioConLai = java.time.Duration.between(now, gioKhoiHanh).toHours();
-        
-        // Kiểm tra vé đã quá giờ khởi hành chưa
-        if (soGioConLai < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vé đã quá giờ khởi hành, không thể trả vé!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 4. Xác định loại vé (cá nhân hay tập thể) dựa trên số vé trong hóa đơn
-        int soVeTrongHoaDon = modelVe.getRowCount(); // Số vé hiển thị trong bảng = số vé trong hóa đơn
-        boolean laVeTapThe = soVeTrongHoaDon > 1;
-        
-        // 5. Tính % hoàn tiền
-        double giaVe = ve.getGiaVe();
-        double phanTramHoan = 0;
-        String lyDoKhongTra = null;
-        
-        if (laVeTapThe) {
-            // ===== VÉ TẬP THỂ =====
-            if (soGioConLai < 24) {
-                lyDoKhongTra = "Vé tập thể không được trả trong vòng 24 giờ trước giờ khởi hành!";
-            } else if (soGioConLai < 72) { // 24 đến < 72 giờ
-                phanTramHoan = 80; // Thu 20%, hoàn 80%
-            } else { // ≥ 72 giờ
-                phanTramHoan = 90; // Thu 10%, hoàn 90%
-            }
-        } else {
-            // ===== VÉ CÁ NHÂN =====
-            if (soGioConLai < 4) {
-                lyDoKhongTra = "Vé cá nhân không được trả trong vòng 4 giờ trước giờ khởi hành!";
-            } else if (soGioConLai < 24) { // 4 đến < 24 giờ
-                phanTramHoan = 80; // Thu 20%, hoàn 80%
-            } else { // ≥ 24 giờ
-                phanTramHoan = 90; // Thu 10%, hoàn 90%
-            }
-        }
-        
-        // Nếu không cho trả vé
-        if (lyDoKhongTra != null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                lyDoKhongTra,
-                "Không thể trả vé",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 6. Tính số tiền hoàn lại (tối thiểu 10.000đ)
-        double tienHoan = (giaVe * phanTramHoan / 100.0);
-        double phiTra = giaVe - tienHoan;
-        
-        // Phí trả tối thiểu 10.000đ
-        if (phiTra < 10000 && phiTra > 0) {
-            phiTra = 10000;
-            tienHoan = giaVe - phiTra;
-        }
-        
-        // Format tiền
-        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN"));
-        
-        // 7. Hiển thị dialog xác nhận
-        String message = String.format(
-            "Số tiền hoàn lại cho khách hàng là %sVNĐ. Xem quy định trả vé tại mục 3 phần hỗ trợ",
-            currencyFormat.format(tienHoan)
-        );
-        
-        int choice = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            message,
-            "Xác nhận",
-            javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.QUESTION_MESSAGE
-        );
-        
-        // 8. Nếu user chọn "Yes" → Xử lý trả vé
-        if (choice == javax.swing.JOptionPane.YES_OPTION) {
-            xuLyTraVe(ve, tienHoan, phiTra);
-        }
-    }
-    
-    /**
-     * Xử lý trả vé: Xóa vé, cập nhật ghế, reload UI
-     */
-    private void xuLyTraVe(Ve ve, double tienHoan, double phiTra) {
-        try {
-            // TODO: Implement logic xóa vé và cập nhật database
-            // 1. Xóa vé khỏi database (hoặc đánh dấu đã trả)
-            // 2. Cập nhật trạng thái ghế về trống
-            // 3. Tạo phiếu hoàn tiền (nếu cần)
-            // 4. Reload bảng vé
-            
-            boolean success = veDAO.delete(ve.getMaVe());
-            
-            if (success) {
-                // Cập nhật lại TongTien của hóa đơn
-                String maHoaDon = txtMaHD.getText().trim();
-                if (!maHoaDon.isEmpty()) {
-                    hoaDonDAO.capNhatTongTien(maHoaDon);
-                }
-                
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "Trả vé thành công!\nSố tiền hoàn: " + 
-                    java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN")).format(tienHoan) + " VNĐ",
-                    "Thành công",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                
-                // Reload bảng vé
-                if (!maHoaDon.isEmpty()) {
-                    loadVeByMaHoaDon(maHoaDon);
-                    
-                    // Đếm số vé còn lại
-                    int soVeConLai = modelVe.getRowCount();
-                    
-                    // Reload bảng hóa đơn để cập nhật TongTien
-                    loadHoaDonTable();
-                    
-                    // Nếu không còn vé nào → Clear form
-                    if (soVeConLai == 0) {
-                        javax.swing.JOptionPane.showMessageDialog(this,
-                            "Hóa đơn không còn vé nào!\nVui lòng chọn hóa đơn khác.",
-                            "Thông báo",
-                            javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                        clearThongTinHoaDon();
-                        modelVe.setRowCount(0);
-                    }
-                }
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "Lỗi khi trả vé! Vui lòng thử lại.",
-                    "Lỗi",
-                    javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Lỗi khi xử lý trả vé: " + e.getMessage(),
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    /**
-     * Trả TẬP VÉ - Trả tất cả vé trong hóa đơn
-     * Áp dụng quy định vé tập thể:
-     * - Dưới 24h: KHÔNG cho trả
-     * - 24-72h: Thu 20% (hoàn 80%)
-     * - ≥72h: Thu 10% (hoàn 90%)
-     */
-    private void btnTraTapVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTraTapVeActionPerformed
-        // 1. Kiểm tra đã chọn hóa đơn chưa
-        int selectedRow = tblHoaDon.getSelectedRow();
-        if (selectedRow < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vui lòng chọn hóa đơn cần trả vé!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 2. Kiểm tra có vé nào trong bảng không
-        if (modelVe.getRowCount() == 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không có vé nào để trả!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 3. Lấy danh sách tất cả vé trong hóa đơn
-        String maHoaDon = txtMaHD.getText().trim();
-        java.util.List<Ve> danhSachVe = new java.util.ArrayList<>();
-        
-        for (int i = 0; i < modelVe.getRowCount(); i++) {
-            String maVe = modelVe.getValueAt(i, 0).toString();
-            Ve ve = veDAO.findByMaVe(maVe);
-            if (ve != null) {
-                danhSachVe.add(ve);
-            }
-        }
-        
-        if (danhSachVe.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không tìm thấy thông tin vé!",
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // 4. Kiểm tra thời gian còn lại (dựa vào vé đầu tiên - cùng lịch trình)
-        Ve veDauTien = danhSachVe.get(0);
-        if (veDauTien.getLichTrinh() == null || veDauTien.getLichTrinh().getGioKhoiHanh() == null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Không xác định được giờ khởi hành!",
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        java.time.LocalDateTime gioKhoiHanh = veDauTien.getLichTrinh().getGioKhoiHanh();
-        java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        long soGioConLai = java.time.Duration.between(now, gioKhoiHanh).toHours();
-        
-        // Kiểm tra vé đã quá giờ khởi hành chưa
-        if (soGioConLai < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Vé đã quá giờ khởi hành, không thể trả vé!",
-                "Thông báo",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 5. Áp dụng quy định VÉ TẬP THỂ
-        double phanTramHoan = 0;
-        String lyDoKhongTra = null;
-        
-        if (soGioConLai < 24) {
-            lyDoKhongTra = "Vé tập thể không được trả trong vòng 24 giờ trước giờ khởi hành!";
-        } else if (soGioConLai < 72) { // 24 đến < 72 giờ
-            phanTramHoan = 80; // Thu 20%, hoàn 80%
-        } else { // ≥ 72 giờ
-            phanTramHoan = 90; // Thu 10%, hoàn 90%
-        }
-        
-        // Nếu không cho trả vé
-        if (lyDoKhongTra != null) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                lyDoKhongTra,
-                "Không thể trả vé",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // 6. Tính tổng tiền hoàn lại
-        double tongGiaVe = 0;
-        for (Ve ve : danhSachVe) {
-            tongGiaVe += ve.getGiaVe();
-        }
-        
-        double tongTienHoan = (tongGiaVe * phanTramHoan / 100.0);
-        double tongPhiTra = tongGiaVe - tongTienHoan;
-        
-        // Format tiền
-        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN"));
-        
-        // 7. Hiển thị dialog xác nhận
-        String message = String.format(
-            "Trả %d vé trong hóa đơn %s\n\n" +
-            "Tổng giá vé: %s VNĐ\n" +
-            "Phí trả vé: %s VNĐ (%.0f%%)\n" +
-            "Số tiền hoàn lại: %s VNĐ\n\n" +
-            "Xem quy định trả vé tại mục 3 phần hỗ trợ",
-            danhSachVe.size(),
-            maHoaDon,
-            currencyFormat.format(tongGiaVe),
-            currencyFormat.format(tongPhiTra),
-            (100 - phanTramHoan),
-            currencyFormat.format(tongTienHoan)
-        );
-        
-        int choice = javax.swing.JOptionPane.showConfirmDialog(
-            this,
-            message,
-            "Xác nhận",
-            javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.QUESTION_MESSAGE
-        );
-        
-        // 8. Nếu user chọn "Yes" → Xử lý trả tập vé
-        if (choice == javax.swing.JOptionPane.YES_OPTION) {
-            xuLyTraTapVe(danhSachVe, tongTienHoan, tongPhiTra, maHoaDon);
-        }
-    }//GEN-LAST:event_btnTraTapVeActionPerformed
-    
-    /**
-     * Xử lý trả tập vé: Xóa tất cả vé trong danh sách
-     */
-    private void xuLyTraTapVe(java.util.List<Ve> danhSachVe, double tongTienHoan, double tongPhiTra, String maHoaDon) {
-        try {
-            int soVeThanhCong = 0;
-            int soVeThatBai = 0;
-            
-            // Xóa từng vé
-            for (Ve ve : danhSachVe) {
-                boolean success = veDAO.delete(ve.getMaVe());
-                if (success) {
-                    soVeThanhCong++;
-                } else {
-                    soVeThatBai++;
-                }
-            }
-            
-            // Cập nhật lại TongTien của hóa đơn
-            hoaDonDAO.capNhatTongTien(maHoaDon);
-            
-            // Hiển thị kết quả
-            if (soVeThatBai == 0) {
-                // Tất cả vé đều trả thành công
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    String.format(
-                        "Trả tập vé thành công!\n\n" +
-                        "Số vé đã trả: %d\n" +
-                        "Số tiền hoàn: %s VNĐ",
-                        soVeThanhCong,
-                        java.text.NumberFormat.getInstance(java.util.Locale.of("vi", "VN")).format(tongTienHoan)
-                    ),
-                    "Thành công",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                
-                // Reload bảng vé (sẽ rỗng vì đã xóa hết)
-                loadVeByMaHoaDon(maHoaDon);
-                
-                // Clear thông tin hóa đơn và reload danh sách hóa đơn
-                clearThongTinHoaDon();
-                modelVe.setRowCount(0);
-                loadHoaDonTable();
-                
-            } else {
-                // Có vé trả thất bại
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    String.format(
-                        "Trả vé hoàn tất với một số lỗi:\n\n" +
-                        "Thành công: %d vé\n" +
-                        "Thất bại: %d vé\n\n" +
-                        "Vui lòng kiểm tra lại!",
-                        soVeThanhCong,
-                        soVeThatBai
-                    ),
-                    "Cảnh báo",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
-                
-                // Reload bảng vé và bảng hóa đơn
-                loadVeByMaHoaDon(maHoaDon);
-                loadHoaDonTable();
-                
-                // Kiểm tra xem còn vé nào không
-                int soVeConLai = modelVe.getRowCount();
-                if (soVeConLai == 0) {
-                    clearThongTinHoaDon();
-                }
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Lỗi khi xử lý trả tập vé: " + e.getMessage(),
-                "Lỗi",
-                javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnInHoaDon;
-    private javax.swing.JButton btnInVe;
-    private javax.swing.JButton btnTimHoaDon;
-    private javax.swing.JButton btnTimVe;
-    private javax.swing.JButton btnTraTapVe;
-    private javax.swing.JButton btnTraVe;
-    private javax.swing.JButton btnXoaTrangHD;
-    private javax.swing.JLabel lblBangVeTitle;
-    private javax.swing.JLabel lblCCCD_HD;
-    private javax.swing.JLabel lblCCCD_Ve;
-    private javax.swing.JLabel lblGiaVe;
-    private javax.swing.JLabel lblHoTen_Ve;
-    private javax.swing.JLabel lblHoaDonTitle;
-    private javax.swing.JLabel lblMaHD;
-    private javax.swing.JLabel lblMaNV;
-    private javax.swing.JLabel lblMaVe;
-    private javax.swing.JLabel lblSoDT_HD;
-    private javax.swing.JLabel lblTenKH_HD;
-    private javax.swing.JPanel pnlThongTinHoaDon;
-    private javax.swing.JPanel pnlThongTinVe;
-    private javax.swing.JScrollPane scrollHoaDon;
-    private javax.swing.JScrollPane scrollVe;
-    private javax.swing.JTable tblHoaDon;
-    private javax.swing.JTable tblVe;
-    private javax.swing.JTextField txtCCCD_HD;
-    private javax.swing.JTextField txtCCCD_Ve;
-    private javax.swing.JTextField txtGiaVe;
-    private javax.swing.JTextField txtHoTen_Ve;
-    private javax.swing.JTextField txtMaHD;
-    private javax.swing.JTextField txtMaNV;
-    private javax.swing.JTextField txtMaVe;
-    private javax.swing.JTextField txtSoDT_HD;
-    private javax.swing.JTextField txtTenKH_HD;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField jTextField7;
+    private javax.swing.JTextField jTextField8;
+    private javax.swing.JTextField jTextField9;
     // End of variables declaration//GEN-END:variables
-
-    private void loadHoaDonTable() {
-        modelHoaDon.setRowCount(0);
-        List<HoaDon> list = hoaDonDAO.findAll();
-        for (HoaDon hd : list) {
-            modelHoaDon.addRow(new Object[]{
-                    hd.getMaHoaDon(), hd.getMaNhanVien(), hd.getCccd(), hd.getTenKhachHang(),
-                    hd.getSdt(), hd.getKhuyenMai(), hd.getNgayTao(), hd.getGioTao(), hd.getTongTien()
-            });
-        }
-    }
-
-    private void loadVeTable() {
-        modelVe.setRowCount(0);
-        List<Ve> list = veDAO.findAll();
-        for (Ve v : list) {
-            modelVe.addRow(new Object[]{
-                    v.getMaVe(), v.getCccd(), v.getTenKhachHang(), v.getDoiTuong(),
-                    v.getGaDi(), v.getGaDen(), v.getMaTau(), v.getSoToa(),
-                    v.getViTriCho(), v.getThoiGianLenTau(), v.getGia()
-            });
-        }
-    }
-    
-    /**
-     * Xử lý khi click vào hóa đơn trong table
-     */
-    private void onHoaDonSelected() {
-        int selectedRow = tblHoaDon.getSelectedRow();
-        if (selectedRow < 0) {
-            // Không có dòng nào được chọn → Xóa bảng vé
-            modelVe.setRowCount(0);
-            clearThongTinHoaDon();
-            return;
-        }
-        
-        // Lấy mã hóa đơn từ dòng được chọn
-        String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
-        
-        // Hiển thị thông tin hóa đơn lên form
-        txtMaHD.setText(maHoaDon);
-        txtMaNV.setText(modelHoaDon.getValueAt(selectedRow, 1).toString());
-        txtCCCD_HD.setText(modelHoaDon.getValueAt(selectedRow, 2).toString());
-        txtTenKH_HD.setText(modelHoaDon.getValueAt(selectedRow, 3).toString());
-        txtSoDT_HD.setText(modelHoaDon.getValueAt(selectedRow, 4).toString());
-        
-        // Load vé của hóa đơn này
-        loadVeByMaHoaDon(maHoaDon);
-    }
-    
-    /**
-     * Load vé theo mã hóa đơn
-     */
-    private void loadVeByMaHoaDon(String maHoaDon) {
-        modelVe.setRowCount(0);
-        
-        try {
-            // Lấy danh sách mã vé từ ChiTietHoaDon
-            dao.ChiTietHoaDon_DAO chiTietDAO = new dao.ChiTietHoaDon_DAO();
-            List<entity.ChiTietHoaDon> danhSachCTHD = chiTietDAO.findByMaHoaDon(maHoaDon);
-            
-            // Load thông tin vé
-            for (entity.ChiTietHoaDon cthd : danhSachCTHD) {
-                Ve ve = veDAO.findByMaVe(cthd.getMaVe());
-                if (ve != null) {
-                    modelVe.addRow(new Object[]{
-                        ve.getMaVe(), 
-                        ve.getSoCCCD(), 
-                        ve.getTenKhachHang(), 
-                        ve.getLoaiVe() != null ? ve.getLoaiVe().getTenLoaiVe() : "",
-                        ve.getLichTrinh() != null && ve.getLichTrinh().getGaDi() != null ? ve.getLichTrinh().getGaDi().getTenGa() : "",
-                        ve.getLichTrinh() != null && ve.getLichTrinh().getGaDen() != null ? ve.getLichTrinh().getGaDen().getTenGa() : "",
-                        ve.getLichTrinh() != null && ve.getLichTrinh().getChuyenTau() != null ? ve.getLichTrinh().getChuyenTau().getSoHieuTau() : "",
-                        ve.getChoNgoi() != null && ve.getChoNgoi().getToa() != null ? ve.getChoNgoi().getToa().getSoToa() : "",
-                        ve.getChoNgoi() != null ? ve.getChoNgoi().getViTri() : "",
-                        ve.getThoiGianLenTau(),
-                        ve.getGiaVe()
-                    });
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Lỗi load vé: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * Xóa thông tin hóa đơn trên form
-     */
-    private void clearThongTinHoaDon() {
-        txtMaHD.setText("");
-        txtMaNV.setText("");
-        txtCCCD_HD.setText("");
-        txtTenKH_HD.setText("");
-        txtSoDT_HD.setText("");
-    }
-
 }

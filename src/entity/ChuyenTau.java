@@ -1,74 +1,65 @@
-/*
- * @ (#) ChuyenTau.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package entity;
 
-/**
- * @description: Entity Chuyến Tàu
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 2.0 (Updated: namSanXuat INT)
- */
+import java.time.LocalDateTime;
+
 public class ChuyenTau {
     private String soHieuTau;
-    private double tocDo;  // km/h
+    private double tocDo;
     private LoaiTau loaiTau;
-    private Integer namSanXuat;  // Năm sản xuất (2020, 2021...)
+    private LocalDateTime namSanXuat;
 
-    public ChuyenTau() {}
+    public ChuyenTau(String soHieuTau, double tocDo, LoaiTau loaiTau, LocalDateTime namSanXuat) {
+		super();
+		this.soHieuTau = soHieuTau;
+		this.tocDo = tocDo;
+		this.loaiTau = loaiTau;
+		this.namSanXuat = namSanXuat;
+	}
 
-    public ChuyenTau(String soHieuTau, double tocDo, LoaiTau loaiTau, Integer namSanXuat) {
-        this.soHieuTau = soHieuTau;
-        this.tocDo = tocDo;
-        this.loaiTau = loaiTau;
-        this.namSanXuat = namSanXuat;
+
+	public ChuyenTau() {
+        this("", 0, null, LocalDateTime.now());
     }
 
-    public String getSoHieuTau() {
-        return soHieuTau;
-    }
 
-    public void setSoHieuTau(String soHieuTau) {
-        this.soHieuTau = soHieuTau;
-    }
+	public String getSoHieuTau() {
+		return soHieuTau;
+	}
 
-    public double getTocDo() {
-        return tocDo;
-    }
 
-    public void setTocDo(double tocDo) {
-        this.tocDo = tocDo;
-    }
+	public void setSoHieuTau(String soHieuTau) {
+		this.soHieuTau = soHieuTau;
+	}
 
-    public LoaiTau getLoaiTau() {
-        return loaiTau;
-    }
 
-    public void setLoaiTau(LoaiTau loaiTau) {
-        this.loaiTau = loaiTau;
-    }
+	public double getTocDo() {
+		return tocDo;
+	}
 
-    public Integer getNamSanXuat() {
-        return namSanXuat;
-    }
 
-    public void setNamSanXuat(Integer namSanXuat) {
-        this.namSanXuat = namSanXuat;
-    }
+	public void setTocDo(double tocDo) {
+		this.tocDo = tocDo;
+	}
 
-    @Override
-    public String toString() {
-        return "ChuyenTau{" +
-                "soHieuTau='" + soHieuTau + '\'' +
-                ", tocDo=" + tocDo +
-                ", loaiTau=" + loaiTau +
-                ", namSanXuat=" + namSanXuat +
-                '}';
-    }
+
+	public LoaiTau getLoaiTau() {
+		return loaiTau;
+	}
+
+
+	public void setLoaiTau(LoaiTau loaiTau) {
+		this.loaiTau = loaiTau;
+	}
+
+
+	public LocalDateTime getNamSanXuat() {
+		return namSanXuat;
+	}
+
+
+	public void setNamSanXuat(LocalDateTime namSanXuat) {
+		this.namSanXuat = namSanXuat;
+	}
+
 }
-
-
 

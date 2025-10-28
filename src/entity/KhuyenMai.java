@@ -1,19 +1,7 @@
-/*
- * @ (#) KhuyenMai.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package entity;
 
 import java.time.LocalDateTime;
 
-/**
- * @description: Entity Khuyến Mãi
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 1.0
- */
 public class KhuyenMai {
     private String maKhuyenMai;
     private String tenKhuyenMai;
@@ -34,67 +22,83 @@ public class KhuyenMai {
         this.trangThai = trangThai;
     }
 
-    public String getMaKhuyenMai() {
-        return maKhuyenMai;
-    }
-
+    // Getters và Setters
+    public String getMaKhuyenMai() { return maKhuyenMai; }
     public void setMaKhuyenMai(String maKhuyenMai) {
+        if (maKhuyenMai == null || !maKhuyenMai.matches("^KM\\d{8}\\d{2}$")) {
+            throw new IllegalArgumentException(
+                    "❌ Mã khuyến mãi không hợp lệ! Phải có dạng KMddMMyyyyXX, ví dụ: KM0609202304");
+        }
         this.maKhuyenMai = maKhuyenMai;
     }
-
-    public String getTenKhuyenMai() {
-        return tenKhuyenMai;
-    }
-
+    public String getTenKhuyenMai() { return tenKhuyenMai; }
     public void setTenKhuyenMai(String tenKhuyenMai) {
-        this.tenKhuyenMai = tenKhuyenMai;
+        if (tenKhuyenMai == null || tenKhuyenMai.trim().isEmpty()) {
+            throw new IllegalArgumentException("❌ Tên khuyến mãi không được để trống!");
+        }
+        this.tenKhuyenMai = tenKhuyenMai.trim();
     }
-
-    public String getLoaiKhuyenMai() {
-        return loaiKhuyenMai;
-    }
-
+    public String getLoaiKhuyenMai() { return loaiKhuyenMai; }
     public void setLoaiKhuyenMai(String loaiKhuyenMai) {
-        this.loaiKhuyenMai = loaiKhuyenMai;
+        if (!"KMKH".equalsIgnoreCase(loaiKhuyenMai) && !"KMHD".equalsIgnoreCase(loaiKhuyenMai)) {
+            throw new IllegalArgumentException("❌ Loại khuyến mãi phải là 'KMKH' hoặc 'KMHD'");
+        }
+        this.loaiKhuyenMai = loaiKhuyenMai.toUpperCase();
     }
-
-    public LocalDateTime getThoiGianBatDau() {
-        return thoiGianBatDau;
-    }
-
+    public LocalDateTime getThoiGianBatDau() { return thoiGianBatDau; }
     public void setThoiGianBatDau(LocalDateTime thoiGianBatDau) {
+        if (thoiGianBatDau == null)
+            throw new IllegalArgumentException("❌ Thời gian bắt đầu không được rỗng!");
         this.thoiGianBatDau = thoiGianBatDau;
     }
-
-    public LocalDateTime getThoiGianKetThuc() {
-        return thoiGianKetThuc;
-    }
-
+    public LocalDateTime getThoiGianKetThuc() { return thoiGianKetThuc; }
     public void setThoiGianKetThuc(LocalDateTime thoiGianKetThuc) {
+        if (thoiGianKetThuc == null)
+            throw new IllegalArgumentException("❌ Thời gian kết thúc không được rỗng!");
+        if (this.thoiGianBatDau != null && thoiGianKetThuc.isBefore(this.thoiGianBatDau)) {
+            throw new IllegalArgumentException("❌ Thời gian kết thúc phải sau thời gian bắt đầu!");
+        }
         this.thoiGianKetThuc = thoiGianKetThuc;
     }
+    public boolean isTrangThai() { return trangThai; }
+    public void setTrangThai(boolean trangThai) { this.trangThai = trangThai; }
 
-    public boolean isTrangThai() {
-        return trangThai;
+    private int soVe;
+
+    public int getSoVe() {
+        return soVe;
     }
 
-    public void setTrangThai(boolean trangThai) {
-        this.trangThai = trangThai;
+    public void setSoVe(int soVe) {
+        this.soVe = soVe;
+    }
+    private double chietKhau;
+
+    public double getChietKhau() {
+        return chietKhau;
     }
 
-    @Override
-    public String toString() {
-        return "KhuyenMai{" +
-                "maKhuyenMai='" + maKhuyenMai + '\'' +
-                ", tenKhuyenMai='" + tenKhuyenMai + '\'' +
-                ", loaiKhuyenMai='" + loaiKhuyenMai + '\'' +
-                ", thoiGianBatDau=" + thoiGianBatDau +
-                ", thoiGianKetThuc=" + thoiGianKetThuc +
-                ", trangThai=" + trangThai +
-                '}';
+    public void setChietKhau(double chietKhau) {
+        if (chietKhau <= 0) {
+            throw new IllegalArgumentException("❌ Chiết khấu phải lớn hơn 0");
+        }
+        this.chietKhau = chietKhau;
     }
+    private String doiTuongApDung;
+    public String getDoiTuongApDung() {
+        return doiTuongApDung;
+    }
+
+    public void setDoiTuongApDung(String doiTuongApDung) {
+        this.doiTuongApDung = doiTuongApDung;
+    }
+
+    public static String taoMaKhuyenMaiTheoNgay(java.util.Date ngayBatDau, int soThuTu) {
+        if (ngayBatDau == null)
+            throw new IllegalArgumentException("❌ Ngày bắt đầu không được null khi tạo mã khuyến mãi!");
+
+        String ngay = new java.text.SimpleDateFormat("ddMMyyyy").format(ngayBatDau);
+        return String.format("KM%s%02d", ngay, soThuTu);
+    }
+
 }
-
-
-
-

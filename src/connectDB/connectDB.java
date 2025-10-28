@@ -1,58 +1,37 @@
 package connectDB;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class connectDB {
     private static Connection con = null;
-    public static connectDB instance = new connectDB();
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=BTL;encrypt=false;trustServerCertificate=true;";
+    private static final String USER = "sa";
+    private static final String PASSWORD = "123456789";
 
-    public static Connection getCon() {
+    public static Connection getConnection() {
         try {
-            // Nếu kết nối chưa mở hoặc đã bị đóng → tự mở lại
             if (con == null || con.isClosed()) {
-                instance.connect();
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+                con = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("✅ Kết nối SQL Server thành công!");
             }
+        } catch (ClassNotFoundException e) {
+            System.err.println("❌ Không tìm thấy JDBC Driver! Hãy kiểm tra xem đã thêm file mssql-jdbc.jar chưa?");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("❌ Lỗi SQL khi kết nối: " + e.getMessage());
         }
         return con;
     }
 
-    public static connectDB getInstance() {
-        return instance;
-    }
-
-    public void connect() throws SQLException {
-        try {
-            // Load driver (bắt buộc trên IntelliJ)
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
-            // Thêm encrypt=true & trustServerCertificate=true để tránh lỗi SSL
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=HTQLVT;encrypt=true;trustServerCertificate=true";
-            String user = "sa";
-            String password = "sapassword";
-
-            // Nếu kết nối đang đóng → mở lại
-            if (con == null || con.isClosed()) {
-                con = DriverManager.getConnection(url, user, password);
-                System.out.println("Connected to the database.");
-            }
-        } catch (ClassNotFoundException e) {
-            System.err.println("Driver SQL Server chưa được load!");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.err.println("Không thể kết nối đến SQL Server!");
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    public void disconnect() {
+    public static void disconnect() {
         if (con != null) {
             try {
                 con.close();
-                System.out.println("Disconnected from the database.");
+                System.out.println("🔒 Đã ngắt kết nối SQL Server!");
             } catch (SQLException e) {
+                System.err.println("❌ Lỗi khi đóng kết nối!");
                 e.printStackTrace();
             }
         }

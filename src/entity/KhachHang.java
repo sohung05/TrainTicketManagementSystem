@@ -1,33 +1,22 @@
-/*
- * @ (#) KhachHang.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package entity;
 
-/**
- * @description: Entity Khách Hàng
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 1.0
- */
 public class KhachHang {
     private String maKH;
-    private String cccd;
+    private String CCCD;
     private String hoTen;
     private String email;
-    private String sdt;
-    private String doiTuong;  // SinhVien, TreEm, NguoiLon, NguoiCaoTuoi
+    private String SDT;
+    private String doiTuong; // SinhVien, TreEm, NguoiLon, NguoiCaoTuoi
 
-    public KhachHang() {}
+    public KhachHang() {
+    }
 
-    public KhachHang(String maKH, String cccd, String hoTen, String email, String sdt, String doiTuong) {
+    public KhachHang(String maKH, String CCCD, String hoTen, String email, String SDT, String doiTuong) {
         this.maKH = maKH;
-        this.cccd = cccd;
+        this.CCCD = CCCD;
         this.hoTen = hoTen;
         this.email = email;
-        this.sdt = sdt;
+        this.SDT = SDT;
         this.doiTuong = doiTuong;
     }
 
@@ -39,12 +28,12 @@ public class KhachHang {
         this.maKH = maKH;
     }
 
-    public String getCccd() {
-        return cccd;
+    public String getCCCD() {
+        return CCCD;
     }
 
-    public void setCccd(String cccd) {
-        this.cccd = cccd;
+    public void setCCCD(String CCCD) {
+        this.CCCD = CCCD;
     }
 
     public String getHoTen() {
@@ -63,12 +52,12 @@ public class KhachHang {
         this.email = email;
     }
 
-    public String getSdt() {
-        return sdt;
+    public String getSDT() {
+        return SDT;
     }
 
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
+    public void setSDT(String SDT) {
+        this.SDT = SDT;
     }
 
     public String getDoiTuong() {
@@ -83,14 +72,9 @@ public class KhachHang {
     public String toString() {
         return "KhachHang{" +
                 "maKH='" + maKH + '\'' +
-                ", cccd='" + cccd + '\'' +
                 ", hoTen='" + hoTen + '\'' +
-                ", email='" + email + '\'' +
-                ", sdt='" + sdt + '\'' +
+                ", SDT='" + SDT + '\'' +
                 ", doiTuong='" + doiTuong + '\'' +
                 '}';
     }
 }
-
-
-

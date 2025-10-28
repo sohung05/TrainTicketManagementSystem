@@ -1,135 +1,61 @@
-/*
- * @ (#) KhachHang_DAO.java          1.0        10/26/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved.
- */
-
 package dao;
 
+import connectDB.connectDB;
 import entity.KhachHang;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @description: DAO cho bảng KhachHang
- * @author: Truong Tran Hung
- * @date: 10/26/2025
- * @version: 1.0
- */
-public class KhachHang_DAO extends BaseDAO {
+public class KhachHang_DAO {
 
-    // Lấy tất cả khách hàng
-    public List<KhachHang> findAll() {
-        String sql = "SELECT * FROM KhachHang ORDER BY hoTen";
-        List<KhachHang> list = new ArrayList<>();
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
+    public List<KhachHang> getAll() {
+        List<KhachHang> ds = new ArrayList<>();
+        String sql = "SELECT * FROM KhachHang";
+
+        Connection con = connectDB.getConnection();
+        if (con == null) {
+            System.err.println("Không thể lấy connection trong getAll()");
+            return ds;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                KhachHang kh = mapResultSetToKhachHang(rs);
-                list.add(kh);
+                KhachHang kh = new KhachHang(
+                        rs.getString("maKH"),
+                        rs.getString("CCCD"),
+                        rs.getString("hoTen"),
+                        rs.getString("email"),
+                        rs.getString("SDT"),
+                        rs.getString("doiTuong")
+                );
+                ds.add(kh);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+        return ds;
     }
 
-    // Tìm khách hàng theo mã
-    public KhachHang findByMaKH(String maKH) {
-        String sql = "SELECT * FROM KhachHang WHERE maKH = ?";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, maKH);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToKhachHang(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean them(KhachHang kh) {
+        String sql = "INSERT INTO KhachHang (maKH, CCCD, hoTen, email, SDT, doiTuong) VALUES (?, ?, ?, ?, ?, ?)";
+        Connection con = connectDB.getConnection();
+        if (con == null) {
+            System.err.println("Không thể lấy connection trong them()");
+            return false;
         }
-        return null;
-    }
 
-    // Tìm khách hàng theo CCCD
-    public KhachHang findByCCCD(String cccd) {
-        String sql = "SELECT * FROM KhachHang WHERE CCCD = ?";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, cccd);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToKhachHang(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
 
-    // Tìm khách hàng theo SĐT
-    public KhachHang findBySDT(String sdt) {
-        String sql = "SELECT * FROM KhachHang WHERE SDT = ?";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, sdt);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToKhachHang(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    // Tìm khách hàng theo tên (hỗ trợ tìm kiếm gần đúng)
-    public List<KhachHang> findByHoTen(String hoTen) {
-        String sql = "SELECT * FROM KhachHang WHERE hoTen LIKE ? ORDER BY hoTen";
-        List<KhachHang> list = new ArrayList<>();
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, "%" + hoTen + "%");
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    KhachHang kh = mapResultSetToKhachHang(rs);
-                    list.add(kh);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Helper method
-    private KhachHang mapResultSetToKhachHang(ResultSet rs) throws SQLException {
-        KhachHang kh = new KhachHang();
-        kh.setMaKH(rs.getString("maKH"));
-        kh.setCccd(rs.getString("CCCD"));
-        kh.setHoTen(rs.getString("hoTen"));
-        kh.setEmail(rs.getString("email"));
-        kh.setSdt(rs.getString("SDT"));
-        kh.setDoiTuong(rs.getString("doiTuong"));
-        return kh;
-    }
-
-    // Thêm khách hàng mới
-    public boolean insert(KhachHang kh) {
-        String sql = "INSERT INTO KhachHang (maKH, CCCD, hoTen, email, SDT, doiTuong) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, kh.getMaKH());
-            ps.setString(2, kh.getCccd());
+            ps.setString(2, kh.getCCCD());
             ps.setString(3, kh.getHoTen());
             ps.setString(4, kh.getEmail());
-            ps.setString(5, kh.getSdt());
+            ps.setString(5, kh.getSDT());
             ps.setString(6, kh.getDoiTuong());
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -137,18 +63,23 @@ public class KhachHang_DAO extends BaseDAO {
         }
     }
 
-    // Cập nhật khách hàng
-    public boolean update(KhachHang kh) {
-        String sql = "UPDATE KhachHang SET CCCD=?, hoTen=?, email=?, SDT=?, doiTuong=? " +
-                     "WHERE maKH=?";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, kh.getCccd());
+    public boolean sua(KhachHang kh) {
+        String sql = "UPDATE KhachHang SET CCCD=?, hoTen=?, email=?, SDT=?, doiTuong=? WHERE maKH=?";
+        Connection con = connectDB.getConnection();
+        if (con == null) {
+            System.err.println("Không thể lấy connection trong sua()");
+            return false;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, kh.getCCCD());
             ps.setString(2, kh.getHoTen());
             ps.setString(3, kh.getEmail());
-            ps.setString(4, kh.getSdt());
+            ps.setString(4, kh.getSDT());
             ps.setString(5, kh.getDoiTuong());
             ps.setString(6, kh.getMaKH());
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -156,39 +87,72 @@ public class KhachHang_DAO extends BaseDAO {
         }
     }
 
-    // Xóa khách hàng
-    public boolean delete(String maKH) {
-        String sql = "DELETE FROM KhachHang WHERE maKH = ?";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public boolean exists(String maKH) {
+        String sql = "SELECT 1 FROM KhachHang WHERE maKH = ?";
+        Connection con = connectDB.getConnection();
+        if (con == null) {
+            System.err.println("Không thể lấy connection trong exists()");
+            return false;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maKH);
-            return ps.executeUpdate() > 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Nếu có kết quả -> đã tồn tại
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Tạo mã khách hàng tự động
-    public String generateMaKH() {
-        String sql = "SELECT TOP 1 maKH FROM KhachHang ORDER BY maKH DESC";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                String lastMa = rs.getString("maKH");
-                // Giả sử mã có dạng KH001, KH002...
-                int num = Integer.parseInt(lastMa.substring(2)) + 1;
-                return String.format("KH%03d", num);
+    public List<KhachHang> timKiem(String cccd, String hoTen, String email, String sdt, String doiTuong) {
+        List<KhachHang> ds = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM KhachHang WHERE 1=1");
+
+        // Tạo câu lệnh SQL động
+        if (cccd != null && !cccd.trim().isEmpty()) sql.append(" AND CCCD LIKE ?");
+        if (hoTen != null && !hoTen.trim().isEmpty()) sql.append(" AND hoTen LIKE ?");
+        if (email != null && !email.trim().isEmpty()) sql.append(" AND email LIKE ?");
+        if (sdt != null && !sdt.trim().isEmpty()) sql.append(" AND SDT LIKE ?");
+        if (doiTuong != null && !doiTuong.trim().isEmpty()) sql.append(" AND doiTuong LIKE ?");
+
+        Connection con = connectDB.getConnection();
+        if (con == null) {
+            System.err.println("Không thể lấy connection trong timKiem()");
+            return ds;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            int index = 1;
+
+            // Gán tham số lần lượt
+            if (cccd != null && !cccd.trim().isEmpty()) ps.setString(index++, "%" + cccd + "%");
+            if (hoTen != null && !hoTen.trim().isEmpty()) ps.setString(index++, "%" + hoTen + "%");
+            if (email != null && !email.trim().isEmpty()) ps.setString(index++, "%" + email + "%");
+            if (sdt != null && !sdt.trim().isEmpty()) ps.setString(index++, "%" + sdt + "%");
+            if (doiTuong != null && !doiTuong.trim().isEmpty()) ps.setString(index++, "%" + doiTuong + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    KhachHang kh = new KhachHang(
+                            rs.getString("maKH"),
+                            rs.getString("CCCD"),
+                            rs.getString("hoTen"),
+                            rs.getString("email"),
+                            rs.getString("SDT"),
+                            rs.getString("doiTuong")
+                    );
+                    ds.add(kh);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "KH001"; // Mã đầu tiên
+
+        return ds;
     }
+
 }
-
-
-
-
-
