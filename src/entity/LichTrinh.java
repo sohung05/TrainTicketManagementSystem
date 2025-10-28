@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class LichTrinh {
     private String maLichTrinh;
     private ChuyenTau chuyenTau;
+    private Tuyen tuyen;
     private Ga gaDi;
     private Ga gaDen;
     private LocalDateTime gioKhoiHanh;
@@ -44,6 +45,14 @@ public class LichTrinh {
 
 	public void setChuyenTau(ChuyenTau chuyenTau) {
 		this.chuyenTau = chuyenTau;
+	}
+
+	public Tuyen getTuyen() {
+		return tuyen;
+	}
+
+	public void setTuyen(Tuyen tuyen) {
+		this.tuyen = tuyen;
 	}
 
 	public Ga getGaDi() {

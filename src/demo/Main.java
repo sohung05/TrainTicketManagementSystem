@@ -52,7 +52,20 @@ public class Main extends javax.swing.JFrame {
                     case 1: // Vé
                         switch (subMenuIndex) {
                             case 0: // Bán Vé
-                                main.showForm(new Gui_BanVe());
+                                // Tạo màn hình nhập thông tin hành trình
+                                Gui_NhapThongTinHanhTrinh guiNhapThongTin = new Gui_NhapThongTinHanhTrinh();
+                                
+                                // Set callback để chuyển sang màn hình bán vé khi tìm kiếm
+                                guiNhapThongTin.setCallback(info -> {
+                                    System.out.println("✅ Tìm kiếm: " + info.getGaDi() + " → " + info.getGaDen() 
+                                                      + " | Ngày: " + info.getNgayDi());
+                                    
+                                    // Chuyển sang màn hình bán vé với thông tin đã nhập
+                                    Gui_BanVe guiBanVe = new Gui_BanVe(info);
+                                    main.showForm(guiBanVe);
+                                });
+                                
+                                main.showForm(guiNhapThongTin);
                                 break;
                             case 1: // Trả Vé
                                 main.showForm(new Gui_TraVe());
@@ -206,6 +219,33 @@ public class Main extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public static void main(String args[]) {
+        // ✅ Kết nối database trước khi chạy
+        try {
+            if (connectDB.connectDB.getConnection() == null) {
+                javax.swing.JOptionPane.showMessageDialog(null, 
+                    "Không thể kết nối đến database!\nKiểm tra lại SQL Server và thông tin kết nối.",
+                    "Lỗi kết nối Database", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
+            System.out.println("✅ Kết nối database thành công!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(null, 
+                "Lỗi kết nối database: " + e.getMessage(),
+                "Lỗi", 
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+        
+        // ✅ Set session mặc định cho nhân viên admin (để test không cần login)
+        entity.NhanVien nvAdmin = new entity.NhanVien();
+        nvAdmin.setMaNhanVien("NV24030001");
+        nvAdmin.setHoTen("Nguyễn Văn An");
+        nvAdmin.setEmail("nva@railway.vn");
+        util.SessionManager.getInstance().setNhanVienDangNhap(nvAdmin);
+        System.out.println("✅ Đã set session cho nhân viên: " + nvAdmin.getMaNhanVien() + " - " + nvAdmin.getHoTen());
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.

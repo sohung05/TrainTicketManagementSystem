@@ -170,11 +170,17 @@ public class Ve_DAO {
                     Timestamp.valueOf(ve.getThoiGianLenTau()) : null);
             ps.setDouble(5, ve.getGiaVe());
             ps.setString(6, ve.getKhachHang() != null ? ve.getKhachHang().getMaKH() : null);
-            ps.setString(7, ve.getChoNgoi() != null ? ve.getChoNgoi().getMaChoNgoi() : null);
-            ps.setString(8, ve.getLichTrinh() != null ? ve.getLichTrinh().getMaLichTrinh() : null);
+            String maChoNgoi = ve.getChoNgoi() != null ? ve.getChoNgoi().getMaChoNgoi() : null;
+            String maLichTrinh = ve.getLichTrinh() != null ? ve.getLichTrinh().getMaLichTrinh() : null;
+            ps.setString(7, maChoNgoi);
+            ps.setString(8, maLichTrinh);
             ps.setBoolean(9, ve.isTrangThai());
             ps.setString(10, ve.getTenKhachHang());
             ps.setString(11, ve.getSoCCCD());
+            
+            System.out.println("🎫 INSERT Vé: maVe=" + ve.getMaVe() + 
+                ", maChoNgoi=" + maChoNgoi + ", maLichTrinh=" + maLichTrinh + ", trangThai=" + ve.isTrangThai());
+            
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -256,12 +262,15 @@ public class Ve_DAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, maLichTrinh);
             try (ResultSet rs = ps.executeQuery()) {
+                int count = 0;
                 while (rs.next()) {
                     String maChoNgoi = rs.getString("maChoNgoi");
                     if (maChoNgoi != null) {
                         gheDaDat.add(maChoNgoi);
+                        count++;
                     }
                 }
+                System.out.println("📊 Lịch trình " + maLichTrinh + " có " + count + " ghế đã bán: " + gheDaDat);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -379,6 +388,123 @@ public class Ve_DAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return list;
+    }
+    
+    /**
+     * Tìm danh sách vé theo mã hóa đơn
+     */
+    public List<Ve> findByMaHoaDon(String maHoaDon) {
+        String sql = """
+            SELECT v.maVe, v.maLoaiVe, v.maVach, v.thoiGianLenTau, v.giaVe,
+                   v.maKH, v.maChoNgoi, v.maLichTrinh, v.trangThai,
+                   v.tenKhachHang, v.soCCCD,
+                   lv.tenLoaiVe,
+                   lt.gioKhoiHanh,
+                   gaDi.tenGa AS tenGaDi,
+                   gaDen.tenGa AS tenGaDen,
+                   ct.soHieuTau,
+                   toa.soToa,
+                   loaiToa.tenLoaiToa,
+                   cn.viTri
+            FROM Ve v
+            JOIN ChiTietHoaDon cthd ON v.maVe = cthd.maVe
+            LEFT JOIN LoaiVe lv ON v.maLoaiVe = lv.maLoaiVe
+            LEFT JOIN ChoNgoi cn ON v.maChoNgoi = cn.maChoNgoi
+            LEFT JOIN Toa toa ON cn.maToa = toa.maToa
+            LEFT JOIN LoaiToa loaiToa ON toa.maLoaiToa = loaiToa.maLoaiToa
+            LEFT JOIN LichTrinh lt ON v.maLichTrinh = lt.maLichTrinh
+            LEFT JOIN Ga gaDi ON lt.maGaDi = gaDi.maGa
+            LEFT JOIN Ga gaDen ON lt.maGaDen = gaDen.maGa
+            LEFT JOIN ChuyenTau ct ON lt.soHieuTau = ct.soHieuTau
+            WHERE cthd.maHoaDon = ?
+              AND v.trangThai = 1
+            ORDER BY v.maVe
+        """;
+        
+        List<Ve> list = new ArrayList<>();
+        
+        try (Connection con = connectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, maHoaDon);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Ve ve = new Ve();
+                    ve.setMaVe(rs.getString("maVe"));
+                    ve.setMaVach(rs.getString("maVach"));
+                    
+                    Timestamp tg = rs.getTimestamp("thoiGianLenTau");
+                    ve.setThoiGianLenTau(tg != null ? tg.toLocalDateTime() : null);
+                    
+                    ve.setGiaVe(rs.getDouble("giaVe"));
+                    ve.setTrangThai(rs.getBoolean("trangThai"));
+                    ve.setTenKhachHang(rs.getString("tenKhachHang"));
+                    ve.setSoCCCD(rs.getString("soCCCD"));
+                    
+                    // Set LoaiVe
+                    if (rs.getString("tenLoaiVe") != null) {
+                        entity.LoaiVe loaiVe = new entity.LoaiVe();
+                        loaiVe.setTenLoaiVe(rs.getString("tenLoaiVe"));
+                        ve.setLoaiVe(loaiVe);
+                    }
+                    
+                    // Set ChoNgoi
+                    if (rs.getObject("viTri") != null) {
+                        entity.ChoNgoi choNgoi = new entity.ChoNgoi();
+                        choNgoi.setViTri(rs.getInt("viTri"));
+                        
+                        if (rs.getInt("soToa") > 0) {
+                            entity.Toa toa = new entity.Toa();
+                            toa.setSoToa(rs.getInt("soToa"));
+                            
+                            // Set LoaiToa
+                            if (rs.getString("tenLoaiToa") != null) {
+                                entity.LoaiToa loaiToa = new entity.LoaiToa();
+                                loaiToa.setTenLoaiToa(rs.getString("tenLoaiToa"));
+                                toa.setLoaiToa(loaiToa);
+                            }
+                            
+                            choNgoi.setToa(toa);
+                        }
+                        
+                        ve.setChoNgoi(choNgoi);
+                    }
+                    
+                    // Set LichTrinh
+                    if (rs.getString("tenGaDi") != null || rs.getString("tenGaDen") != null) {
+                        entity.LichTrinh lichTrinh = new entity.LichTrinh();
+                        
+                        if (rs.getString("tenGaDi") != null) {
+                            entity.Ga gaDi = new entity.Ga();
+                            gaDi.setTenGa(rs.getString("tenGaDi"));
+                            lichTrinh.setGaDi(gaDi);
+                        }
+                        
+                        if (rs.getString("tenGaDen") != null) {
+                            entity.Ga gaDen = new entity.Ga();
+                            gaDen.setTenGa(rs.getString("tenGaDen"));
+                            lichTrinh.setGaDen(gaDen);
+                        }
+                        
+                        if (rs.getString("soHieuTau") != null) {
+                            entity.ChuyenTau chuyenTau = new entity.ChuyenTau();
+                            chuyenTau.setSoHieuTau(rs.getString("soHieuTau"));
+                            lichTrinh.setChuyenTau(chuyenTau);
+                        }
+                        
+                        ve.setLichTrinh(lichTrinh);
+                    }
+                    
+                    list.add(ve);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("❌ Lỗi khi tìm vé theo mã hóa đơn: " + e.getMessage());
+        }
+        
         return list;
     }
 }

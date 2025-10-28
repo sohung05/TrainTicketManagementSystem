@@ -3,7 +3,9 @@ package entity;
 public class ChiTietHoaDon {
     private String maCTHD;
     private HoaDon hoaDon;
+    private String maHoaDon; // Để lưu vào database
     private Ve ve;
+    private String maVe; // Để lưu vào database
     private int soLuong;
     private double giaVe;
     private double mucGiam;
@@ -45,12 +47,28 @@ public class ChiTietHoaDon {
         this.hoaDon = hoaDon;
     }
 
+    public String getMaHoaDon() {
+        return maHoaDon;
+    }
+
+    public void setMaHoaDon(String maHoaDon) {
+        this.maHoaDon = maHoaDon;
+    }
+
     public Ve getVe() {
         return ve;
     }
 
     public void setVe(Ve ve) {
         this.ve = ve;
+    }
+
+    public String getMaVe() {
+        return maVe;
+    }
+
+    public void setMaVe(String maVe) {
+        this.maVe = maVe;
     }
 
     public int getSoLuong() {

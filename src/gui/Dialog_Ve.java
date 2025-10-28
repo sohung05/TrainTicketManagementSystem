@@ -405,12 +405,19 @@ public class Dialog_Ve extends javax.swing.JDialog {
             }
         }
         
-        // Vị trí toa, vị trí chỗ
+        // Vị trí toa, vị trí chỗ, loại chỗ
         if (ve.getChoNgoi() != null) {
             lbViTriToa.setText(ve.getChoNgoi().getToa() != null 
                 ? String.valueOf(ve.getChoNgoi().getToa().getSoToa()) 
                 : "");
             lbViTriCho.setText(String.valueOf(ve.getChoNgoi().getViTri()));
+            
+            // Loại chỗ (từ Toa → LoaiToa)
+            if (ve.getChoNgoi().getToa() != null && ve.getChoNgoi().getToa().getLoaiToa() != null) {
+                lbIfCho1.setText(ve.getChoNgoi().getToa().getLoaiToa().getTenLoaiToa());
+            } else {
+                lbIfCho1.setText("");
+            }
         }
         
         // Đối tượng
@@ -425,7 +432,7 @@ public class Dialog_Ve extends javax.swing.JDialog {
         lbCccd.setText(ve.getSoCCCD() != null ? ve.getSoCCCD() : "");
         
         // Giá vé
-        lbGia.setText(currencyFormat.format(ve.getGiaVe()) + " VNĐ");
+        lbGia.setText(currencyFormat.format(ve.getGiaVe()));
         
         // Set dialog ở giữa màn hình
         setLocationRelativeTo(null);

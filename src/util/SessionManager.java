@@ -34,12 +34,31 @@ public class SessionManager {
         return nhanVienDangNhap.getMaNhanVien();
     }
     
+    public String getTenNhanVienDangNhap() {
+        if (nhanVienDangNhap == null) {
+            return "Admin"; // Tên mặc định
+        }
+        return nhanVienDangNhap.getHoTen();
+    }
+    
     public boolean isLoggedIn() {
         return nhanVienDangNhap != null;
     }
     
     public void logout() {
         nhanVienDangNhap = null;
+    }
+    
+    // ========== STATIC METHODS (Tương thích với code cũ) ==========
+    
+    public static void setMaNhanVienDangNhap(String maNV) {
+        // Deprecated: Chỉ lưu mã, không lưu đầy đủ object
+        System.out.println("⚠️ Warning: setMaNhanVienDangNhap() is deprecated. Use setNhanVienDangNhap(NhanVien) instead.");
+    }
+    
+    public static void setTenNhanVienDangNhap(String tenNV) {
+        // Deprecated: Chỉ lưu tên, không lưu đầy đủ object
+        System.out.println("⚠️ Warning: setTenNhanVienDangNhap() is deprecated. Use setNhanVienDangNhap(NhanVien) instead.");
     }
 }
 

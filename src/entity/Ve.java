@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class Ve {
     private String maVe;
     private LoaiVe loaiVe;
+    private LichTrinh lichTrinh;
     private String maVach;
     private LocalDateTime thoiGianLenTau;
     private double giaVe;
@@ -54,6 +55,16 @@ public class Ve {
 
 	public void setLoaiVe(LoaiVe loaiVe) {
 		this.loaiVe = loaiVe;
+	}
+
+
+	public LichTrinh getLichTrinh() {
+		return lichTrinh;
+	}
+
+
+	public void setLichTrinh(LichTrinh lichTrinh) {
+		this.lichTrinh = lichTrinh;
 	}
 
 

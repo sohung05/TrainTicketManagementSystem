@@ -8,12 +8,20 @@ import java.time.LocalDateTime;
 public class GheGiuCho {
     private String maChoNgoi;
     private String maDonTreo;
+    private String maLichTrinh; // ⚡ Thêm mã lịch trình (quan trọng với khứ hồi)
     private LocalDateTime thoiGianGiuCho;
     private static final int PHUT_GIU_CHO = 5;
     
     public GheGiuCho(String maChoNgoi, String maDonTreo) {
         this.maChoNgoi = maChoNgoi;
         this.maDonTreo = maDonTreo;
+        this.thoiGianGiuCho = LocalDateTime.now();
+    }
+    
+    public GheGiuCho(String maChoNgoi, String maDonTreo, String maLichTrinh) {
+        this.maChoNgoi = maChoNgoi;
+        this.maDonTreo = maDonTreo;
+        this.maLichTrinh = maLichTrinh;
         this.thoiGianGiuCho = LocalDateTime.now();
     }
     
@@ -62,6 +70,14 @@ public class GheGiuCho {
 
     public void setThoiGianGiuCho(LocalDateTime thoiGianGiuCho) {
         this.thoiGianGiuCho = thoiGianGiuCho;
+    }
+
+    public String getMaLichTrinh() {
+        return maLichTrinh;
+    }
+
+    public void setMaLichTrinh(String maLichTrinh) {
+        this.maLichTrinh = maLichTrinh;
     }
 }
 

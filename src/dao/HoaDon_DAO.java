@@ -51,9 +51,9 @@ public class HoaDon_DAO {
                 
                 // Tạo KhachHang object tạm với thông tin cơ bản
                 KhachHang kh = new KhachHang();
-                kh.setCccd(rs.getString("CCCD"));
+                kh.setCCCD(rs.getString("CCCD"));
                 kh.setHoTen(rs.getString("hoTen"));
-                kh.setSdt(rs.getString("SDT"));
+                kh.setSDT(rs.getString("SDT"));
                 hd.setKhachHang(kh);
                 
                 // Set các field tạm thời
@@ -190,9 +190,9 @@ public class HoaDon_DAO {
                     // KhachHang
                     KhachHang kh = new KhachHang();
                     kh.setMaKH(rs.getString("maKH"));
-                    kh.setCccd(rs.getString("CCCD"));
+                    kh.setCCCD(rs.getString("CCCD"));
                     kh.setHoTen(rs.getString("hoTen"));
-                    kh.setSdt(rs.getString("SDT"));
+                    kh.setSDT(rs.getString("SDT"));
                     kh.setEmail(rs.getString("email"));
                     hd.setKhachHang(kh);
                     
@@ -253,9 +253,9 @@ public class HoaDon_DAO {
                     
                     // Tạo KhachHang object tạm với thông tin cơ bản
                     KhachHang kh = new KhachHang();
-                    kh.setCccd(rs.getString("CCCD"));
+                    kh.setCCCD(rs.getString("CCCD"));
                     kh.setHoTen(rs.getString("hoTen"));
-                    kh.setSdt(rs.getString("SDT"));
+                    kh.setSDT(rs.getString("SDT"));
                     hd.setKhachHang(kh);
                     
                     // Set các field tạm thời

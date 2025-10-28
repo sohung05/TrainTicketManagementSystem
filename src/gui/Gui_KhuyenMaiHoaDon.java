@@ -42,16 +42,25 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
         List<KhuyenMai> dsKM = dao.getTatCaKhuyenMaiHoaDon();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
 
         for (KhuyenMai km : dsKM) {
+            // ✅ Kiểm tra hết hạn
+            String trangThai;
+            if (km.getThoiGianKetThuc() != null && km.getThoiGianKetThuc().isBefore(now)) {
+                trangThai = "Hết hạn";
+            } else {
+                trangThai = km.isTrangThai() ? "Hoạt động" : "Tạm ngưng";
+            }
+            
             Object[] row = {
                     km.getMaKhuyenMai(),
                     km.getTenKhuyenMai(),
-                    km.getSoVe(),
+                    km.getDoiTuongApDung(), // Hiển thị điều kiện ("11-40 vé") thay vì số vé
                     km.getThoiGianBatDau() != null ? km.getThoiGianBatDau().format(formatter) : "",
                     km.getThoiGianKetThuc() != null ? km.getThoiGianKetThuc().format(formatter) : "",
                     km.getChietKhau(),
-                    km.isTrangThai() ? "Hoạt động" : "Ngừng"
+                    trangThai
             };
             model.addRow(row);
         }
@@ -105,8 +114,8 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
             jTextField4.requestFocus();
             return false;
         }
-        if (chietKhau <= 0 || chietKhau > 1) {
-            JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải lớn hơn 0 và bé hơn 1");
+        if (chietKhau <= 0 || chietKhau > 100) {
+            JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải trong khoảng 0 - 100 (%)");
             jTextField4.requestFocus();
             return false;
         }
@@ -150,8 +159,8 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
                         return;
                     }
 
-                    if (chietKhau <= 0) {
-                        JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải lớn hơn 0!");
+                    if (chietKhau <= 0 || chietKhau > 100) {
+                        JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải trong khoảng 0 - 100 (%)!");
                         return;
                     }
 
@@ -310,20 +319,39 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
         jButton6.addActionListener(e -> {
             int row = jTable1.getSelectedRow();
             if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn khuyến mãi cần tạm ngưng!");
+                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn khuyến mãi cần thay đổi trạng thái!");
                 return;
             }
 
             String maKM = model.getValueAt(row, 0).toString(); // cột mã KM
-            String currentStatus = model.getValueAt(row, 6).toString();
-            boolean newTrangThai = !currentStatus.equals("Hoạt động"); // true = Hoạt động, false = Tạm ngưng
+            String currentStatus = model.getValueAt(row, 6).toString().trim();
+
+            // ✅ Không cho phép thay đổi trạng thái nếu đã hết hạn
+            if (currentStatus.equalsIgnoreCase("Hết hạn")) {
+                JOptionPane.showMessageDialog(this, 
+                    "❌ Không thể thay đổi trạng thái!\nKhuyến mãi này đã hết hạn.", 
+                    "Thông báo", 
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            boolean newTrangThai; // true = Hoạt động, false = Tạm ngưng
+            String message;
+
+            if (currentStatus.equalsIgnoreCase("Hoạt động")) {
+                newTrangThai = false;
+                message = "✅ Khuyến mãi đã được tạm ngưng!";
+            } else {
+                newTrangThai = true;
+                message = "✅ Khuyến mãi đã được kích hoạt lại!";
+            }
 
             KhuyenMaiHoaDon_DAO dao = new KhuyenMaiHoaDon_DAO();
             boolean success = dao.tamNgungTrangThai(maKM, newTrangThai);
 
             if (success) {
-                model.setValueAt(newTrangThai ? "Hoạt động" : "Tạm ngưng", row, 6);
-                JOptionPane.showMessageDialog(this, "✅ Cập nhật trạng thái thành công!");
+                JOptionPane.showMessageDialog(this, message);
+                loadTableData(); // ✅ làm mới dữ liệu từ SQL
             } else {
                 JOptionPane.showMessageDialog(this, "❌ Cập nhật trạng thái thất bại!");
             }
@@ -338,25 +366,19 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
                     jTextField1.setText(model.getValueAt(row, 0).toString());
                     jTextField2.setText(model.getValueAt(row, 1).toString());
                     jTextField3.setText(model.getValueAt(row, 2).toString());
-                    jTextField4.setText(model.getValueAt(row, 5).toString());
+                    
+                    // ✅ Chiết khấu: nhân 100 để hiển thị (DB lưu 0.09, hiển thị 9)
+                    double chietKhau = Double.parseDouble(model.getValueAt(row, 5).toString());
+                    jTextField4.setText(String.format("%.0f", chietKhau * 100));
 
                     try {
                         String startStr = model.getValueAt(row, 3).toString();
                         String endStr = model.getValueAt(row, 4).toString();
 
-                        // Nếu là dạng ISO (có ký tự 'T')
-                        if (startStr.contains("T")) {
-                            DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                            LocalDateTime startDT = LocalDateTime.parse(startStr, isoFormatter);
-                            LocalDateTime endDT = LocalDateTime.parse(endStr, isoFormatter);
-                            jDateChooser1.setDate(Timestamp.valueOf(startDT));
-                            jDateChooser2.setDate(Timestamp.valueOf(endDT));
-                        } else {
-                            // Ngược lại, dùng format dd/MM/yyyy hoặc dd/MM/yyyy HH:mm
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                            jDateChooser1.setDate(sdf.parse(startStr));
-                            jDateChooser2.setDate(sdf.parse(endStr));
-                        }
+                        // Format từ database: "yyyy-MM-dd HH:mm:ss"
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        jDateChooser1.setDate(sdf.parse(startStr));
+                        jDateChooser2.setDate(sdf.parse(endStr));
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Lỗi định dạng ngày: " + ex.getMessage());
@@ -421,19 +443,28 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
             KhuyenMaiHoaDon_DAO dao = new KhuyenMaiHoaDon_DAO();
             List<KhuyenMai> dsKM = dao.getTatCaKhuyenMaiHoaDon();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            
             for (KhuyenMai km : dsKM) {
+                // ✅ Kiểm tra hết hạn
+                String trangThai;
+                if (km.getThoiGianKetThuc() != null && km.getThoiGianKetThuc().isBefore(now)) {
+                    trangThai = "Hết hạn";
+                } else {
+                    trangThai = km.isTrangThai() ? "Hoạt động" : "Tạm ngưng";
+                }
+                
                 Object[] row = {
                         km.getMaKhuyenMai(),
                         km.getTenKhuyenMai(),
-                        km.getSoVe(),
+                        km.getDoiTuongApDung(), // Hiển thị điều kiện ("11-40 vé") thay vì số vé
                         km.getThoiGianBatDau().format(formatter),
                         km.getThoiGianKetThuc().format(formatter),
                         km.getChietKhau(),
-                        km.isTrangThai() ? "Hoạt động" : "Ngừng"
+                        trangThai
                 };
                 model.addRow(row);
             }
-
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -451,8 +482,7 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
         jDateChooser2.setDate(null);
         jTable1.clearSelection();
 
-        loadTableData();
-        jTable1.setModel(model);
+        loadTableData();  // ✅ Load lại data từ DB vào model (instance variable)
     }
 
     @SuppressWarnings("unchecked")

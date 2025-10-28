@@ -140,6 +140,7 @@ public class DonTreoDat {
         private double giamGia;
         private double thanhTien;
         private ChoNgoi choNgoi;
+        private LichTrinh lichTrinh; // ⚡ Thêm lịch trình cho từng vé (quan trọng với khứ hồi)
         
         public ThongTinVeTam() {}
         
@@ -178,6 +179,9 @@ public class DonTreoDat {
 
         public ChoNgoi getChoNgoi() { return choNgoi; }
         public void setChoNgoi(ChoNgoi choNgoi) { this.choNgoi = choNgoi; }
+
+        public LichTrinh getLichTrinh() { return lichTrinh; }
+        public void setLichTrinh(LichTrinh lichTrinh) { this.lichTrinh = lichTrinh; }
     }
 }
 

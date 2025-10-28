@@ -502,6 +502,21 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
     }//GEN-LAST:event_btnNhapLaiActionPerformed
 
     private void btnTreoDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTreoDonActionPerformed
+        // ⚡ VALIDATE "ĐỐI TƯỢNG" TRƯỚC KHI TREO ĐƠN
+        if (previousGui != null) {
+            javax.swing.table.TableModel model = previousGui.getModelThongTinVe();
+            for (int i = 0; i < model.getRowCount(); i++) {
+                String doiTuong = model.getValueAt(i, 2) != null ? model.getValueAt(i, 2).toString().trim() : "";
+                if (doiTuong.isEmpty()) {
+                    JOptionPane.showMessageDialog(this,
+                        "Vui lòng chọn Đối tượng cho vé ở dòng " + (i + 1) + " trước khi treo đơn!",
+                        "Thiếu thông tin",
+                        JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+        }
+        
         // Lưu đơn treo
         entity.DonTreoDat donTreo = new entity.DonTreoDat();
         donTreo.setCccdNguoiDat(cccd);
@@ -534,8 +549,14 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
             // Lấy dữ liệu từ bảng vé
             javax.swing.table.TableModel model = previousGui.getModelThongTinVe();
             
-            // ⚡ Lấy danh sách ghế đang chọn từ Gui_BanVe
-            java.util.List<entity.ChoNgoi> danhSachGheDangChon = previousGui.getPreviousGuiBanVe().getDanhSachGheDangChon();
+            // ⚡ LẤY TỪ GUI_NHAPTHONGTINBANVE (không phải từ Gui_BanVe vì đã bị clear)
+            java.util.List<entity.ChoNgoi> danhSachChoNgoi = previousGui.getDanhSachChoNgoi();
+            
+            // ⚡ Lấy danh sách lịch trình (quan trọng cho khứ hồi)
+            java.util.List<entity.LichTrinh> danhSachLichTrinh = previousGui.getDanhSachLichTrinh();
+            System.out.println("🟡 DEBUG TREO ĐƠN: Số vé trong table = " + model.getRowCount());
+            System.out.println("🟡 DEBUG TREO ĐƠN: Số ghế (ChoNgoi) = " + (danhSachChoNgoi != null ? danhSachChoNgoi.size() : "null"));
+            System.out.println("🟡 DEBUG TREO ĐƠN: Số lịch trình = " + (danhSachLichTrinh != null ? danhSachLichTrinh.size() : "null"));
             
             for (int i = 0; i < model.getRowCount(); i++) {
                 entity.DonTreoDat.ThongTinVeTam veTam = new entity.DonTreoDat.ThongTinVeTam();
@@ -554,8 +575,19 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 veTam.setThongTinCho(thongTinCho != null ? thongTinCho.toString() : "");
                 
                 // ⚡ LƯU THÔNG TIN GHẾ (để khi thanh toán có thể lưu vào database)
-                if (i < danhSachGheDangChon.size()) {
-                    veTam.setChoNgoi(danhSachGheDangChon.get(i));
+                if (danhSachChoNgoi != null && i < danhSachChoNgoi.size()) {
+                    veTam.setChoNgoi(danhSachChoNgoi.get(i));
+                    System.out.println("🟡 Vé #" + i + ": ChoNgoi = " + danhSachChoNgoi.get(i).getMaChoNgoi());
+                } else {
+                    System.out.println("❌ Vé #" + i + ": KHÔNG CÓ ChoNgoi!");
+                }
+                
+                // ⚡ LƯU LỊCH TRÌNH CHO TỪNG VÉ (quan trọng với khứ hồi)
+                if (danhSachLichTrinh != null && i < danhSachLichTrinh.size()) {
+                    veTam.setLichTrinh(danhSachLichTrinh.get(i));
+                    System.out.println("🟡 Vé #" + i + ": LichTrinh = " + danhSachLichTrinh.get(i).getMaLichTrinh());
+                } else {
+                    System.out.println("❌ Vé #" + i + ": KHÔNG CÓ LichTrinh!");
                 }
                 
                 try {
@@ -576,16 +608,42 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
         QuanLyDonTreo.themDonTreo(donTreo);
         
         // SAU ĐÓ mới lưu ghế vào danh sách giữ chỗ (với maDonTreo đã được set)
+        // ⚡ Lưu ghế với maLichTrinh để hỗ trợ khứ hồi
         if (previousGui != null) {
-            java.util.List<entity.ChoNgoi> danhSachGheDangChon = previousGui.getPreviousGuiBanVe().getDanhSachGheDangChon();
-            for (entity.ChoNgoi ghe : danhSachGheDangChon) {
-                QuanLyGheGiuCho.themGheGiuCho(ghe.getMaChoNgoi(), donTreo.getMaDonTreo());
+            System.out.println("🟡 ============ BẮT ĐẦU TREO ĐƠN ============");
+            for (entity.DonTreoDat.ThongTinVeTam veTam : donTreo.getDanhSachVe()) {
+                if (veTam.getChoNgoi() != null) {
+                    String maChoNgoi = veTam.getChoNgoi().getMaChoNgoi();
+                    String maLichTrinh = veTam.getLichTrinh() != null ? veTam.getLichTrinh().getMaLichTrinh() : null;
+                    System.out.println("🟡 TREO GHẾ: " + maChoNgoi + " | Lịch trình: " + maLichTrinh);
+                    QuanLyGheGiuCho.themGheGiuCho(maChoNgoi, donTreo.getMaDonTreo(), maLichTrinh);
+                }
             }
+            System.out.println("🟡 ============ KẾT THÚC TREO ĐƠN ============");
         }
         
         isTreoDon = true;
         isThanhToanThanhCong = false;
         isNhapLai = false;
+        
+        // ⚡ RELOAD SƠ ĐỒ GHẾ SAU KHI TREO ĐƠN để hiển thị ghế màu vàng
+        Gui_BanVe guiBanVeToReload = null;
+        try {
+            if (previousGui != null && previousGui.getPreviousGuiBanVe() != null) {
+                guiBanVeToReload = previousGui.getPreviousGuiBanVe();
+            }
+        } catch (Exception e) {
+            System.err.println("Không tìm thấy Gui_BanVe: " + e.getMessage());
+        }
+        
+        final Gui_BanVe finalGuiBanVe = guiBanVeToReload;
+        if (finalGuiBanVe != null) {
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                System.out.println("🟡 Đang reload sơ đồ ghế sau khi TREO ĐƠN...");
+                finalGuiBanVe.reloadSoDoGhe();
+                System.out.println("✅ Đã reload sơ đồ ghế - ghế giữ chỗ hiển thị màu vàng!");
+            });
+        }
         
         dispose();
     }//GEN-LAST:event_btnTreoDonActionPerformed
@@ -636,6 +694,21 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 return;
             }
             
+            // ⚡ VALIDATE "ĐỐI TƯỢNG" - Kiểm tra tất cả vé đã chọn đối tượng
+            if (previousGui != null) {
+                javax.swing.table.TableModel model = previousGui.getModelThongTinVe();
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    String doiTuong = model.getValueAt(i, 2) != null ? model.getValueAt(i, 2).toString().trim() : "";
+                    if (doiTuong.isEmpty()) {
+                        JOptionPane.showMessageDialog(this,
+                            "Vui lòng chọn Đối tượng cho vé ở dòng " + (i + 1) + "!",
+                            "Thiếu thông tin",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
+            }
+            
             // ============ LƯU VÀO DATABASE ============
             String maHoaDon = "HD" + System.currentTimeMillis();
             boolean luuThanhCong = luuVaoDatabase(maHoaDon, cccd, hoTen, sdt, email, soLuongVe, tongTien, khuyenMai);
@@ -665,8 +738,9 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 // Trường hợp bán vé thường
                 guiBanVeToReload = previousGui.getPreviousGuiBanVe();
                 if (guiBanVeToReload != null) {
-                    // Xóa ghế đã chọn
-                    guiBanVeToReload.xoaTatCaGheDaChon();
+                    // ⚡ KHÔNG gọi xoaTatCaGheDaChon() ở đây vì nó có reload bên trong
+                    // Sẽ gọi reloadSoDoGhe() sau để đảm bảo database đã commit
+                    // reloadSoDoGhe() sẽ tự động clear danh sách ghế và giỏ vé
                     
                     // Quay về Gui_BanVe
                     gui.menu.form.MainForm mainForm = 
@@ -679,24 +753,57 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 }
             } else if (donTreo != null) {
                 // ⚡ Trường hợp xử lý đơn tạm → Tìm Gui_BanVe để reload
+                System.out.println("🔵 Xử lý đơn treo - Tìm Gui_BanVe để reload...");
                 try {
-                    java.awt.Window[] windows = java.awt.Window.getWindows();
-                    for (java.awt.Window window : windows) {
-                        if (window.isVisible()) {
-                            guiBanVeToReload = findGuiBanVe(window);
-                            if (guiBanVeToReload != null) {
+                    // Tìm MainForm
+                    gui.menu.form.MainForm mainForm = null;
+                    for (java.awt.Window window : java.awt.Window.getWindows()) {
+                        if (window instanceof javax.swing.JFrame) {
+                            javax.swing.JFrame frame = (javax.swing.JFrame) window;
+                            java.awt.Component comp = frame.getContentPane().getComponent(0);
+                            if (comp instanceof gui.menu.form.MainForm) {
+                                mainForm = (gui.menu.form.MainForm) comp;
                                 break;
                             }
                         }
                     }
+                    
+                    if (mainForm != null) {
+                        guiBanVeToReload = findGuiBanVeInMainForm(mainForm);
+                        if (guiBanVeToReload != null) {
+                            System.out.println("✅ Tìm thấy Gui_BanVe!");
+                        } else {
+                            System.out.println("⚠️ Không tìm thấy Gui_BanVe trong MainForm");
+                        }
+                    } else {
+                        System.out.println("⚠️ Không tìm thấy MainForm");
+                    }
                 } catch (Exception e) {
+                    System.err.println("❌ Lỗi khi tìm Gui_BanVe: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
             
             // Reload sơ đồ ghế SAU KHI lưu database, TRƯỚC KHI mở Dialog_HoaDon
-            if (guiBanVeToReload != null) {
-                guiBanVeToReload.reloadSoDoGhe();
+            // ⚡ Sử dụng invokeLater để đảm bảo reload sau khi database đã commit
+            final Gui_BanVe finalGuiBanVeToReload = guiBanVeToReload;
+            final boolean isFromDonTreo = (donTreo != null);
+            
+            if (finalGuiBanVeToReload != null) {
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    System.out.println("🔄 Đang reload sơ đồ ghế sau khi thanh toán...");
+                    entity.LichTrinh ltHienTai = finalGuiBanVeToReload.getLichTrinhDangChon();
+                    if (ltHienTai != null) {
+                        System.out.println("📍 Lịch trình đang hiển thị: " + ltHienTai.getMaLichTrinh());
+                    }
+                    finalGuiBanVeToReload.reloadSoDoGhe();
+                    System.out.println("✅ Đã reload sơ đồ ghế!");
+                    System.out.println("💡 LƯU Ý: Nếu đơn khứ hồi, chuyển sang chiều kia sẽ tự động hiển thị màu đỏ khi query database!");
+                });
+            } else if (isFromDonTreo) {
+                // ⚠️ Không tìm thấy Gui_BanVe → Thông báo cho user
+                System.out.println("⚠️ Không thể reload sơ đồ ghế vì Gui_BanVe chưa mở");
+                System.out.println("💡 Vé đã lưu vào database. Khi mở lại màn hình bán vé, ghế sẽ hiển thị màu đỏ.");
             }
             
             // Mở Dialog_HoaDon (NON-MODAL)
@@ -769,6 +876,27 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                     return result;
                 }
             }
+        }
+        return null;
+    }
+    
+    /**
+     * Tìm Gui_BanVe trong MainForm (dùng cho xử lý đơn treo)
+     */
+    private Gui_BanVe findGuiBanVeInMainForm(gui.menu.form.MainForm mainForm) {
+        try {
+            // MainForm thường có cấu trúc: MainForm -> Body (JPanel) -> CurrentForm
+            java.awt.Component[] components = mainForm.getComponents();
+            for (java.awt.Component comp : components) {
+                if (comp instanceof java.awt.Container) {
+                    Gui_BanVe result = findGuiBanVe((java.awt.Container) comp);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tìm Gui_BanVe: " + e.getMessage());
         }
         return null;
     }
@@ -878,13 +1006,13 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 // Tạo khách hàng mới
                 kh = new entity.KhachHang();
                 kh.setMaKH("KH" + System.currentTimeMillis());
-                kh.setCccd(cccd);
+                kh.setCCCD(cccd);
                 kh.setHoTen(hoTen);
-                kh.setSdt(sdt);
+                kh.setSDT(sdt);
                 kh.setEmail(email);
                 kh.setDoiTuong(null); // Chưa xác định đối tượng ở đây
                 
-                if (!khachHangDAO.insert(kh)) {
+                if (!khachHangDAO.them(kh)) {
                     System.out.println("Lỗi: Không thể tạo khách hàng!");
                     return false;
                 }
@@ -983,6 +1111,8 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
             } else if (donTreo != null) {
                 // Flow xử lý đơn tạm
                 java.util.List<entity.DonTreoDat.ThongTinVeTam> danhSachVe = donTreo.getDanhSachVe();
+                System.out.println("💳 ========== THANH TOÁN ĐƠN TREO ==========");
+                System.out.println("💳 Số vé trong đơn: " + danhSachVe.size());
                 
                 for (int i = 0; i < danhSachVe.size(); i++) {
                     entity.DonTreoDat.ThongTinVeTam veTam = danhSachVe.get(i);
@@ -996,6 +1126,13 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                         return false;
                     }
                     
+                    // ⚡ LẤY LỊCH TRÌNH TỪ VÉ TẠM (quan trọng cho khứ hồi!)
+                    entity.LichTrinh lichTrinhCuaVe = veTam.getLichTrinh();
+                    if (lichTrinhCuaVe == null) {
+                        System.out.println("❌ LỖI: Vé #" + i + " không có lịch trình!");
+                        return false;
+                    }
+                    
                     // Tạo Vé
                     entity.Ve ve = new entity.Ve();
                     String maVe = "V" + System.currentTimeMillis() + "_" + i;
@@ -1006,10 +1143,12 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                     ve.setGiaVe(veTam.getGiaVe());
                     ve.setKhachHang(kh);
                     ve.setChoNgoi(veTam.getChoNgoi()); // ⚡ Lấy từ ThongTinVeTam
-                    ve.setLichTrinh(donTreo.getLichTrinh()); // ⚡ Lấy từ DonTreoDat
+                    ve.setLichTrinh(lichTrinhCuaVe); // ⚡⚡ FIX: Lấy từ VeTam, KHÔNG phải từ DonTreoDat!
                     ve.setTrangThai(true);
                     ve.setTenKhachHang(veTam.getHoTen());
                     ve.setSoCCCD(veTam.getSoGiayTo());
+                    
+                    System.out.println("🎫 INSERT Vé: maVe=" + maVe + ", maChoNgoi=" + veTam.getChoNgoi().getMaChoNgoi() + ", maLichTrinh=" + lichTrinhCuaVe.getMaLichTrinh() + ", trangThai=true");
                     
                     if (!veDAO.insert(ve)) {
                         System.out.println("Lỗi: Không thể lưu vé từ đơn treo");

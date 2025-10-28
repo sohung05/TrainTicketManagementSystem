@@ -166,9 +166,9 @@ public class Dialog_HoaDon extends javax.swing.JDialog {
             // 2. Load thông tin khách hàng
             entity.KhachHang kh = hoaDon.getKhachHang();
             if (kh != null) {
-                this.cccd = kh.getCccd();
+                this.cccd = kh.getCCCD();
                 this.hoTen = kh.getHoTen();
-                this.sdt = kh.getSdt();
+                this.sdt = kh.getSDT();
                 this.email = kh.getEmail();
             }
             

@@ -12,7 +12,7 @@ public class TaiKhoan_DAO {
     // Lấy tất cả tài khoản
     public List<Object[]> getAll() {
         List<Object[]> list = new ArrayList<>();
-        String sql = "SELECT tk.maNhanVien, nv.hoTen, tk.tenTaiKhoan, tk.matKhau " +
+        String sql = "SELECT tk.maNhanVien, nv.hoTen, tk.userName, tk.passWord " +
                 "FROM TaiKhoan tk " +
                 "JOIN NhanVien nv ON tk.maNhanVien = nv.maNhanVien";
 
@@ -28,8 +28,8 @@ public class TaiKhoan_DAO {
             while (rs.next()) {
                 String maNV = rs.getString("maNhanVien");
                 String hoTen = rs.getString("hoTen");
-                String tenTK = rs.getString("tenTaiKhoan");
-                String matKhau = rs.getString("matKhau");
+                String tenTK = rs.getString("userName");
+                String matKhau = rs.getString("passWord");
 
                 // Thay vì return entity, ta trả về Object[] để tiện add vào table
                 list.add(new Object[]{maNV, hoTen, tenTK, matKhau});
@@ -44,7 +44,7 @@ public class TaiKhoan_DAO {
 
     // Thêm tài khoản mới
     public boolean them(TaiKhoan tk) {
-        String sql = "INSERT INTO TaiKhoan (tenTaiKhoan, matKhau, maNhanVien) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO TaiKhoan (userName, passWord, maNhanVien) VALUES (?, ?, ?)";
 
         Connection con = connectDB.getConnection();
         if (con == null) {
@@ -67,7 +67,7 @@ public class TaiKhoan_DAO {
     }
 
     public boolean sua(TaiKhoan tk) {
-        String sql = "UPDATE TaiKhoan SET tenTaiKhoan = ?, matKhau = ? WHERE maNhanVien = ?";
+        String sql = "UPDATE TaiKhoan SET userName = ?, passWord = ? WHERE maNhanVien = ?";
 
         Connection con = connectDB.getConnection();
         if (con == null) {
@@ -95,14 +95,14 @@ public class TaiKhoan_DAO {
         List<Object[]> list = new ArrayList<>();
         // LEFT JOIN để vẫn lấy được tài khoản ngay cả khi không có bản ghi tương ứng trong NhanVien
         StringBuilder sql = new StringBuilder(
-                "SELECT tk.maNhanVien, nv.hoTen, tk.tenTaiKhoan, tk.matKhau "
+                "SELECT tk.maNhanVien, nv.hoTen, tk.userName, tk.passWord "
                         + "FROM TaiKhoan tk "
                         + "LEFT JOIN NhanVien nv ON tk.maNhanVien = nv.maNhanVien "
                         + "WHERE 1=1"
         );
 
         if (maNV != null && !maNV.trim().isEmpty()) sql.append(" AND tk.maNhanVien LIKE ?");
-        if (tenTaiKhoan != null && !tenTaiKhoan.trim().isEmpty()) sql.append(" AND tk.tenTaiKhoan LIKE ?");
+        if (tenTaiKhoan != null && !tenTaiKhoan.trim().isEmpty()) sql.append(" AND tk.userName LIKE ?");
         if (tenNhanVien != null && !tenNhanVien.trim().isEmpty()) sql.append(" AND nv.hoTen LIKE ?");
 
         Connection con = connectDB.getConnection();
@@ -121,8 +121,8 @@ public class TaiKhoan_DAO {
                 while (rs.next()) {
                     String m = rs.getString("maNhanVien");
                     String hoTen = rs.getString("hoTen");
-                    String tk = rs.getString("tenTaiKhoan");
-                    String mk = rs.getString("matKhau");
+                    String tk = rs.getString("userName");
+                    String mk = rs.getString("passWord");
                     // nếu không có cột ngayTao thì rs.getDate sẽ trả SQLException -> bắt/ignore
                     java.time.LocalDate ngayTao = null;
                     try {
@@ -154,7 +154,7 @@ public class TaiKhoan_DAO {
         return false;
     }
     public TaiKhoan dangNhap(String tenTaiKhoan, String matKhau) {
-        String sql = "SELECT maNhanVien, tenTaiKhoan, matKhau FROM TaiKhoan WHERE tenTaiKhoan = ? AND matKhau = ?";
+        String sql = "SELECT maNhanVien, userName, passWord FROM TaiKhoan WHERE userName = ? AND passWord = ?";
         Connection con = connectDB.getConnection();
         if (con == null) {
             System.err.println("Không thể lấy connection trong dangNhap()");
@@ -168,8 +168,8 @@ public class TaiKhoan_DAO {
                 if (rs.next()) {
                     TaiKhoan tk = new TaiKhoan();
                     tk.setMaNhanVien(rs.getString("maNhanVien"));
-                    tk.setTenTaiKhoan(rs.getString("tenTaiKhoan"));
-                    tk.setMatKhau(rs.getString("matKhau"));
+                    tk.setTenTaiKhoan(rs.getString("userName"));
+                    tk.setMatKhau(rs.getString("passWord"));
                     return tk;
                 }
             }

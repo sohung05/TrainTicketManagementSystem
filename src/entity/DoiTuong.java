@@ -8,6 +8,11 @@ public enum DoiTuong {
 
     // Hàm tiện ích để map từ chuỗi DB sang enum
     public static DoiTuong fromString(String str) {
+        // Xử lý null hoặc chuỗi rỗng - trả về mặc định là NguoiLon
+        if (str == null || str.trim().isEmpty()) {
+            return NguoiLon; // Giá trị mặc định
+        }
+        
         switch (str.trim()) {
             case "Sinh viên":
             case "SinhVien":
@@ -23,7 +28,7 @@ public enum DoiTuong {
             case "NguoiCaoTuoi":
                 return NguoiCaoTuoi;
             default:
-                throw new IllegalArgumentException("Không map được đối tượng: " + str);
+                return NguoiLon; // Giá trị mặc định cho trường hợp không khớp
         }
     }
 }

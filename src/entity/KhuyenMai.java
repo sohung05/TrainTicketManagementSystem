@@ -79,8 +79,8 @@ public class KhuyenMai {
     }
 
     public void setChietKhau(double chietKhau) {
-        if (chietKhau <= 0) {
-            throw new IllegalArgumentException("❌ Chiết khấu phải lớn hơn 0");
+        if (chietKhau <= 0 || chietKhau > 1) {
+            throw new IllegalArgumentException("❌ Chiết khấu phải trong khoảng 0 - 1 (dạng 0.25 = 25%)");
         }
         this.chietKhau = chietKhau;
     }

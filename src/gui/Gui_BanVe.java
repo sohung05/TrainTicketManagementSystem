@@ -35,6 +35,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
     private LichTrinh lichTrinhDangChon;
     private Toa toaDangChon;
     private List<ChoNgoi> danhSachGheDangChon;
+    private Map<ChoNgoi, LichTrinh> mapGheLichTrinh; // Lưu lịch trình của từng ghế đã chọn
     
     // Lưu ga gốc để swap khi chuyển chiều
     private String gaDiGoc;
@@ -76,6 +77,12 @@ public class Gui_BanVe extends javax.swing.JPanel {
         } else {
             radKhuHoi.setSelected(true);
             dchNgayVe.setEnabled(true);
+            
+            // ⚡ LƯU THÔNG TIN GỐC CHO KHỨ HỒI (để swap chiều đi/về)
+            gaDiGoc = info.getGaDi();
+            gaDenGoc = info.getGaDen();
+            ngayDiGoc = info.getNgayDi();
+            ngayVeGoc = info.getNgayVe();
         }
         
         // Tự động tìm kiếm
@@ -102,6 +109,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
     private void initCustomComponents() {
         // Khởi tạo danh sách ghế đang chọn
         danhSachGheDangChon = new ArrayList<>();
+        mapGheLichTrinh = new java.util.LinkedHashMap<>(); // Khởi tạo map lưu lịch trình của từng ghế
         
         // Group radio buttons
         groupChieu = new ButtonGroup();
@@ -687,6 +695,12 @@ public class Gui_BanVe extends javax.swing.JPanel {
         // Auto chọn chuyến có giờ xuất phát sớm nhất TRƯỚC
         if (!danhSachLichTrinh.isEmpty()) {
             lichTrinhDangChon = timChuyenXuatPhatSomNhat(danhSachLichTrinh);
+            
+            // 🔍 DEBUG: Log lịch trình auto chọn
+            if (lichTrinhDangChon != null) {
+                System.out.println("🔄 Auto chọn chuyến sớm nhất: Lịch trình " + lichTrinhDangChon.getMaLichTrinh() + 
+                    " | Giờ KH: " + (lichTrinhDangChon.getGioKhoiHanh() != null ? lichTrinhDangChon.getGioKhoiHanh() : "null"));
+            }
         }
         
         // SAU ĐÓ mới hiển thị danh sách chuyến tàu (để render đúng màu)
@@ -832,6 +846,10 @@ public class Gui_BanVe extends javax.swing.JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 lichTrinhDangChon = lt;
+                
+                // 🔍 DEBUG: Log lịch trình đang chọn
+                System.out.println("🚆 Chọn tàu: Lịch trình " + lt.getMaLichTrinh() + 
+                    " | Giờ KH: " + (lt.getGioKhoiHanh() != null ? lt.getGioKhoiHanh() : "null"));
                 
                 // Reload lại danh sách chuyến tàu để cập nhật màu
                 if (danhSachLichTrinh != null) {
@@ -1016,6 +1034,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
         
         // ⚡ TỐI ƯU: Query 1 lần danh sách ghế đã đặt cho cả lịch trình
         java.util.Set<String> gheDaDatSet = veDAO.layDanhSachGheDaDat(lt.getMaLichTrinh());
+        System.out.println("📊 Lịch trình " + lt.getMaLichTrinh() + " có " + gheDaDatSet.size() + " ghế đã bán: " + gheDaDatSet);
         
         // Kiểm tra toa ngồi hay nằm
         int soToa = toa.getSoToa();
@@ -1167,7 +1186,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
                         btnGhe.setBackground(new Color(255, 102, 102));
                         btnGhe.setEnabled(false);
                         btnGhe.setBorder(BorderFactory.createLineBorder(new Color(200, 0, 0), 1));
-                    } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi())) {
+                    } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi(), lt.getMaLichTrinh())) {
                         // Ghế đang được giữ chỗ (5 phút) => màu VÀNG, không cho click
                         btnGhe.setBackground(new Color(255, 255, 0));
                         btnGhe.setEnabled(false);
@@ -1276,7 +1295,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
                 btnGhe.setBackground(new Color(255, 102, 102));
                 btnGhe.setEnabled(false);
                 btnGhe.setBorder(BorderFactory.createLineBorder(new Color(200, 0, 0), 1));
-            } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi())) {
+            } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi(), lt.getMaLichTrinh())) {
                 // Ghế đang được giữ chỗ (5 phút) => màu VÀNG, không cho click
                 btnGhe.setBackground(new Color(255, 255, 0));
                 btnGhe.setEnabled(false);
@@ -1339,7 +1358,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
         
         // Kiểm tra trạng thái ghế
         boolean daDat = choNgoiDAO.kiemTraChoNgoiDaDat(cho.getMaChoNgoi(), lt.getMaLichTrinh());
-        boolean dangGiuCho = QuanLyGheGiuCho.kiemTraGheDangGiuCho(cho.getMaChoNgoi());
+        boolean dangGiuCho = QuanLyGheGiuCho.kiemTraGheDangGiuCho(cho.getMaChoNgoi(), lt.getMaLichTrinh());
         boolean dangChon = kiemTraGheDangDuocChon(cho);
         
         if (daDat) {
@@ -1432,6 +1451,13 @@ public class Gui_BanVe extends javax.swing.JPanel {
         String choNgoi = "Toa " + cho.getToa().getSoToa() + " - Ghế " + cho.getViTri();
         String chieu = radChieuDi.isSelected() ? "Chiều đi" : "Chiều về";
         
+        // 🔍 DEBUG: Log lịch trình được thêm vào giỏ
+        System.out.println("➕ Thêm vào giỏ: Ghế " + cho.getMaChoNgoi() + " | Lịch trình " + lt.getMaLichTrinh() + 
+            " | Giờ KH: " + (lt.getGioKhoiHanh() != null ? lt.getGioKhoiHanh() : "null"));
+        
+        // Lưu lịch trình của ghế này vào map
+        mapGheLichTrinh.put(cho, lt);
+        
         // Thêm vào bảng: Tuyến | Chỗ ngồi | Chiều (giữ nguyên 3 cột như giao diện cũ)
         modelGioVe.addRow(new Object[]{tuyen, choNgoi, chieu});
     }
@@ -1440,6 +1466,9 @@ public class Gui_BanVe extends javax.swing.JPanel {
      * Xóa vé khỏi giỏ dựa vào chỗ ngồi
      */
     private void xoaKhoiGioVe(ChoNgoi cho) {
+        // Xóa khỏi map lưu lịch trình
+        mapGheLichTrinh.remove(cho);
+        
         for (int i = 0; i < modelGioVe.getRowCount(); i++) {
             String choNgoi = (String) modelGioVe.getValueAt(i, 1); // Cột thứ 2: Chỗ ngồi
             String gheCurrent = "Toa " + cho.getToa().getSoToa() + " - Ghế " + cho.getViTri();
@@ -1457,6 +1486,12 @@ public class Gui_BanVe extends javax.swing.JPanel {
      * Chuyển sang chiều về (swap ga đi/đến)
      */
     private void chuyenChieuVe() {
+        System.out.println("🔄 ========== CHUYỂN CHIỀU VỀ ==========");
+        System.out.println("📍 gaDiGoc = " + gaDiGoc);
+        System.out.println("📍 gaDenGoc = " + gaDenGoc);
+        System.out.println("📍 ngayDiGoc = " + ngayDiGoc);
+        System.out.println("📍 ngayVeGoc = " + ngayVeGoc);
+        
         // Kiểm tra xem đã tìm kiếm chiều đi chưa
         if (gaDiGoc == null || gaDenGoc == null) {
             JOptionPane.showMessageDialog(this,
@@ -1488,6 +1523,13 @@ public class Gui_BanVe extends javax.swing.JPanel {
         txtGaDi.setText(gaDenGoc);
         txtGaDen.setText(gaDiGoc);
         dchNgayDi.setDate(ngayVeGoc);
+        dchNgayVe.setDate(null); // ⚡ Clear ngày về vì chiều về là vé một chiều
+        
+        System.out.println("✅ ĐÃ SET UI:");
+        System.out.println("   - Ga đi: " + gaDenGoc);
+        System.out.println("   - Ga đến: " + gaDiGoc);
+        System.out.println("   - Ngày đi: " + ngayVeGoc);
+        System.out.println("   - Ngày về: null");
         
         // Chỉ clear danh sách ghế đang chọn (chưa thêm vào giỏ)
         // KHÔNG clear giỏ vé (để giữ vé chiều đi)
@@ -1504,8 +1546,11 @@ public class Gui_BanVe extends javax.swing.JPanel {
      * Chuyển về chiều đi (restore lại ga gốc)
      */
     private void chuyenChieuDi() {
+        System.out.println("🔄 ========== CHUYỂN VỀ CHIỀU ĐI ==========");
+        
         // Nếu chưa có thông tin gốc thì không làm gì
         if (gaDiGoc == null || gaDenGoc == null) {
+            System.out.println("⚠️ Chưa có thông tin gốc!");
             return;
         }
         
@@ -1513,6 +1558,13 @@ public class Gui_BanVe extends javax.swing.JPanel {
         txtGaDi.setText(gaDiGoc);
         txtGaDen.setText(gaDenGoc);
         dchNgayDi.setDate(ngayDiGoc);
+        dchNgayVe.setDate(ngayVeGoc); // ⚡ Restore lại ngày về
+        
+        System.out.println("✅ ĐÃ RESTORE UI:");
+        System.out.println("   - Ga đi: " + gaDiGoc);
+        System.out.println("   - Ga đến: " + gaDenGoc);
+        System.out.println("   - Ngày đi: " + ngayDiGoc);
+        System.out.println("   - Ngày về: " + ngayVeGoc);
         
         // Chỉ clear danh sách ghế đang chọn (chưa thêm vào giỏ)
         // KHÔNG clear giỏ vé (để giữ vé chiều về)
@@ -1641,84 +1693,8 @@ public class Gui_BanVe extends javax.swing.JPanel {
      * @return Map<ChoNgoi, LichTrinh> - Ghế và lịch trình tương ứng
      */
     public Map<ChoNgoi, LichTrinh> getAllVeTrongGioVe() {
-        Map<ChoNgoi, LichTrinh> result = new java.util.LinkedHashMap<>();
-        
-        // Duyệt qua giỏ vé
-        for (int i = 0; i < modelGioVe.getRowCount(); i++) {
-            String tuyen = modelGioVe.getValueAt(i, 0).toString();
-            String choNgoi = modelGioVe.getValueAt(i, 1).toString();
-            
-            // Parse tuyến để lấy mã tàu và ga đi/đến
-            String soHieuTau = null;
-            String gaDi = null;
-            String gaDen = null;
-            
-            if (tuyen.contains(" | ")) {
-                String[] parts1 = tuyen.split(" \\| ");
-                if (parts1.length == 2) {
-                    soHieuTau = parts1[0].trim();
-                    String[] parts2 = parts1[1].split(" - ");
-                    if (parts2.length == 2) {
-                        gaDi = parts2[0].trim();
-                        gaDen = parts2[1].trim();
-                    }
-                }
-            }
-            
-            // Parse chỗ ngồi
-            String soToa = null;
-            String viTri = null;
-            if (choNgoi.contains(" - ")) {
-                String[] parts = choNgoi.split(" - ");
-                if (parts.length == 2) {
-                    soToa = parts[0].replace("Toa ", "").trim();
-                    viTri = parts[1].replace("Ghế ", "").replace("Giường ", "").trim();
-                }
-            }
-            
-            if (soHieuTau == null || gaDi == null || gaDen == null || soToa == null || viTri == null) {
-                continue;
-            }
-            
-            try {
-                // Tìm LichTrinh
-                dao.LichTrinh_DAO lichTrinhDAO = new dao.LichTrinh_DAO();
-                List<LichTrinh> danhSachLT = lichTrinhDAO.timLichTrinh(gaDi, gaDen, java.time.LocalDate.now());
-                LichTrinh lt = null;
-                for (LichTrinh temp : danhSachLT) {
-                    if (temp.getChuyenTau() != null && temp.getChuyenTau().getSoHieuTau().equals(soHieuTau)) {
-                        lt = temp;
-                        break;
-                    }
-                }
-                
-                if (lt == null) continue;
-                
-                // Tìm ChoNgoi
-                List<Toa> danhSachToa = toaDAO.getToaBySoHieuTau(soHieuTau);
-                String maToa = null;
-                for (Toa toa : danhSachToa) {
-                    if (String.valueOf(toa.getSoToa()).equals(soToa)) {
-                        maToa = toa.getMaToa();
-                        break;
-                    }
-                }
-                
-                if (maToa != null) {
-                    List<ChoNgoi> danhSachCho = choNgoiDAO.getChoNgoiByMaToa(maToa);
-                    for (ChoNgoi cn : danhSachCho) {
-                        if (String.valueOf(cn.getViTri()).equals(viTri)) {
-                            result.put(cn, lt);
-                            break;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
-        return result;
+        // ⚡ TỐI ƯU: Trả về trực tiếp map đã lưu, không cần parse và query lại database
+        return new java.util.LinkedHashMap<>(mapGheLichTrinh);
     }
     
     /**
@@ -1739,6 +1715,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
         // Clear giỏ vé và danh sách ghế đang chọn (vì đã thanh toán xong)
         modelGioVe.setRowCount(0);
         danhSachGheDangChon.clear();
+        mapGheLichTrinh.clear(); // Clear map lưu lịch trình
         
         // Reload sơ đồ ghế của toa đang hiển thị
         hienThiSoDoGheTrongPanel(toaDangChon, lichTrinhDangChon);
@@ -1813,6 +1790,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
     public void xoaTatCaGheDaChon() {
         // Clear danh sách
         danhSachGheDangChon.clear();
+        mapGheLichTrinh.clear(); // Clear map lưu lịch trình
         
         // Clear table giỏ vé
         modelGioVe.setRowCount(0);

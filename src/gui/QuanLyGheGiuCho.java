@@ -15,38 +15,73 @@ public class QuanLyGheGiuCho {
     private static Timer timer = new Timer(true); // Daemon thread
     
     /**
-     * Thêm ghế vào danh sách giữ chỗ
+     * Thêm ghế vào danh sách giữ chỗ (cũ - không có maLichTrinh, giữ để tương thích)
      */
     public static void themGheGiuCho(String maChoNgoi, String maDonTreo) {
-        GheGiuCho gheGiuCho = new GheGiuCho(maChoNgoi, maDonTreo);
+        themGheGiuCho(maChoNgoi, maDonTreo, null);
+    }
+    
+    /**
+     * Thêm ghế vào danh sách giữ chỗ (mới - có maLichTrinh cho khứ hồi)
+     */
+    public static void themGheGiuCho(String maChoNgoi, String maDonTreo, String maLichTrinh) {
+        GheGiuCho gheGiuCho = new GheGiuCho(maChoNgoi, maDonTreo, maLichTrinh);
         danhSachGheGiuCho.add(gheGiuCho);
         
         // Tạo task tự động xóa sau 5 phút
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                xoaGheGiuCho(maChoNgoi);
-                System.out.println("Đã hết hạn giữ chỗ: " + maChoNgoi);
+                xoaGheGiuCho(maChoNgoi, maLichTrinh);
+                System.out.println("Đã hết hạn giữ chỗ: " + maChoNgoi + " (Lịch trình: " + maLichTrinh + ")");
             }
         }, 5 * 60 * 1000); // 5 phút = 5 * 60 * 1000 milliseconds
     }
     
     /**
-     * Kiểm tra ghế có đang được giữ chỗ không
+     * Kiểm tra ghế có đang được giữ chỗ không (cũ - không check maLichTrinh)
      */
     public static boolean kiemTraGheDangGiuCho(String maChoNgoi) {
-        // Xóa các ghế đã hết hạn trước
-        xoaGheHetHan();
-        
-        return danhSachGheGiuCho.stream()
-            .anyMatch(ghe -> ghe.getMaChoNgoi().equals(maChoNgoi) && ghe.conTrongThoiGianGiuCho());
+        return kiemTraGheDangGiuCho(maChoNgoi, null);
     }
     
     /**
-     * Xóa ghế khỏi danh sách giữ chỗ
+     * Kiểm tra ghế có đang được giữ chỗ không (mới - check cả maLichTrinh)
+     */
+    public static boolean kiemTraGheDangGiuCho(String maChoNgoi, String maLichTrinh) {
+        // Xóa các ghế đã hết hạn trước
+        xoaGheHetHan();
+        
+        if (maLichTrinh == null) {
+            // Nếu không truyền maLichTrinh, check chỉ maChoNgoi (tương thích ngược)
+            return danhSachGheGiuCho.stream()
+                .anyMatch(ghe -> ghe.getMaChoNgoi().equals(maChoNgoi) && ghe.conTrongThoiGianGiuCho());
+        } else {
+            // Nếu có maLichTrinh, check cả 2 (chính xác với khứ hồi)
+            return danhSachGheGiuCho.stream()
+                .anyMatch(ghe -> ghe.getMaChoNgoi().equals(maChoNgoi) 
+                    && (ghe.getMaLichTrinh() == null || ghe.getMaLichTrinh().equals(maLichTrinh))
+                    && ghe.conTrongThoiGianGiuCho());
+        }
+    }
+    
+    /**
+     * Xóa ghế khỏi danh sách giữ chỗ (cũ - không check maLichTrinh)
      */
     public static void xoaGheGiuCho(String maChoNgoi) {
         danhSachGheGiuCho.removeIf(ghe -> ghe.getMaChoNgoi().equals(maChoNgoi));
+    }
+    
+    /**
+     * Xóa ghế khỏi danh sách giữ chỗ (mới - check cả maLichTrinh)
+     */
+    public static void xoaGheGiuCho(String maChoNgoi, String maLichTrinh) {
+        if (maLichTrinh == null) {
+            xoaGheGiuCho(maChoNgoi);
+        } else {
+            danhSachGheGiuCho.removeIf(ghe -> ghe.getMaChoNgoi().equals(maChoNgoi) 
+                && (ghe.getMaLichTrinh() == null || ghe.getMaLichTrinh().equals(maLichTrinh)));
+        }
     }
     
     /**

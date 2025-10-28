@@ -9,7 +9,7 @@ public class NhanVien {
     private String SDT;
     private String email;
     private String diaChi;
-    private String loaiNV;
+    private int chucVu;  // ✅ Đổi từ loaiNV String → chucVu int
     private boolean trangThai;
     private LocalDate ngaySinh;
     private LocalDate ngayVaoLam;
@@ -19,7 +19,7 @@ public class NhanVien {
     }
 
     public NhanVien(String maNhanVien, String CCCD, String hoTen, String SDT,
-                    String email, String diaChi, String loaiNV, boolean trangThai,
+                    String email, String diaChi, int chucVu, boolean trangThai,
                     LocalDate ngaySinh, LocalDate ngayVaoLam, String gioiTinh) {
         this.maNhanVien = maNhanVien;
         this.CCCD = CCCD;
@@ -27,7 +27,7 @@ public class NhanVien {
         this.SDT = SDT;
         this.email = email;
         this.diaChi = diaChi;
-        this.loaiNV = loaiNV;
+        this.chucVu = chucVu;  // ✅ Đổi từ loaiNV → chucVu
         this.trangThai = trangThai;
         this.ngaySinh = ngaySinh;
         this.ngayVaoLam = ngayVaoLam;
@@ -82,12 +82,12 @@ public class NhanVien {
         this.diaChi = diaChi;
     }
 
-    public String getLoaiNV() {
-        return loaiNV;
+    public int getChucVu() {  // ✅ Đổi từ getLoaiNV() → getChucVu()
+        return chucVu;
     }
 
-    public void setLoaiNV(String loaiNV) {
-        this.loaiNV = loaiNV;
+    public void setChucVu(int chucVu) {  // ✅ Đổi từ setLoaiNV() → setChucVu()
+        this.chucVu = chucVu;
     }
 
     public boolean isTrangThai() {
@@ -127,7 +127,7 @@ public class NhanVien {
         return "NhanVien{" +
                 "maNhanVien='" + maNhanVien + '\'' +
                 ", hoTen='" + hoTen + '\'' +
-                ", loaiNV='" + loaiNV + '\'' +
+                ", chucVu=" + chucVu +
                 ", trangThai=" + trangThai +
                 '}';
     }

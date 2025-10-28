@@ -106,6 +106,34 @@ public class KhachHang_DAO {
         }
     }
 
+    public KhachHang findByCCCD(String cccd) {
+        String sql = "SELECT * FROM KhachHang WHERE CCCD = ?";
+        Connection con = connectDB.getConnection();
+        if (con == null) {
+            System.err.println("Không thể lấy connection trong findByCCCD()");
+            return null;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, cccd);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new KhachHang(
+                            rs.getString("maKH"),
+                            rs.getString("CCCD"),
+                            rs.getString("hoTen"),
+                            rs.getString("email"),
+                            rs.getString("SDT"),
+                            rs.getString("doiTuong")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<KhachHang> timKiem(String cccd, String hoTen, String email, String sdt, String doiTuong) {
         List<KhachHang> ds = new ArrayList<>();
 

@@ -166,7 +166,7 @@ public class LichTrinh_DAO {
         lt.setGioKhoiHanh(gioKH != null ? gioKH.toLocalDateTime() : null);
         
         Timestamp gioDen = rs.getTimestamp("gioDenDuKien");
-        lt.setGioDenDuKien(gioDen != null ? gioDen.toLocalDateTime() : null);
+        lt.setGioDen(gioDen != null ? gioDen.toLocalDateTime() : null);
         
         lt.setTrangThai(rs.getBoolean("trangThai"));
         

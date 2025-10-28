@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class connectDB {
     private static Connection con = null;
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=BTL;encrypt=false;trustServerCertificate=true;";
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=HTQLVT;encrypt=false;trustServerCertificate=true;";
     private static final String USER = "sa";
-    private static final String PASSWORD = "123456789";
+    private static final String PASSWORD = "sapassword";
 
     public static Connection getConnection() {
         try {

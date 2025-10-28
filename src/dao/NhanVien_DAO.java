@@ -34,7 +34,7 @@ public class NhanVien_DAO {
                         rs.getString("SDT"),
                         rs.getString("email"),
                         rs.getString("diaChi"),
-                        rs.getString("loaiNV"),
+                        rs.getInt("chucVu"),  // ✅ Đổi từ loaiNV String → chucVu int
                         rs.getBoolean("trangThai"),
                         (dNgaySinh != null) ? dNgaySinh.toLocalDate() : null,
                         (dNgayVaoLam != null) ? dNgayVaoLam.toLocalDate() : null,
@@ -50,7 +50,7 @@ public class NhanVien_DAO {
     }
 
     public boolean them(NhanVien nv) {
-        String sql = "INSERT INTO NhanVien (maNhanVien, CCCD, hoTen, SDT, email, diaChi, loaiNV, trangThai, ngaySinh, ngayVaoLam, gioiTinh) "
+        String sql = "INSERT INTO NhanVien (maNhanVien, CCCD, hoTen, SDT, email, diaChi, chucVu, trangThai, ngaySinh, ngayVaoLam, gioiTinh) "  // ✅ Đổi loaiNV → chucVu
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection con = connectDB.getConnection();
@@ -67,7 +67,7 @@ public class NhanVien_DAO {
             ps.setString(4, nv.getSDT());
             ps.setString(5, nv.getEmail());
             ps.setString(6, nv.getDiaChi());
-            ps.setString(7, nv.getLoaiNV());
+            ps.setInt(7, nv.getChucVu());  // ✅ Đổi từ setString(getLoaiNV) → setInt(getChucVu)
             ps.setBoolean(8, nv.isTrangThai());
             ps.setDate(9, (nv.getNgaySinh() != null) ? Date.valueOf(nv.getNgaySinh()) : null);
 
@@ -88,7 +88,7 @@ public class NhanVien_DAO {
     }
 
     public boolean sua(NhanVien nv) {
-        String sql = "UPDATE NhanVien SET CCCD=?, hoTen=?, SDT=?, email=?, diaChi=?, loaiNV=?, trangThai=?, ngaySinh=?, ngayVaoLam=?, gioiTinh=? "
+        String sql = "UPDATE NhanVien SET CCCD=?, hoTen=?, SDT=?, email=?, diaChi=?, chucVu=?, trangThai=?, ngaySinh=?, ngayVaoLam=?, gioiTinh=? "  // ✅ Đổi loaiNV → chucVu
                 + "WHERE maNhanVien=?";
 
         Connection con = connectDB.getConnection();
@@ -104,7 +104,7 @@ public class NhanVien_DAO {
             ps.setString(3, nv.getSDT());
             ps.setString(4, nv.getEmail());
             ps.setString(5, nv.getDiaChi());
-            ps.setString(6, nv.getLoaiNV());
+            ps.setInt(6, nv.getChucVu());  // ✅ Đổi từ setString(getLoaiNV) → setInt(getChucVu)
             ps.setBoolean(7, nv.isTrangThai());
             ps.setDate(8, (nv.getNgaySinh() != null) ? Date.valueOf(nv.getNgaySinh()) : null);
             ps.setDate(9, (nv.getNgayVaoLam() != null) ? Date.valueOf(nv.getNgayVaoLam()) : null);
@@ -174,7 +174,7 @@ public class NhanVien_DAO {
                     nv.setEmail(rs.getString("email"));
                     nv.setSDT(rs.getString("SDT"));
                     nv.setDiaChi(rs.getString("diaChi"));
-                    nv.setLoaiNV(rs.getString("loaiNV"));
+                    nv.setChucVu(rs.getInt("chucVu"));  // ✅ Đổi từ setLoaiNV(getString) → setChucVu(getInt)
                     nv.setTrangThai(rs.getBoolean("trangThai"));
                     Date dNgaySinh = rs.getDate("ngaySinh");
                     Date dNgayVaoLam = rs.getDate("ngayVaoLam");
@@ -209,7 +209,7 @@ public class NhanVien_DAO {
                     nv.setSDT(rs.getString("SDT"));
                     nv.setEmail(rs.getString("email"));
                     nv.setDiaChi(rs.getString("diaChi"));
-                    nv.setLoaiNV(rs.getString("loaiNV"));
+                    nv.setChucVu(rs.getInt("chucVu"));  // ✅ Đổi từ setLoaiNV(getString) → setChucVu(getInt)
                     // trangThai là bit -> getBoolean
                     try { nv.setTrangThai(rs.getBoolean("trangThai")); } catch (SQLException ignored) {}
                     Date dSinh = rs.getDate("ngaySinh");

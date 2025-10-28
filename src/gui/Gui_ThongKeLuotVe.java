@@ -177,6 +177,7 @@ public class Gui_ThongKeLuotVe extends javax.swing.JPanel {
                 "Ngày", "Số vé", dataset
         );
 
+
         // Chỉnh trục Y
         CategoryPlot plot = barChart.getCategoryPlot();
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
@@ -184,7 +185,8 @@ public class Gui_ThongKeLuotVe extends javax.swing.JPanel {
         rangeAxis.setTickUnit(new NumberTickUnit(10));
         // chinh sua form
         ChartPanel chartPanel = new ChartPanel(barChart);
-        chartPanel.setPreferredSize(new Dimension(1400, 400));
+        chartPanel.setPreferredSize(new Dimension(1250, 320));
+
 
         jPanel6.removeAll();
         jPanel6.setLayout(new FlowLayout()); // thay vì BorderLayout

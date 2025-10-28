@@ -187,10 +187,10 @@ public class Gui_Dashboard extends JPanel {
 
             // ===== Biểu đồ tròn =====
             Map<String, Double> thongKe = dashboardDAO.getThongKeTongQuan();
-            double soVe = thongKe.getOrDefault("soVe", 0.0);
-            double soKhach = thongKe.getOrDefault("khachHang", 0.0);
+            double soVeBan = thongKe.getOrDefault("soVeBan", 0.0);  // Vé đã bán (trangThai = 1)
+            double soVeTra = thongKe.getOrDefault("soVeTra", 0.0);  // Vé đã trả (trangThai = 0)
 
-            JFreeChart pieChart = createPieChart(soVe, soKhach);
+            JFreeChart pieChart = createPieChart(soVeBan, soVeTra);
             ChartPanel pieChartPanel = new ChartPanel(pieChart);
 
             // ===== Panel chứa cả 2 biểu đồ =====
@@ -209,13 +209,13 @@ public class Gui_Dashboard extends JPanel {
         }
     }
 
-    private JFreeChart createPieChart(double soVe, double soKhach) {
+    private JFreeChart createPieChart(double soVeBan, double soVeTra) {
         DefaultPieDataset pieDataset = new DefaultPieDataset();
-        pieDataset.setValue("Vé đã bán", soVe);
-        pieDataset.setValue("Khách hàng", soKhach);
+        pieDataset.setValue("Vé đã bán", soVeBan);
+        pieDataset.setValue("Vé đã trả", soVeTra);
 
         JFreeChart pieChart = ChartFactory.createPieChart(
-                "Tỷ lệ khách hàng và vé đã bán",
+                "Tỷ lệ giữa Vé đã bán và Vé đã trả",
                 pieDataset,
                 true,   // legend
                 true,   // tooltips

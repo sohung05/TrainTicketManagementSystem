@@ -220,7 +220,7 @@ public class Gui_NhanVien extends javax.swing.JPanel {
         nv.setSDT(sdt);
         nv.setEmail(email);
         nv.setDiaChi(diaChi);
-        nv.setLoaiNV("Nhân viên");
+        nv.setChucVu(1); // 1 = Nhân viên (mặc định)
         nv.setTrangThai(trangThai);
         nv.setNgaySinh(ngaySinh);
         // Ngày vào làm sẽ được gán trong btnThemActionPerformed

@@ -4,22 +4,16 @@ public class Ga {
     private String maGa;
     private String tenGa;
     private String viTri;
-    private String gaDen;
-    private String gaDi;
 
-    
-
-    public Ga(String maGa, String tenGa, String viTri, String gaDen, String gaDi) {
+    public Ga(String maGa, String tenGa, String viTri) {
 		super();
 		this.maGa = maGa;
 		this.tenGa = tenGa;
 		this.viTri = viTri;
-		this.gaDen = gaDen;
-		this.gaDi = gaDi;
 	}
 
 	public Ga() {
-        this("","","","","");
+        this("","","");
     }
 
 	public String getMaGa() {
@@ -45,23 +39,5 @@ public class Ga {
 	public void setViTri(String viTri) {
 		this.viTri = viTri;
 	}
-
-	public String getGaDen() {
-		return gaDen;
-	}
-
-	public void setGaDen(String gaDen) {
-		this.gaDen = gaDen;
-	}
-
-	public String getGaDi() {
-		return gaDi;
-	}
-
-	public void setGaDi(String gaDi) {
-		this.gaDi = gaDi;
-	}
-
-   
 }
 

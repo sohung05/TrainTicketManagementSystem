@@ -1,5 +1,5 @@
 import connectDB.connectDB;
-import gui.Gui_Login;
+import demo.LoginFrame;
 import javax.swing.*;
 
 /**
@@ -9,7 +9,12 @@ public class App {
     public static void main(String[] args) {
         // Kết nối database
         try {
-            connectDB.getInstance().connect();
+            if (connectDB.getConnection() != null) {
+                System.out.println("✅ Kết nối SQL Server thành công!");
+                System.out.println("✅ Kết nối database thành công!");
+            } else {
+                throw new Exception("Không thể kết nối đến database!");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, 
@@ -28,12 +33,7 @@ public class App {
         
         // Hiển thị màn hình Login
         SwingUtilities.invokeLater(() -> {
-            JFrame loginFrame = new JFrame("ĐĂNG NHẬP - HỆ THỐNG QUẢN LÝ VÉ TÀU");
-            loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            loginFrame.setContentPane(new Gui_Login());
-            loginFrame.setSize(800, 500); // Set size cố định thay vì pack()
-            loginFrame.setResizable(false); // Không cho resize
-            loginFrame.setLocationRelativeTo(null); // Center màn hình
+            LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
         });
     }

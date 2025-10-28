@@ -1,14 +1,12 @@
 package entity;
 
-import java.time.LocalDateTime;
-
 public class ChuyenTau {
     private String soHieuTau;
     private double tocDo;
     private LoaiTau loaiTau;
-    private LocalDateTime namSanXuat;
+    private Integer namSanXuat;
 
-    public ChuyenTau(String soHieuTau, double tocDo, LoaiTau loaiTau, LocalDateTime namSanXuat) {
+    public ChuyenTau(String soHieuTau, double tocDo, LoaiTau loaiTau, Integer namSanXuat) {
 		super();
 		this.soHieuTau = soHieuTau;
 		this.tocDo = tocDo;
@@ -18,7 +16,7 @@ public class ChuyenTau {
 
 
 	public ChuyenTau() {
-        this("", 0, null, LocalDateTime.now());
+        this("", 0, null, null);
     }
 
 
@@ -52,12 +50,12 @@ public class ChuyenTau {
 	}
 
 
-	public LocalDateTime getNamSanXuat() {
+	public Integer getNamSanXuat() {
 		return namSanXuat;
 	}
 
 
-	public void setNamSanXuat(LocalDateTime namSanXuat) {
+	public void setNamSanXuat(Integer namSanXuat) {
 		this.namSanXuat = namSanXuat;
 	}
 

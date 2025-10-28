@@ -32,8 +32,6 @@ public class Ga_DAO {
                 ga.setMaGa(rs.getString("maGa"));
                 ga.setTenGa(rs.getString("tenGa"));
                 ga.setViTri(rs.getString("viTri"));
-                ga.setGaDi(rs.getString("gaDi"));
-                ga.setGaDen(rs.getString("gaDen"));
                 list.add(ga);
             }
         } catch (SQLException e) {
@@ -54,8 +52,6 @@ public class Ga_DAO {
                     ga.setMaGa(rs.getString("maGa"));
                     ga.setTenGa(rs.getString("tenGa"));
                     ga.setViTri(rs.getString("viTri"));
-                    ga.setGaDi(rs.getString("gaDi"));
-                    ga.setGaDen(rs.getString("gaDen"));
                     return ga;
                 }
             }
@@ -78,8 +74,6 @@ public class Ga_DAO {
                     ga.setMaGa(rs.getString("maGa"));
                     ga.setTenGa(rs.getString("tenGa"));
                     ga.setViTri(rs.getString("viTri"));
-                    ga.setGaDi(rs.getString("gaDi"));
-                    ga.setGaDen(rs.getString("gaDen"));
                     list.add(ga);
                 }
             }
@@ -91,14 +85,12 @@ public class Ga_DAO {
 
     // Thêm ga mới
     public boolean insert(Ga ga) {
-        String sql = "INSERT INTO Ga (maGa, tenGa, viTri, gaDi, gaDen) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Ga (maGa, tenGa, viTri) VALUES (?, ?, ?)";
         try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ga.getMaGa());
             ps.setString(2, ga.getTenGa());
             ps.setString(3, ga.getViTri());
-            ps.setString(4, ga.getGaDi());
-            ps.setString(5, ga.getGaDen());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -108,14 +100,12 @@ public class Ga_DAO {
 
     // Cập nhật thông tin ga
     public boolean update(Ga ga) {
-        String sql = "UPDATE Ga SET tenGa=?, viTri=?, gaDi=?, gaDen=? WHERE maGa=?";
+        String sql = "UPDATE Ga SET tenGa=?, viTri=? WHERE maGa=?";
         try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, ga.getTenGa());
             ps.setString(2, ga.getViTri());
-            ps.setString(3, ga.getGaDi());
-            ps.setString(4, ga.getGaDen());
-            ps.setString(5, ga.getMaGa());
+            ps.setString(3, ga.getMaGa());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

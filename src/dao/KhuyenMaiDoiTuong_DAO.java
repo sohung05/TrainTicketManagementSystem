@@ -81,19 +81,22 @@ public class KhuyenMaiDoiTuong_DAO {
             con = connectDB.getConnection();
         }
 
+        // ✅ Load khuyến mãi master data: loaiKhuyenMai = 'KMKH' và maHoaDon = NULL
         String sql = """
-    SELECT km.maKhuyenMai, km.tenKhuyenMai, kh.doiTuong, 
-           km.thoiGianBatDau, km.thoiGianKetThuc, ctkm.chietKhau, km.trangThai
+    SELECT 
+        km.maKhuyenMai, 
+        km.tenKhuyenMai, 
+        ctkm.dieuKien AS doiTuong, 
+        km.thoiGianBatDau, 
+        km.thoiGianKetThuc, 
+        ctkm.chietKhau, 
+        km.trangThai
     FROM KhuyenMai km
-         JOIN ChiTietKhuyenMai ctkm ON km.maKhuyenMai = ctkm.maKhuyenMai
-         JOIN HoaDon hd ON hd.maHoaDon = ctkm.maHoaDon
-         JOIN KhachHang kh ON kh.maKH = hd.maKH
-    GROUP BY km.maKhuyenMai, km.tenKhuyenMai, kh.doiTuong,
-             km.thoiGianBatDau, km.thoiGianKetThuc, ctkm.chietKhau, km.trangThai
+    JOIN ChiTietKhuyenMai ctkm ON km.maKhuyenMai = ctkm.maKhuyenMai
+    WHERE km.loaiKhuyenMai = 'KMKH' 
+      AND ctkm.maHoaDon IS NULL
     ORDER BY km.thoiGianBatDau DESC
 """;
-
-
 
         try (PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -111,7 +114,7 @@ public class KhuyenMaiDoiTuong_DAO {
                 list.add(row);
             }
 
-            System.out.println("✅ Đã load " + list.size() + " khuyến mãi đối tượng.");
+            System.out.println("✅ Đã load " + list.size() + " khuyến mãi đối tượng (KMKH).");
 
         } catch (SQLException e) {
             e.printStackTrace();

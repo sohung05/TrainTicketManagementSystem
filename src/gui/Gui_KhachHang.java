@@ -40,17 +40,25 @@ public class Gui_KhachHang extends javax.swing.JPanel {
                 int row = tblKhachHang.getSelectedRow();
                 if (row != -1) {
                     int modelRow = tblKhachHang.convertRowIndexToModel(row);
-                    maKHChon = modelKhachHang.getValueAt(modelRow, 0).toString();
+                    
+                    // Kiểm tra null trước khi gọi toString()
+                    Object maKH = modelKhachHang.getValueAt(modelRow, 0);
+                    maKHChon = maKH != null ? maKH.toString() : "";
 
-                    txtCCCD.setText(modelKhachHang.getValueAt(modelRow, 4).toString());
+                    Object cccd = modelKhachHang.getValueAt(modelRow, 4);
+                    txtCCCD.setText(cccd != null ? cccd.toString() : "");
 
-                    txtHoTen.setText(modelKhachHang.getValueAt(modelRow, 1).toString());
+                    Object hoTen = modelKhachHang.getValueAt(modelRow, 1);
+                    txtHoTen.setText(hoTen != null ? hoTen.toString() : "");
 
-                    txtEmail.setText(modelKhachHang.getValueAt(modelRow, 2).toString());
+                    Object email = modelKhachHang.getValueAt(modelRow, 2);
+                    txtEmail.setText(email != null ? email.toString() : "");
 
-                    txtSoDienThoai.setText(modelKhachHang.getValueAt(modelRow, 3).toString());
+                    Object sdt = modelKhachHang.getValueAt(modelRow, 3);
+                    txtSoDienThoai.setText(sdt != null ? sdt.toString() : "");
 
-                    cmbDoiTuong.setSelectedItem(modelKhachHang.getValueAt(modelRow, 5).toString());
+                    Object doiTuong = modelKhachHang.getValueAt(modelRow, 5);
+                    cmbDoiTuong.setSelectedItem(doiTuong != null ? doiTuong.toString() : "");
                 }
             }
         });

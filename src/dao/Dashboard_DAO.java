@@ -54,12 +54,12 @@ public class Dashboard_DAO {
             SELECT TOP 10 
                 lt.maLichTrinh,
                 t.tenTuyen,
-                g.tenGa,
+                gaDi.tenGa AS gaDi,
                 lt.gioKhoiHanh,
-                lt.gioDenDuKien
+                lt.gioDenDuKien AS gioDen
             FROM LichTrinh lt
             JOIN Tuyen t ON lt.maTuyen = t.maTuyen
-            JOIN Ga g ON lt.maGa = g.maGa
+            LEFT JOIN Ga gaDi ON lt.maGaDi = gaDi.maGa
             ORDER BY lt.gioKhoiHanh DESC
         """;
 
@@ -69,9 +69,9 @@ public class Dashboard_DAO {
                 list.add(new Object[]{
                         rs.getString("maLichTrinh"),
                         rs.getString("tenTuyen"),
-                        rs.getString("tenGa"),
+                        rs.getString("gaDi"),
                         rs.getTimestamp("gioKhoiHanh"),
-                        rs.getTimestamp("gioDenDuKien")
+                        rs.getTimestamp("gioDen")
                 });
             }
         } catch (SQLException e) {
@@ -103,6 +103,18 @@ public class Dashboard_DAO {
             String sqlSoVe = "SELECT COUNT(maVe) AS soVe FROM Ve";
             try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlSoVe)) {
                 if (rs.next()) data.put("soVe", rs.getDouble("soVe"));
+            }
+
+            // ✅ Số vé đã bán (trangThai = 1)
+            String sqlVeBan = "SELECT COUNT(maVe) AS veBan FROM Ve WHERE trangThai = 1";
+            try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlVeBan)) {
+                if (rs.next()) data.put("soVeBan", rs.getDouble("veBan"));
+            }
+
+            // ✅ Số vé đã trả/hủy (trangThai = 0)
+            String sqlVeTra = "SELECT COUNT(maVe) AS veTra FROM Ve WHERE trangThai = 0";
+            try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlVeTra)) {
+                if (rs.next()) data.put("soVeTra", rs.getDouble("veTra"));
             }
 
             // ✅ Tổng số khách hàng

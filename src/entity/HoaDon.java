@@ -11,8 +11,10 @@ public class HoaDon {
     private KhachHang khachHang;
     private LocalDateTime gioTao;
     private LocalDateTime ngayTao;
+    private double tongTien;
     private boolean trangThai; // true = đã trả, false = chưa trả
     private List<ChiTietHoaDon> danhSachChiTiet;
+    private String khuyenMai; // Tạm thời để hiển thị
 
     // Constructor đầy đủ
     public HoaDon(String maHoaDon, NhanVien nhanVien, KhachHang khachHang,
@@ -49,6 +51,12 @@ public class HoaDon {
 
     public boolean isTrangThai() { return trangThai; }
     public void setTrangThai(boolean trangThai) { this.trangThai = trangThai; }
+
+    public double getTongTien() { return tongTien; }
+    public void setTongTien(double tongTien) { this.tongTien = tongTien; }
+
+    public String getKhuyenMai() { return khuyenMai; }
+    public void setKhuyenMai(String khuyenMai) { this.khuyenMai = khuyenMai; }
 
     public List<ChiTietHoaDon> getDanhSachChiTiet() { return danhSachChiTiet; }
     public void setDanhSachChiTiet(List<ChiTietHoaDon> danhSachChiTiet) { this.danhSachChiTiet = danhSachChiTiet; }

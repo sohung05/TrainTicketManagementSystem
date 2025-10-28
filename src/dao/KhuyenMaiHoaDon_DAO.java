@@ -87,6 +87,7 @@ public class KhuyenMaiHoaDon_DAO {
     public List<KhuyenMai> getTatCaKhuyenMaiHoaDon() {
         List<KhuyenMai> list = new ArrayList<>();
 
+        // ✅ Load khuyến mãi master data: loaiKhuyenMai = 'KMHD' và maHoaDon = NULL
         String sql = """
         SELECT
             KM.maKhuyenMai,
@@ -95,23 +96,13 @@ public class KhuyenMaiHoaDon_DAO {
             KM.thoiGianBatDau,
             KM.thoiGianKetThuc,
             KM.trangThai,
-            ISNULL(SUM(CTHD.soLuong), 0) AS soVeKhaDung,
+            CTKM.dieuKien AS soLuongVe,
             CTKM.chietKhau
         FROM KhuyenMai KM
-        LEFT JOIN ChiTietKhuyenMai CTKM
-            ON CTKM.maKhuyenMai = KM.maKhuyenMai
-            AND CTKM.dieuKien LIKE N'Hóa đơn%'
-        LEFT JOIN HoaDon HD ON HD.maHoaDon = CTKM.maHoaDon
-        LEFT JOIN ChiTietHoaDon CTHD ON CTHD.maHoaDon = HD.maHoaDon
-        WHERE CTKM.chietKhau > 0
-        GROUP BY
-            KM.maKhuyenMai,
-            KM.tenKhuyenMai,
-            KM.loaiKhuyenMai,
-            KM.thoiGianBatDau,
-            KM.thoiGianKetThuc,
-            KM.trangThai,
-            CTKM.chietKhau
+        JOIN ChiTietKhuyenMai CTKM ON CTKM.maKhuyenMai = KM.maKhuyenMai
+        WHERE KM.loaiKhuyenMai = 'KMHD' 
+          AND CTKM.maHoaDon IS NULL
+          AND CTKM.chietKhau > 0
         ORDER BY KM.thoiGianBatDau DESC
     """;
 
@@ -131,11 +122,11 @@ public class KhuyenMaiHoaDon_DAO {
                 LocalDateTime tgKetThuc = tsKetThuc != null ? tsKetThuc.toLocalDateTime() : null;
 
                 boolean trangThai = rs.getBoolean("trangThai");
-                int soVeKhaDung = rs.getInt("soVeKhaDung");
+                String soLuongVe = rs.getString("soLuongVe"); // e.g., "11-40 vé"
                 double chietKhau = rs.getDouble("chietKhau");
 
                 KhuyenMai km = new KhuyenMai(maKM, tenKM, loaiKM, tgBatDau, tgKetThuc, trangThai);
-                km.setSoVe(soVeKhaDung);
+                km.setDoiTuongApDung(soLuongVe); // Lưu điều kiện ("11-40 vé") vào doiTuongApDung
                 km.setChietKhau(chietKhau);
 
                 list.add(km);
