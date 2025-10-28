@@ -17,15 +17,16 @@ import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 import gui.Gui_BanVe;
-import gui.Gui_Dasboard;
+import gui.Gui_NhapThongTinHanhTrinh;
+import gui.Gui_Dashboard;
 import gui.Gui_DoiVe;
 import gui.Gui_KhachHang;
 import gui.Gui_KhuyenMaiHoaDon;
+import gui.Gui_KhuyenMaiDoiTuong;
 import gui.Gui_NhanVien;
 import gui.Gui_ThongKeDoanhThu;
 import gui.Gui_ThongKeLuotVe;
 import gui.Gui_TraVe;
-import gui.Gui_KhuyenMaiDoiTuong;
 
 
 public class Main extends javax.swing.JFrame {
@@ -55,13 +56,37 @@ public class Main extends javax.swing.JFrame {
                 switch (menuIndex) {
                     case 0: // Dashboard
                         if (subMenuIndex == 0 || subMenuIndex == -1) {
-                            main.showForm(new Gui_Dasboard());
+                            main.showForm(new Gui_Dashboard());
                         }
                         break;
                     case 1: // Vé
                         switch (subMenuIndex) {
                             case 0: // Bán Vé
-                                main.showForm(new Gui_BanVe());
+                                // Hiển thị form nhập thông tin hành trình
+                                Gui_NhapThongTinHanhTrinh formNhap = new Gui_NhapThongTinHanhTrinh();
+                                formNhap.setCallback(info -> {
+                                    // Tìm kiếm TRƯỚC để kiểm tra có kết quả không
+                                    dao.LichTrinh_DAO lichTrinhDAO = new dao.LichTrinh_DAO();
+                                    java.time.LocalDate ngayDi = info.getNgayDi().toInstant()
+                                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                                    java.util.List<entity.LichTrinh> ketQua = lichTrinhDAO.timLichTrinh(
+                                        info.getGaDi(), 
+                                        info.getGaDen(), 
+                                        ngayDi
+                                    );
+                                    
+                                    if (ketQua == null || ketQua.isEmpty()) {
+                                        // KHÔNG có kết quả → Hiện thông báo, GIỮ NGUYÊN form nhập
+                                        javax.swing.JOptionPane.showMessageDialog(formNhap,
+                                            "Không tìm thấy chuyến tàu nào phù hợp!\nVui lòng thử lại với thông tin khác.",
+                                            "Thông báo", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                                    } else {
+                                        // CÓ kết quả → Chuyển sang màn hình bán vé
+                                        Gui_BanVe guiBanVe = new Gui_BanVe(info);
+                                        main.showForm(guiBanVe);
+                                    }
+                                });
+                                main.showForm(formNhap);
                                 break;
                             case 1: // Trả Vé
                                 main.showForm(new Gui_TraVe());
@@ -173,7 +198,7 @@ public class Main extends javax.swing.JFrame {
         //  Init google icon font
         IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
         //  Start with this form
-        main.showForm(new Gui_Dasboard());
+        main.showForm(new Gui_Dashboard());
     }
 
     @SuppressWarnings("unchecked")
@@ -251,3 +276,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLayeredPane bg;
     // End of variables declaration//GEN-END:variables
 }
+
+
+
+
