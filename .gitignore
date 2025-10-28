@@ -1,40 +1,35 @@
-### IntelliJ IDEA
+# Build outputs
+build/
+dist/
+out/
+*.class
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# IDE
 .idea/
 *.iml
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### Eclipse (phòng hờ nếu ai đó dùng)
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### NetBeans / Ant
-/nbproject/private/
-/nbbuild/
-/nbdist/
-/dist/        # <- KHÔNG đẩy JAR build sẵn (giữ repo nhẹ)
-/.nb-gradle/
-
-### VS Code
+*.iws
 .vscode/
 
-### Java chung
-*.class
-*.log
-*.tmp
-
-### OS junk
+# OS
 .DS_Store
 Thumbs.db
 
-# Nếu có thư mục build ở gốc
-/build/
+# Logs
+*.log
+
+# Backup files
+*.bak
+*.tmp
+*~
+
+# Compiled files
+*.jar (except lib/)
+
+# Don't ignore lib folder
+!lib/*.jar
