@@ -817,7 +817,7 @@ public class Gui_BanVe extends javax.swing.JPanel {
         String soHieuTau = lt.getChuyenTau() != null ? lt.getChuyenTau().getSoHieuTau() : "SE1";
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String tgDi = lt.getGioKhoiHanh() != null ? lt.getGioKhoiHanh().format(formatter) : "N/A";
-        String tgDen = lt.getGioDenDuKien() != null ? lt.getGioDenDuKien().format(formatter) : "N/A";
+        String tgDen = lt.getGioDen() != null ? lt.getGioDen().format(formatter) : "N/A";
         
         tauItem.setData(soHieuTau, tgDi, tgDen);
         

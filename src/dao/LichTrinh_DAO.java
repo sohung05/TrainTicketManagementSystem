@@ -5,7 +5,8 @@
  */
 
 package dao;
-import connectDB.connectDB;
+
+import connectDB.connectDB;
 
 import entity.*;
 import java.sql.*;
@@ -184,7 +185,7 @@ public class LichTrinh_DAO {
             ps.setString(4, lt.getGaDi() != null ? lt.getGaDi().getMaGa() : null);
             ps.setString(5, lt.getGaDen() != null ? lt.getGaDen().getMaGa() : null);
             ps.setTimestamp(6, lt.getGioKhoiHanh() != null ? Timestamp.valueOf(lt.getGioKhoiHanh()) : null);
-            ps.setTimestamp(7, lt.getGioDenDuKien() != null ? Timestamp.valueOf(lt.getGioDenDuKien()) : null);
+            ps.setTimestamp(7, lt.getGioDen() != null ? Timestamp.valueOf(lt.getGioDen()) : null);
             ps.setBoolean(8, lt.isTrangThai());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -204,7 +205,7 @@ public class LichTrinh_DAO {
             ps.setString(3, lt.getGaDi() != null ? lt.getGaDi().getMaGa() : null);
             ps.setString(4, lt.getGaDen() != null ? lt.getGaDen().getMaGa() : null);
             ps.setTimestamp(5, lt.getGioKhoiHanh() != null ? Timestamp.valueOf(lt.getGioKhoiHanh()) : null);
-            ps.setTimestamp(6, lt.getGioDenDuKien() != null ? Timestamp.valueOf(lt.getGioDenDuKien()) : null);
+            ps.setTimestamp(6, lt.getGioDen() != null ? Timestamp.valueOf(lt.getGioDen()) : null);
             ps.setBoolean(7, lt.isTrangThai());
             ps.setString(8, lt.getMaLichTrinh());
             return ps.executeUpdate() > 0;
