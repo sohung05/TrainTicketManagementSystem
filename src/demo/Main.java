@@ -1,5 +1,6 @@
 package demo;
 
+import gui.*;
 import gui.menu.component.Header;
 import gui.menu.component.Menu;
 import gui.menu.event.EventMenuSelected;
@@ -16,16 +17,6 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
-import gui.Gui_BanVe;
-import gui.Gui_Dasboard;
-import gui.Gui_DoiVe;
-import gui.Gui_KhachHang;
-import gui.Gui_KhuyenMaiHoaDon;
-import gui.Gui_NhanVien;
-import gui.Gui_ThongKeDoanhThu;
-import gui.Gui_ThongKeLuotVe;
-import gui.Gui_TraVe;
-import gui.Gui_KhuyenMaiDoiTuong;
 
 
 public class Main extends javax.swing.JFrame {
@@ -55,7 +46,7 @@ public class Main extends javax.swing.JFrame {
                 switch (menuIndex) {
                     case 0: // Dashboard
                         if (subMenuIndex == 0 || subMenuIndex == -1) {
-                            main.showForm(new Gui_Dasboard());
+                            main.showForm(new Gui_Dashboard());
                         }
                         break;
                     case 1: // Vé
@@ -173,7 +164,7 @@ public class Main extends javax.swing.JFrame {
         //  Init google icon font
         IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
         //  Start with this form
-        main.showForm(new Gui_Dasboard());
+        main.showForm(new Gui_Dashboard());
     }
 
     @SuppressWarnings("unchecked")
