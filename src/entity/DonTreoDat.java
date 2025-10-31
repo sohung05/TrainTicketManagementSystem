@@ -100,11 +100,11 @@ public class DonTreoDat {
     }
     
     /**
-     * Kiểm tra đơn còn trong thời hạn 5 phút không
+     * Kiểm tra đơn còn trong thời hạn 15 phút không
      */
     public boolean conTrongThoiHan() {
         if (ngayLap == null) return false;
-        LocalDateTime thoiGianHetHan = ngayLap.plusMinutes(5);
+        LocalDateTime thoiGianHetHan = ngayLap.plusMinutes(15);
         return LocalDateTime.now().isBefore(thoiGianHetHan);
     }
     
@@ -113,7 +113,7 @@ public class DonTreoDat {
      */
     public long getSoGiayConLai() {
         if (ngayLap == null) return 0;
-        LocalDateTime thoiGianHetHan = ngayLap.plusMinutes(5);
+        LocalDateTime thoiGianHetHan = ngayLap.plusMinutes(15);
         long giay = java.time.Duration.between(LocalDateTime.now(), thoiGianHetHan).getSeconds();
         return giay > 0 ? giay : 0;
     }

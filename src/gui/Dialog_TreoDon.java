@@ -365,7 +365,7 @@ public class Dialog_TreoDon extends javax.swing.JDialog {
             return;
         }
         
-        // ⚡ GIA HẠN ghế giữ chỗ thêm 5 phút (tránh hết hạn trong lúc thanh toán)
+        // ⚡ GIA HẠN ghế giữ chỗ thêm 15 phút (tránh hết hạn trong lúc thanh toán)
         QuanLyGheGiuCho.giaHanGheCuaDonTreo(donCanXuLy.getMaDonTreo());
         
         // Ẩn Dialog Treo Đơn tạm thời (KHÔNG dispose ngay)

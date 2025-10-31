@@ -37,7 +37,7 @@ public class QuanLyDonTreo {
     }
     
     /**
-     * Xóa tất cả đơn đã hết hạn (> 5 phút)
+     * Xóa tất cả đơn đã hết hạn (> 15 phút)
      */
     public static void xoaDonHetHan() {
         List<DonTreoDat> donCanXoa = new ArrayList<>();

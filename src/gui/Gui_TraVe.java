@@ -138,21 +138,19 @@ public class Gui_TraVe extends javax.swing.JPanel {
         try {
             // Lấy thông tin từ bảng vé
             String maVe = modelVe.getValueAt(row, 0).toString();
+            String cccd = modelVe.getValueAt(row, 1).toString();
             String tenKhach = modelVe.getValueAt(row, 2).toString();
-            String loaiVe = modelVe.getValueAt(row, 3).toString();
-            String gaDi = modelVe.getValueAt(row, 4).toString();
-            String gaDen = modelVe.getValueAt(row, 5).toString();
-            String soHieuTau = modelVe.getValueAt(row, 6).toString();
-            String soToa = modelVe.getValueAt(row, 7).toString();
-            String viTri = modelVe.getValueAt(row, 8).toString();
-            String thoiGianLenTau = modelVe.getValueAt(row, 9).toString();
             String giaVe = modelVe.getValueAt(row, 10).toString();
             
-            // Hiển thị thông tin vé vào các text field (jTextField6-9)
+            // Hiển thị thông tin vé vào các text field
+            // jTextField6: Mã vé
+            // jTextField7: CCCD
+            // jTextField8: Họ tên
+            // jTextField9: Giá
             jTextField6.setText(maVe);
-            jTextField7.setText(tenKhach + " - " + loaiVe);
-            jTextField8.setText(gaDi + " → " + gaDen + " | Tàu " + soHieuTau + " | Toa " + soToa + " Ghế " + viTri);
-            jTextField9.setText(thoiGianLenTau + " | " + giaVe);
+            jTextField7.setText(cccd);
+            jTextField8.setText(tenKhach);
+            jTextField9.setText(giaVe);
             
             System.out.println("✅ Đã hiển thị thông tin vé: " + maVe);
         } catch (Exception e) {
@@ -868,10 +866,16 @@ public class Gui_TraVe extends javax.swing.JPanel {
                 }
             }
             
-            // 2. Cập nhật tổng tiền hóa đơn = 0 (vì đã trả hết vé)
+            // 2. Cập nhật tổng tiền hóa đơn (trừ số tiền hoàn lại)
             dao.HoaDon_DAO hdDAO = new dao.HoaDon_DAO();
-            hdDAO.updateTongTien(maHoaDon, 0); // Set tổng tiền = 0
-            System.out.println("✅ Đã set tổng tiền hóa đơn = 0");
+            double tongTienMoi = tongTienHoaDon - tongTienHoanLai; // Trừ số tiền hoàn lại
+            if (tongTienMoi < 0) tongTienMoi = 0; // Đảm bảo không âm
+            
+            hdDAO.updateTongTien(maHoaDon, tongTienMoi);
+            System.out.println("✅ Đã cập nhật tổng tiền hóa đơn: " + maHoaDon + 
+                " | Cũ: " + currencyFormat.format(tongTienHoaDon) + 
+                " | Mới: " + currencyFormat.format(tongTienMoi) +
+                " | Đã trừ: " + currencyFormat.format(tongTienHoanLai));
             
             // 3. Hiển thị thông báo thành công
             JOptionPane.showMessageDialog(this,
@@ -1003,15 +1007,25 @@ public class Gui_TraVe extends javax.swing.JPanel {
                 return;
             }
             
-            // 2. Lấy mã hóa đơn và cập nhật tổng tiền
+            // 2. Lấy mã hóa đơn và cập nhật tổng tiền (trừ số tiền hoàn lại)
             int hoaDonRow = jTable1.getSelectedRow();
             String maHoaDon = hoaDonRow >= 0 ? modelHoaDon.getValueAt(hoaDonRow, 0).toString() : null;
             
             if (maHoaDon != null) {
-                // Tính lại tổng tiền từ các vé còn lại (trangThai = 1)
+                // Lấy tổng tiền hiện tại của hóa đơn
                 dao.HoaDon_DAO hdDAO = new dao.HoaDon_DAO();
-                hdDAO.capNhatTongTien(maHoaDon);
-                System.out.println("✅ Đã cập nhật tổng tiền hóa đơn: " + maHoaDon);
+                entity.HoaDon hoaDon = hdDAO.findByMaHoaDon(maHoaDon);
+                if (hoaDon != null) {
+                    double tongTienCu = hoaDon.getTongTien();
+                    double tongTienMoi = tongTienCu - tienHoanLai; // Trừ số tiền hoàn lại
+                    if (tongTienMoi < 0) tongTienMoi = 0; // Đảm bảo không âm
+                    
+                    hdDAO.updateTongTien(maHoaDon, tongTienMoi);
+                    System.out.println("✅ Đã cập nhật tổng tiền hóa đơn: " + maHoaDon + 
+                        " | Cũ: " + currencyFormat.format(tongTienCu) + 
+                        " | Mới: " + currencyFormat.format(tongTienMoi) +
+                        " | Đã trừ: " + currencyFormat.format(tienHoanLai));
+                }
             }
             
             // 3. Hiển thị thông báo thành công

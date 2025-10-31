@@ -100,3 +100,8 @@ PRINT N'✅ HOÀN THÀNH! Bảng ChiTietKhuyenMai đã được sửa.';
 PRINT N'📝 Bây giờ có thể chạy lại script 03_InsertKhuyenMai.sql';
 GO
 
+
+
+
+
+

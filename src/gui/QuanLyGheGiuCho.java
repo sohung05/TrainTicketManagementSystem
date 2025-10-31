@@ -8,7 +8,7 @@ import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 /**
- * Quản lý danh sách ghế đang được giữ chỗ (5 phút)
+ * Quản lý danh sách ghế đang được giữ chỗ (15 phút)
  */
 public class QuanLyGheGiuCho {
     private static List<GheGiuCho> danhSachGheGiuCho = new ArrayList<>();
@@ -28,14 +28,14 @@ public class QuanLyGheGiuCho {
         GheGiuCho gheGiuCho = new GheGiuCho(maChoNgoi, maDonTreo, maLichTrinh);
         danhSachGheGiuCho.add(gheGiuCho);
         
-        // Tạo task tự động xóa sau 5 phút
+        // Tạo task tự động xóa sau 15 phút
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 xoaGheGiuCho(maChoNgoi, maLichTrinh);
                 System.out.println("Đã hết hạn giữ chỗ: " + maChoNgoi + " (Lịch trình: " + maLichTrinh + ")");
             }
-        }, 5 * 60 * 1000); // 5 phút = 5 * 60 * 1000 milliseconds
+        }, 15 * 60 * 1000); // 15 phút = 15 * 60 * 1000 milliseconds
     }
     
     /**
@@ -92,12 +92,12 @@ public class QuanLyGheGiuCho {
     }
     
     /**
-     * Gia hạn thời gian giữ chỗ cho các ghế của đơn treo (thêm 5 phút nữa)
+     * Gia hạn thời gian giữ chỗ cho các ghế của đơn treo (thêm 15 phút nữa)
      */
     public static void giaHanGheCuaDonTreo(String maDonTreo) {
         for (GheGiuCho ghe : danhSachGheGiuCho) {
             if (ghe.getMaDonTreo() != null && ghe.getMaDonTreo().equals(maDonTreo)) {
-                ghe.giaHanThoiGian(5); // Gia hạn thêm 5 phút
+                ghe.giaHanThoiGian(15); // Gia hạn thêm 15 phút
             }
         }
         System.out.println("✅ Đã gia hạn ghế giữ chỗ cho đơn: " + maDonTreo);

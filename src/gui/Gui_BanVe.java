@@ -1187,11 +1187,11 @@ public class Gui_BanVe extends javax.swing.JPanel {
                         btnGhe.setEnabled(false);
                         btnGhe.setBorder(BorderFactory.createLineBorder(new Color(200, 0, 0), 1));
                     } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi(), lt.getMaLichTrinh())) {
-                        // Ghế đang được giữ chỗ (5 phút) => màu VÀNG, không cho click
+                        // Ghế đang được giữ chỗ (15 phút) => màu VÀNG, không cho click
                         btnGhe.setBackground(new Color(255, 255, 0));
                         btnGhe.setEnabled(false);
                         btnGhe.setBorder(BorderFactory.createLineBorder(new Color(255, 204, 0), 2));
-                        btnGhe.setToolTipText("Ghế đang được giữ chỗ (5 phút)");
+                        btnGhe.setToolTipText("Ghế đang được giữ chỗ (15 phút)");
                     } else if (kiemTraGheDangDuocChon(choFinal)) {
                         // Ghế đang được chọn => màu xanh
                         btnGhe.setBackground(new Color(153, 204, 255));
@@ -1367,12 +1367,12 @@ public class Gui_BanVe extends javax.swing.JPanel {
             btn.setForeground(Color.WHITE);
             btn.setEnabled(false);
         } else if (dangGiuCho) {
-            // Ghế đang được giữ chỗ (5 phút) - màu VÀNG, disable
+            // Ghế đang được giữ chỗ (15 phút) - màu VÀNG, disable
             btn.setBackground(new Color(255, 255, 0));
             btn.setForeground(Color.BLACK);
             btn.setEnabled(false);
             btn.setBorder(BorderFactory.createLineBorder(new Color(255, 204, 0), 2));
-            btn.setToolTipText("Ghế đang được giữ chỗ (5 phút)");
+            btn.setToolTipText("Ghế đang được giữ chỗ (15 phút)");
         } else if (dangChon) {
             // Ghế đang chọn - màu xanh
             btn.setBackground(new Color(153, 204, 255));

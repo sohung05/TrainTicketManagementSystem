@@ -3,14 +3,14 @@ package entity;
 import java.time.LocalDateTime;
 
 /**
- * Entity để lưu thông tin ghế đang được giữ chỗ (5 phút)
+ * Entity để lưu thông tin ghế đang được giữ chỗ (15 phút)
  */
 public class GheGiuCho {
     private String maChoNgoi;
     private String maDonTreo;
     private String maLichTrinh; // ⚡ Thêm mã lịch trình (quan trọng với khứ hồi)
     private LocalDateTime thoiGianGiuCho;
-    private static final int PHUT_GIU_CHO = 5;
+    private static final int PHUT_GIU_CHO = 15;
     
     public GheGiuCho(String maChoNgoi, String maDonTreo) {
         this.maChoNgoi = maChoNgoi;

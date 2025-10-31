@@ -238,7 +238,7 @@ public class Main extends javax.swing.JFrame {
             System.exit(1);
         }
         
-        // ✅ Set session mặc định cho nhân viên admin (để test không cần login)
+        // Set session mặc định cho nhân viên admin (để test không cần login)
         entity.NhanVien nvAdmin = new entity.NhanVien();
         nvAdmin.setMaNhanVien("NV24030001");
         nvAdmin.setHoTen("Nguyễn Văn An");
