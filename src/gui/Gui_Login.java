@@ -183,93 +183,65 @@ public class Gui_Login extends javax.swing.JPanel {
         btnDangNhapActionPerformed(evt);
     }//GEN-LAST:event_txtMatKhauActionPerformed
 
-    private void btnDangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangNhapActionPerformed
+    private void btnDangNhapActionPerformed(java.awt.event.ActionEvent evt) {
         String tenTaiKhoan = txtTaiKhoan.getText().trim();
-        String matKhau = txtMatKhau.getText();
-        
-        // Validate input
+        String matKhau = txtMatKhau.getText(); // Lưu ý: Nếu dùng JPasswordField nên dùng getPassword()
+
+        // 1. Validate dữ liệu
         if (tenTaiKhoan.isEmpty() || matKhau.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Vui lòng nhập đầy đủ tài khoản và mật khẩu!", 
-                "Lỗi", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        // Kiểm tra kết nối database
+
+        // 2. Kiểm tra DB
         if (connectDB.getConnection() == null) {
-            JOptionPane.showMessageDialog(this, 
-                "Không thể kết nối đến cơ sở dữ liệu!", 
-                "Lỗi", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Mất kết nối cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        // Đăng nhập
+
+        // 3. Thực hiện đăng nhập
         TaiKhoan tk = taiKhoanDAO.dangNhap(tenTaiKhoan, matKhau);
-        
+
         if (tk != null) {
-            // Lấy thông tin nhân viên
+            // Lấy thông tin nhân viên từ mã nhân viên trong tài khoản
             NhanVien nv = nhanVienDAO.getById(tk.getMaNhanVien());
-            
+
             if (nv != null) {
-                // Set session
+                // --- QUAN TRỌNG: Lưu vào Session ---
                 SessionManager.getInstance().setNhanVienDangNhap(nv);
-                
-                System.out.println("✅ Đăng nhập thành công!");
-                System.out.println("✅ Nhân viên: " + nv.getMaNhanVien() + " - " + nv.getHoTen());
-                
-                // Lấy reference đến loginFrame trước
-                final JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                
-                // Mở Main (JFrame) TRƯỚC, rồi mới đóng loginFrame
-                SwingUtilities.invokeLater(() -> {
-                    try {
-                        System.out.println("🔄 Đang tạo Main (JFrame)...");
-                        demo.Main mainFrame = new demo.Main();
-                        
-                        System.out.println("🔄 Đang hiển thị Main...");
-                        mainFrame.setVisible(true);
-                        
-                        System.out.println("✅ Main đã visible!");
-                        
-                        // Đợi một chút để Main hoàn toàn hiển thị
-                        Timer timer = new Timer(100, e -> {
-                            if (loginFrame != null) {
-                                System.out.println("🔄 Đang đóng LoginFrame...");
-                                loginFrame.setVisible(false);
-                                loginFrame.dispose();
-                                System.out.println("✅ Đã đóng LoginFrame");
-                            }
-                        });
-                        timer.setRepeats(false);
-                        timer.start();
-                        
-                    } catch (Exception ex) {
-                        System.err.println("❌ Lỗi khi mở Main:");
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, 
-                            "Lỗi khi mở giao diện chính: " + ex.getMessage(), 
-                            "Lỗi", 
-                            JOptionPane.ERROR_MESSAGE);
-                    }
-                });
-                
+
+                // Mở màn hình chính
+                openMainFrame();
             } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Không tìm thấy thông tin nhân viên!", 
-                    "Lỗi", 
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Tài khoản không liên kết với nhân viên nào!", "Lỗi dữ liệu", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(this, 
-                "Tài khoản hoặc mật khẩu không đúng!", 
-                "Lỗi đăng nhập", 
-                JOptionPane.ERROR_MESSAGE);
-            txtMatKhau.setText("");
+            JOptionPane.showMessageDialog(this, "Sai tên tài khoản hoặc mật khẩu!", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
             txtMatKhau.requestFocus();
         }
-    }//GEN-LAST:event_btnDangNhapActionPerformed
+    }
+
+    private void openMainFrame() {
+        // Lấy cửa sổ Login hiện tại để đóng sau này
+        Window loginWindow = SwingUtilities.getWindowAncestor(this);
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Khởi tạo màn hình chính
+                // Giả sử class Main của bạn nằm trong package demo
+                demo.Main mainFrame = new demo.Main();
+                mainFrame.setVisible(true);
+
+                // Đóng màn hình đăng nhập
+                if (loginWindow != null) {
+                    loginWindow.dispose();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khởi tạo màn hình chính: " + e.getMessage());
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDangNhap;
