@@ -8,7 +8,7 @@ public class connectDB {
     private static Connection con = null;
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=HTQLVT;encrypt=false;trustServerCertificate=true;";
     private static final String USER = "sa";
-    private static final String PASSWORD = "sapassword";
+    private static final String PASSWORD = "123456789";
 
     public static Connection getConnection() {
         try {

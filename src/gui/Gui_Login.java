@@ -30,7 +30,7 @@ public class Gui_Login extends javax.swing.JPanel {
         initComponents();
         taiKhoanDAO = new TaiKhoan_DAO();
         nhanVienDAO = new NhanVien_DAO();
-        
+
         // Thêm MouseListener cho icon đóng
         lblOut.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lblOut.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -39,7 +39,7 @@ public class Gui_Login extends javax.swing.JPanel {
                 System.exit(0);
             }
         });
-    }
+  }
 
     /**
      * This method is called from within the constructor to initialize the form.
