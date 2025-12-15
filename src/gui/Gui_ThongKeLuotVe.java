@@ -10,6 +10,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -17,9 +18,11 @@ import java.awt.*;
 public class Gui_ThongKeLuotVe extends JPanel {
 
     // CARD THỐNG KÊ
+
     private JLabel lblKhach, lblSoVe, lblChuyen;
     private JTable table;
     private DefaultTableModel tableModel;
+
 
     // ComboBox lọc
     private JComboBox<String> cbThang, cbNam;
@@ -61,6 +64,7 @@ public class Gui_ThongKeLuotVe extends JPanel {
 
     private JLabel createStatCard(String title, String value, Color bg, Color textColor) {
 
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(bg);
         panel.setBorder(BorderFactory.createCompoundBorder(
@@ -68,6 +72,7 @@ public class Gui_ThongKeLuotVe extends JPanel {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         panel.setPreferredSize(new Dimension(170, 70));
+
 
         JLabel lblTitle = new JLabel(title);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 14));
@@ -192,5 +197,6 @@ public class Gui_ThongKeLuotVe extends JPanel {
         panel.add(chartPanel, BorderLayout.CENTER);
         return panel;
     }
+
 
 }

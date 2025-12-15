@@ -11,6 +11,11 @@ public class KhachHang {
     public KhachHang() {
     }
 
+    // Constructor dành cho load Hóa Đơn, Thống kê,...
+    public KhachHang(String maKH) {
+        this.maKH = maKH;
+    }
+
     public KhachHang(String maKH, String CCCD, String hoTen, String email, String SDT, String doiTuong) {
         this.maKH = maKH;
         this.CCCD = CCCD;

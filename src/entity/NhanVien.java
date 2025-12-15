@@ -9,13 +9,18 @@ public class NhanVien {
     private String SDT;
     private String email;
     private String diaChi;
-    private int chucVu;  // ✅ Đổi từ loaiNV String → chucVu int
+    private int chucVu;
     private boolean trangThai;
     private LocalDate ngaySinh;
     private LocalDate ngayVaoLam;
     private String gioiTinh;
 
     public NhanVien() {
+    }
+
+    // ⬅️ Constructor thiếu khiến bạn bị lỗi — đã bổ sung
+    public NhanVien(String maNhanVien) {
+        this.maNhanVien = maNhanVien;
     }
 
     public NhanVien(String maNhanVien, String CCCD, String hoTen, String SDT,
@@ -27,7 +32,7 @@ public class NhanVien {
         this.SDT = SDT;
         this.email = email;
         this.diaChi = diaChi;
-        this.chucVu = chucVu;  // ✅ Đổi từ loaiNV → chucVu
+        this.chucVu = chucVu;
         this.trangThai = trangThai;
         this.ngaySinh = ngaySinh;
         this.ngayVaoLam = ngayVaoLam;

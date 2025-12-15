@@ -1,6 +1,8 @@
 package gui;
 
+
 import com.toedter.calendar.JDateChooser;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -11,6 +13,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+
 
 public class Gui_ThongKeDoanhThu extends JPanel {
 
@@ -160,5 +163,6 @@ public class Gui_ThongKeDoanhThu extends JPanel {
         statsPanel.add(scrollPane, BorderLayout.CENTER);
 
         return statsPanel;
+
     }
 }

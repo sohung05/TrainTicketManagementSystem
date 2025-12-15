@@ -322,6 +322,7 @@ public class Dashboard_DAO {
         return data;
     }
 
+
     public int getSoVeBanMotThang(int thang, int nam) {
         int soVe = 0;
         Connection con = connectDB.getConnection();
@@ -519,6 +520,7 @@ public class Dashboard_DAO {
         int namNay = now.getYear();
         int thangTruoc = thangNay == 1 ? 12 : thangNay - 1;
         int namTruoc = thangNay == 1 ? namNay - 1 : namNay;
+
 
         try (Connection con = connectDB.getConnection();
              PreparedStatement pst1 = con.prepareStatement(sqlThangNay);

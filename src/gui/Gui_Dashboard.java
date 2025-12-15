@@ -8,16 +8,19 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
+
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.Locale;
+
 import java.util.Map;
 
 // JFreeChart
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
@@ -25,6 +28,7 @@ import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
+
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.AreaRenderer;
@@ -39,7 +43,9 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public class Gui_Dashboard extends JPanel {
 
+
     private JLabel lblDoanhThu, lblSoVe, lblKhachHang;
+
     private Dashboard_DAO dashboardDAO;
     private JPanel panelChart;
 
@@ -48,12 +54,16 @@ public class Gui_Dashboard extends JPanel {
         connectDB.getConnection();
         dashboardDAO = new Dashboard_DAO();
 
+
         // ================= PANEL THỐNG KÊ =================
+
         JPanel panelStats = new JPanel(new GridLayout(1, 4, 20, 10));
         panelStats.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panelStats.setBackground(Color.WHITE);
 
+
         lblDoanhThu = createStatCard("Tổng doanh thu", "0",
+
                 new Color(230, 244, 234), new Color(46, 125, 50));
         lblSoVe = createStatCard("Vé đã bán", "0",
                 new Color(227, 242, 253), new Color(21, 101, 192));
@@ -61,11 +71,14 @@ public class Gui_Dashboard extends JPanel {
                 new Color(255, 248, 225), new Color(245, 124, 0));
 
 
+
         panelStats.add(lblDoanhThu.getParent());
         panelStats.add(lblSoVe.getParent());
         panelStats.add(lblKhachHang.getParent());
 
+
         panelChart = new JPanel(new BorderLayout(20, 0));
+
         panelChart.setPreferredSize(new Dimension(900, 350));
         panelChart.setBackground(Color.WHITE);
         panelChart.setBorder(BorderFactory.createTitledBorder("Thống kê tổng quan"));
@@ -76,6 +89,7 @@ public class Gui_Dashboard extends JPanel {
         SwingUtilities.invokeLater(this::loadData);
     }
 
+
     // ================= LOAD DATA =================
     private void loadData() {
         Map<String, Double> thongKe = dashboardDAO.getThongKeTongQuan();
@@ -83,6 +97,7 @@ public class Gui_Dashboard extends JPanel {
         lblDoanhThu.setText(String.format("%+.1f %% so với tháng trước", thongKe.getOrDefault("doanhThu", 0.0)));
         lblSoVe.setText(String.format("%+.1f %% so với tháng trước", thongKe.getOrDefault("ptVeBan", 0.0)));
         lblKhachHang.setText(String.format("%+.0f khách hàng mới ", thongKe.getOrDefault("ptKhachHang", 0.0)));
+
 
         loadChart();
     }
@@ -100,7 +115,11 @@ public class Gui_Dashboard extends JPanel {
     }
 
 
+    //=================================================================
+    //  LOAD BIỂU ĐỒ ĐÃ SỬA ĐẸP HƠN
+    //=================================================================
     private void loadChart() {
+
         int nam = LocalDate.now().getYear();
         LocalDate today = LocalDate.now();
 
@@ -117,7 +136,9 @@ public class Gui_Dashboard extends JPanel {
         for (int thang = 1; thang <= 12; thang++) {
             doanhThuDataset.addValue(doanhThuTheoThang.getOrDefault(thang, 0.0), "Doanh thu", String.valueOf(thang));
             soVeDataset.addValue(soVeTheoThang.getOrDefault(thang, 0), "Số vé", String.valueOf(thang));
+
         }
+
 
         // ================= COMBO CHART (BAR + LINE) =================
         JFreeChart comboChart = ChartFactory.createBarChart(
@@ -341,6 +362,7 @@ public class Gui_Dashboard extends JPanel {
         return table;
     }
 
+
     private JPanel createPieChartPanel(double ban, double tra) {
         DefaultPieDataset dataset = new DefaultPieDataset();
         dataset.setValue("Vé đã bán", ban);
@@ -354,10 +376,12 @@ public class Gui_Dashboard extends JPanel {
         ChartPanel panel = new ChartPanel(chart);
         panel.setPreferredSize(new Dimension(400, 300));
 
+
         JPanel wrap = new JPanel(new BorderLayout());
         wrap.setBackground(Color.WHITE);
         wrap.add(panel);
         return wrap;
+
     }
 
 }
