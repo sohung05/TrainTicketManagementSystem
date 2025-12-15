@@ -16,6 +16,7 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.AreaRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
@@ -72,98 +73,99 @@ public class Gui_Dashboard extends JPanel {
     }
 
     //=================================================================
-    //  LOAD BIỂU ĐỒ ĐÃ SỬA ĐẸP HƠN
+    //  LOAD BIỂU ĐỒ
     //=================================================================
     private void loadChart() {
         try {
             int nam = LocalDate.now().getYear();
             LocalDate today = LocalDate.now();
 
-            // ========================= BIỂU ĐỒ 1 =========================
+            // ================= BIỂU ĐỒ MIỀN: DOANH THU =================
             Map<Integer, Double> doanhThuTheoThang = dashboardDAO.getDoanhThuTheoThang(nam);
 
-            DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
+            DefaultCategoryDataset areaDataset = new DefaultCategoryDataset();
             for (int thang = 1; thang <= 12; thang++) {
-                barDataset.addValue(doanhThuTheoThang.getOrDefault(thang, 0.0),
-                        "Tổng tiền", "" + thang);
+                areaDataset.addValue(
+                        doanhThuTheoThang.getOrDefault(thang, 0.0),
+                        "Doanh thu",
+                        String.valueOf(thang)
+                );
             }
 
-            JFreeChart barChart1 = ChartFactory.createBarChart(
+            JFreeChart areaChart = ChartFactory.createAreaChart(
                     "Doanh thu theo tháng " + nam,
                     "Tháng",
                     "Doanh thu (VND)",
-                    barDataset, PlotOrientation.VERTICAL,
-                    false, true, false
+                    areaDataset,
+                    PlotOrientation.VERTICAL,
+                    false,
+                    true,
+                    false
             );
 
-            CategoryPlot plot1 = barChart1.getCategoryPlot();
-            plot1.setBackgroundPaint(Color.WHITE);
-            plot1.setRangeGridlinePaint(Color.GRAY);
+            CategoryPlot areaPlot = areaChart.getCategoryPlot();
+            areaPlot.setBackgroundPaint(Color.WHITE);
+            areaPlot.setRangeGridlinePaint(Color.GRAY);
 
-            BarRenderer renderer1 = (BarRenderer) plot1.getRenderer();
-            renderer1.setSeriesPaint(0, new Color(79, 129, 189));
-            renderer1.setBarPainter(new BarRenderer().getBarPainter()); // làm cột thẳng
-            renderer1.setShadowVisible(false); // bỏ bóng
+            AreaRenderer areaRenderer = (AreaRenderer) areaPlot.getRenderer();
+            areaRenderer.setSeriesPaint(0, new Color(79, 129, 189, 160));
 
-            ChartPanel barChartPanel1 = new ChartPanel(barChart1);
-            barChartPanel1.setPreferredSize(new Dimension(800, 250));
+            ChartPanel areaChartPanel = new ChartPanel(areaChart);
+            areaChartPanel.setPreferredSize(new Dimension(800, 250));
 
-            JPanel legendThang = createLegend(new Color(79, 129, 189), "Tổng tiền");
+            // ================= BIỂU ĐỒ CỘT: SỐ CHUYẾN =================
+            Map<Integer, Integer> soChuyenTheoNgay =
+                    dashboardDAO.getSoChuyenTrongNgay(today);
 
-            // ========================= BIỂU ĐỒ 2 =========================
-            Map<Integer, Integer> soChuyenTheoNgay = dashboardDAO.getSoChuyenTrongNgay(today);
-
-            DefaultCategoryDataset barDataset2 = new DefaultCategoryDataset();
+            DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
             for (int day = 1; day <= 31; day++) {
-                barDataset2.addValue(
+                barDataset.addValue(
                         soChuyenTheoNgay.getOrDefault(day, 0),
                         "Số chuyến",
                         String.valueOf(day)
                 );
             }
 
-            JFreeChart barChart2 = ChartFactory.createBarChart(
+            JFreeChart barChart = ChartFactory.createBarChart(
                     "Số chuyến theo ngày trong tháng " + today.getMonthValue(),
-                    "Ngày", "Số chuyến",
-                    barDataset2,
+                    "Ngày",
+                    "Số chuyến",
+                    barDataset,
                     PlotOrientation.VERTICAL,
-                    false, true, false
+                    false,
+                    true,
+                    false
             );
 
-            CategoryPlot plot2 = barChart2.getCategoryPlot();
-            plot2.setBackgroundPaint(Color.WHITE);
-            plot2.setRangeGridlinePaint(Color.GRAY);
+            CategoryPlot barPlot = barChart.getCategoryPlot();
+            barPlot.setBackgroundPaint(Color.WHITE);
+            barPlot.setRangeGridlinePaint(Color.GRAY);
 
-            BarRenderer renderer2 = (BarRenderer) plot2.getRenderer();
-            renderer2.setSeriesPaint(0, new Color(255, 140, 0));
-            renderer2.setBarPainter(new BarRenderer().getBarPainter());
-            renderer2.setShadowVisible(false);
+            BarRenderer barRenderer = (BarRenderer) barPlot.getRenderer();
+            barRenderer.setSeriesPaint(0, new Color(255, 140, 0));
+            barRenderer.setShadowVisible(false);
 
-            ChartPanel barChartPanel2 = new ChartPanel(barChart2);
-            barChartPanel2.setPreferredSize(new Dimension(800, 250));
+            ChartPanel barChartPanel = new ChartPanel(barChart);
+            barChartPanel.setPreferredSize(new Dimension(800, 250));
 
-            JPanel legendNgay = createLegend(new Color(255, 140, 0), "Chuyến");
-
-            JPanel leftChartsPanel = new JPanel();
-            leftChartsPanel.setLayout(new BoxLayout(leftChartsPanel, BoxLayout.Y_AXIS));
-            leftChartsPanel.setBackground(Color.WHITE);
-
-            leftChartsPanel.add(barChartPanel1);
-            leftChartsPanel.add(legendThang);
-            leftChartsPanel.add(Box.createVerticalStrut(10));
-            leftChartsPanel.add(barChartPanel2);
-            leftChartsPanel.add(legendNgay);
-
-            // ====================== BIỂU ĐỒ TRÒN ======================
+            // ================= BIỂU ĐỒ TRÒN =================
             Map<String, Double> thongKe = dashboardDAO.getThongKeTongQuan();
             double soVeBan = thongKe.getOrDefault("soVeBan", 0.0);
             double soVeTra = thongKe.getOrDefault("soVeTra", 0.0);
 
             JPanel piePanel = createPieChartPanel(soVeBan, soVeTra);
 
+            // ================= GHÉP GIAO DIỆN =================
+            JPanel leftPanel = new JPanel();
+            leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+            leftPanel.setBackground(Color.WHITE);
+            leftPanel.add(areaChartPanel);
+            leftPanel.add(Box.createVerticalStrut(10));
+            leftPanel.add(barChartPanel);
+
             panelChart.removeAll();
             panelChart.setLayout(new BorderLayout(20, 0));
-            panelChart.add(leftChartsPanel, BorderLayout.WEST);
+            panelChart.add(leftPanel, BorderLayout.WEST);
             panelChart.add(piePanel, BorderLayout.CENTER);
 
             panelChart.revalidate();
@@ -172,26 +174,6 @@ public class Gui_Dashboard extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    //=================================================================
-    private JPanel createLegend(Color color, String text) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
-        panel.setOpaque(false);
-
-        JLabel colorBox = new JLabel();
-        colorBox.setPreferredSize(new Dimension(14, 14));
-        colorBox.setOpaque(true);
-        colorBox.setBackground(color);
-        colorBox.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-
-        panel.add(colorBox);
-        panel.add(label);
-
-        return panel;
     }
 
     //=================================================================

@@ -221,8 +221,10 @@ public class Gui_ThongKeDoanhThu extends JPanel {
             int day = hd.getNgayTao().getDayOfMonth();
 
             double sum = hd.getDanhSachChiTiet().stream()
+                    .filter(ct -> ct.getMucGiam() >= 0) // loại vé trả
                     .mapToDouble(ChiTietHoaDon::tinhThanhTien)
                     .sum();
+
 
             double old = dataset.getValue("Doanh thu", String.valueOf(day)).doubleValue();
             dataset.setValue(old + sum, "Doanh thu", String.valueOf(day));
