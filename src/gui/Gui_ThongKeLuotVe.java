@@ -1,8 +1,6 @@
 package gui;
 
 import com.toedter.calendar.JDateChooser;
-import dao.ThongKeLuotVe_DAO;
-import entity.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -12,27 +10,23 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Gui_ThongKeLuotVe extends JPanel {
+
+    // CARD THỐNG KÊ
 
     private JLabel lblKhach, lblSoVe, lblChuyen;
     private JTable table;
     private DefaultTableModel tableModel;
 
+
+    // ComboBox lọc
     private JComboBox<String> cbThang, cbNam;
     private JButton btnLoc;
-
-    // DAO
-    private ThongKeLuotVe_DAO thongKeDao = new ThongKeLuotVe_DAO();
-
-    // Lưu panel biểu đồ để refresh
-    private JPanel pieChartPanel;
-    private JPanel barChartPanel;
 
     public Gui_ThongKeLuotVe() {
         setLayout(new BorderLayout());
@@ -43,16 +37,55 @@ public class Gui_ThongKeLuotVe extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(Color.WHITE);
 
-        centerPanel.add(createObjectStatsPanel(), BorderLayout.NORTH);
-        centerPanel.add(createDailyChartPanel(), BorderLayout.CENTER);
+        centerPanel.add(createObjectStatsPanel(), BorderLayout.CENTER);
+        centerPanel.add(createDailyChartPanel(), BorderLayout.SOUTH);
 
         add(centerPanel, BorderLayout.CENTER);
+    }
 
-        // Gắn action
-        btnLoc.addActionListener(e -> loadData());
+    private JPanel createStatCardsPanel() {
+        JPanel panelStats = new JPanel();
+        panelStats.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        panelStats.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panelStats.setBackground(Color.WHITE);
 
-        // Load mặc định
-        loadData();
+        Color textGray = new Color(60, 60, 60);
+
+        lblKhach = createStatCard("Tổng lượng khách", "0", Color.WHITE, textGray);
+        lblSoVe = createStatCard("Tổng số vé đã đặt", "0", Color.WHITE, textGray);
+        lblChuyen = createStatCard("Tổng số chuyến", "0", Color.WHITE, textGray);
+
+        panelStats.add(lblKhach.getParent());
+        panelStats.add(lblSoVe.getParent());
+        panelStats.add(lblChuyen.getParent());
+
+        return panelStats;
+    }
+
+    private JLabel createStatCard(String title, String value, Color bg, Color textColor) {
+
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(bg);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        panel.setPreferredSize(new Dimension(170, 70));
+
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 14));
+        lblTitle.setForeground(textColor);
+
+        JLabel lblValue = new JLabel(value);
+        lblValue.setFont(new Font("Arial", Font.BOLD, 24));
+        lblValue.setForeground(textColor);
+
+        panel.add(lblTitle, BorderLayout.NORTH);
+        panel.add(lblValue, BorderLayout.CENTER);
+
+        return lblValue;
     }
 
     // =================== PANEL LỌC ===================
@@ -79,226 +112,91 @@ public class Gui_ThongKeLuotVe extends JPanel {
         return p;
     }
 
-    // =================== STAT CARDS + TABLE + PIE ===================
     private JPanel createObjectStatsPanel() {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
-        // ========== LEFT COLUMN ==========
+        // ======================= CỘT TRÁI =======================
         JPanel leftColumn = new JPanel(new BorderLayout());
         leftColumn.setBackground(Color.WHITE);
         leftColumn.setPreferredSize(new Dimension(550, 300));
 
-        // 3 cards
+        // 3 CARD
         JPanel cards = createStatCardsPanel();
         leftColumn.add(cards, BorderLayout.NORTH);
 
-        // Table
+        // Tạo bảng
         String[] cols = {"Chuyến", "Số lượt đi"};
         tableModel = new DefaultTableModel(cols, 0);
         table = new JTable(tableModel);
 
+// Tạo JScrollPane và đặt border với tiêu đề
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(550, 230));
         scrollPane.setBorder(BorderFactory.createTitledBorder("Chuyến đi nhiều nhất trong tháng"));
+// Thêm vào panel
         leftColumn.add(scrollPane, BorderLayout.CENTER);
 
-        // ========== RIGHT COLUMN - PIE CHART ==========
-        pieChartPanel = new JPanel(new BorderLayout());
-        pieChartPanel.setPreferredSize(new Dimension(420, 300));
-        pieChartPanel.setBackground(Color.WHITE);
 
-        // Gắn rỗng trước, loadData sẽ render biểu đồ thật
-        pieChartPanel.add(new JLabel("Đang tải..."), BorderLayout.CENTER);
+        // ======================= CỘT PHẢI =======================
+        JPanel rightColumn = new JPanel(new BorderLayout());
+        rightColumn.setBackground(Color.WHITE);
+        rightColumn.setPreferredSize(new Dimension(420, 300));
 
+        // Pie chart
+        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        JFreeChart pieChart = ChartFactory.createPieChart(
+                "Tỉ lệ khách hàng theo đối tượng - Tháng 12/2025",
+                pieDataset,
+                true, false, false
+        );
+
+        org.jfree.chart.plot.PiePlot piePlot = (org.jfree.chart.plot.PiePlot) pieChart.getPlot();
+        piePlot.setBackgroundPaint(Color.WHITE); // nền vùng hiển thị Pie
+
+        ChartPanel chartPanel = new ChartPanel(pieChart);
+        chartPanel.setBackground(Color.WHITE);   // nền toàn bộ chart panel
+        rightColumn.add(chartPanel, BorderLayout.CENTER);
+
+        // ======================= THÊM VÀO MAIN =======================
         mainPanel.add(leftColumn, BorderLayout.WEST);
-        mainPanel.add(pieChartPanel, BorderLayout.CENTER);
+        mainPanel.add(rightColumn, BorderLayout.CENTER);
 
         return mainPanel;
     }
 
-    private JPanel createStatCardsPanel() {
-        JPanel panelStats = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        panelStats.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelStats.setBackground(Color.WHITE);
 
-        Color textGray = new Color(60, 60, 60);
-
-        lblKhach = createStatCard("Tổng lượng khách", "0", Color.WHITE, textGray);
-        lblSoVe = createStatCard("Tổng số vé đã đặt", "0", Color.WHITE, textGray);
-        lblChuyen = createStatCard("Tổng số chuyến", "0", Color.WHITE, textGray);
-
-        panelStats.add(lblKhach.getParent());
-        panelStats.add(lblSoVe.getParent());
-        panelStats.add(lblChuyen.getParent());
-
-        return panelStats;
-    }
-
-    private JLabel createStatCard(String title, String value, Color bg, Color textColor) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(bg);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-        panel.setPreferredSize(new Dimension(170, 70));
-
-        JLabel lblTitle = new JLabel(title);
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 14));
-        lblTitle.setForeground(textColor);
-
-        JLabel lblValue = new JLabel(value);
-        lblValue.setFont(new Font("Arial", Font.BOLD, 24));
-        lblValue.setForeground(textColor);
-
-        panel.add(lblTitle, BorderLayout.NORTH);
-        panel.add(lblValue, BorderLayout.CENTER);
-
-        return lblValue;
-    }
-
-    // =================== DAILY BAR CHART ===================
+    // =================== BAR CHART THEO NGÀY ===================
     private JPanel createDailyChartPanel() {
-        barChartPanel = new JPanel(new BorderLayout());
-        barChartPanel.setBackground(Color.WHITE);
-        barChartPanel.setPreferredSize(new Dimension(1000, 330));
-
-        barChartPanel.add(new JLabel("Đang tải..."), BorderLayout.CENTER);
-
-        return barChartPanel;
-    }
-
-    // =================== LOAD DATA CHÍNH ===================
-    private void loadData() {
-
-        int thang = Integer.parseInt(cbThang.getSelectedItem().toString());
-        int nam = Integer.parseInt(cbNam.getSelectedItem().toString());
-
-        // Cards
-        lblKhach.setText(String.valueOf(thongKeDao.getTongLuotKhach(thang, nam)));
-        lblSoVe.setText(String.valueOf(thongKeDao.getTongSoVe(thang, nam)));
-        lblChuyen.setText(String.valueOf(thongKeDao.getTongSoTuyen(thang, nam)));
-
-        // Table
-        tableModel.setRowCount(0);
-        for (Object[] row : thongKeDao.getTuyenNhieuNhatTrongThang(thang, nam)) {
-            tableModel.addRow(row);
-        }
-
-        // Pie
-        loadPieChart(thang, nam);
-
-        // Bar
-        loadBarChart(thang, nam);
-    }
-
-    // =================== PIE CHART ===================
-    private void loadPieChart(int thang, int nam) {
-        pieChartPanel.removeAll();
-
-        Map<DoiTuong, Integer> map = thongKeDao.getTiLeKhachHangTheoDoiTuong(thang, nam);
-
-        DefaultPieDataset dataset = new DefaultPieDataset();
-
-        // Chỉ add những đối tượng có số lượng > 0
-        for (var e : map.entrySet()) {
-            if (e.getValue() > 0) {
-                dataset.setValue(e.getKey().toString(), e.getValue());
-            }
-        }
-
-        JFreeChart pieChart = ChartFactory.createPieChart(
-                "Tỉ lệ khách hàng theo đối tượng - " + thang + "/" + nam,
-                dataset,
-                true, true, false
-        );
-
-        // =================== LÀM ĐẸP BIỂU ĐỒ ===================
-        var plot = (org.jfree.chart.plot.PiePlot) pieChart.getPlot();
-
-        plot.setBackgroundPaint(Color.WHITE);
-
-        // Hiển thị % trên lát
-        plot.setLabelGenerator(
-                new org.jfree.chart.labels.StandardPieSectionLabelGenerator(
-                        "{0}: {2}" // {2} = phần trăm
-                )
-        );
-
-        plot.setLabelFont(new Font("Arial", Font.BOLD, 12));
-        plot.setCircular(true);
-        plot.setLabelBackgroundPaint(new Color(255, 255, 255));
-        plot.setLabelOutlinePaint(Color.GRAY);
-        plot.setLabelShadowPaint(null);
-
-        // Border
-        plot.setOutlineVisible(false);
-
-        // =================== MÀU SẮC ĐẸP ===================
-        Color[] colors = {
-                new Color(72, 149, 239),   // Xanh dương
-                new Color(255, 159, 67),   // Cam
-                new Color(255, 105, 98),   // Đỏ hồng
-                new Color(120, 224, 143),  // Xanh lá
-                new Color(162, 155, 254)   // Tím
-        };
-
-        int i = 0;
-        for (Object key : dataset.getKeys()) {
-            plot.setSectionPaint((Comparable) key, colors[i % colors.length]);
-            i++;
-        }
-
-        // =================== PANEL ===================
-        ChartPanel chartPanel = new ChartPanel(pieChart);
-        chartPanel.setBackground(Color.WHITE);
-        chartPanel.setMouseWheelEnabled(true);
-
-        pieChartPanel.add(chartPanel, BorderLayout.CENTER);
-        pieChartPanel.revalidate();
-        pieChartPanel.repaint();
-    }
-
-    // =================== BAR CHART ===================
-    private void loadBarChart(int thang, int nam) {
-        barChartPanel.removeAll();
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        Map<Integer, Integer> map = new HashMap<>();
 
-        List<HoaDon> ds = thongKeDao.loadHoaDonTheoThangNam(thang, nam);
-
-        for (HoaDon hd : ds) {
-            if (hd.getNgayTao() == null) continue;
-            int day = hd.getNgayTao().getDayOfMonth();
-
-            int so = hd.getDanhSachChiTiet().stream()
-                    .mapToInt(ChiTietHoaDon::getSoLuong)
-                    .sum();
-
-            map.put(day, map.getOrDefault(day, 0) + so);
-        }
-
-        for (int i = 1; i <= 31; i++) {
-            dataset.addValue(map.getOrDefault(i, 0), "Số vé", String.valueOf(i));
+        // Thêm 31 ngày vào trục X với giá trị 0 tạm thời
+        for (int day = 1; day <= 31; day++) {
+            dataset.addValue(0, "Số lượt vé", String.valueOf(day));
         }
 
         JFreeChart barChart = ChartFactory.createBarChart(
-                "Thống kê lượt vé theo ngày - " + thang + "/" + nam,
+                "Thống kê lượt vé theo ngày - Tháng 12/2025",
                 "Ngày",
                 "Số lượt vé",
                 dataset
         );
+        barChart.setBackgroundPaint(Color.WHITE);
 
+        // Lấy plot để chỉnh nền vùng hiển thị cột
         CategoryPlot plot = barChart.getCategoryPlot();
-        plot.setBackgroundPaint(Color.WHITE);
+        plot.setBackgroundPaint(Color.WHITE);      // nền vùng cột
         plot.setRangeGridlinePaint(Color.GRAY);
-
         ChartPanel chartPanel = new ChartPanel(barChart);
+        chartPanel.setPreferredSize(new Dimension(1000, 300));
 
-        barChartPanel.add(chartPanel, BorderLayout.CENTER);
-        barChartPanel.revalidate();
-        barChartPanel.repaint();
+        panel.add(chartPanel, BorderLayout.CENTER);
+        return panel;
     }
+
+
 }

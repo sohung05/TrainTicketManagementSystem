@@ -8,6 +8,7 @@ package dao;
  */
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import entity.KhuyenMai;
@@ -16,61 +17,7 @@ import entity.DoiTuong;
 import connectDB.connectDB;
 
 public class KhuyenMaiDoiTuong_DAO {
-    /**
-     * 🔹 Lấy toàn bộ danh sách khuyến mãi - khách hàng (tất cả đối tượng)
-     */
-    public List<Object[]> getTatCaKhuyenMaiKhachHang() {
-        List<Object[]> list = new ArrayList<>();
-        Connection con = connectDB.getConnection();
 
-        if (con == null) {
-            connectDB.getConnection();
-            con = connectDB.getConnection();
-        }
-
-        String sql = """
-        SELECT 
-            KM.maKhuyenMai,
-            KM.tenKhuyenMai,
-            CTKM.dieuKien AS doiTuong,
-            KM.thoiGianBatDau,
-            KM.thoiGianKetThuc,
-            CTKM.chietKhau,
-            KM.trangThai
-        FROM KhuyenMai KM
-        JOIN ChiTietKhuyenMai CTKM ON KM.maKhuyenMai = CTKM.maKhuyenMai
-        WHERE CTKM.chietKhau > 0
-        ORDER BY KM.thoiGianBatDau DESC
-    """;
-
-        try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Object[] row = {
-                        rs.getString("maKhuyenMai"),
-                        rs.getString("tenKhuyenMai"),
-                        rs.getString("doiTuong"),
-                        rs.getTimestamp("thoiGianBatDau").toLocalDateTime(),
-                        rs.getTimestamp("thoiGianKetThuc").toLocalDateTime(),
-                        rs.getDouble("chietKhau"),
-                        rs.getBoolean("trangThai")
-                };
-                list.add(row);
-            }
-
-            System.out.println("✅ Đã load toàn bộ " + list.size() + " khuyến mãi - khách hàng hiện có (chỉ >0).");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-    /**
-     * 🔹 Lấy danh sách khuyến mãi theo đối tượng khách hàng
-     */
     public List<Object[]> getDanhSachKhuyenMaiDoiTuong() {
         List<Object[]> list = new ArrayList<>();
 
@@ -81,7 +28,6 @@ public class KhuyenMaiDoiTuong_DAO {
             con = connectDB.getConnection();
         }
 
-        // ✅ Load khuyến mãi master data: loaiKhuyenMai = 'KMKH' và maHoaDon = NULL
         String sql = """
     SELECT 
         km.maKhuyenMai, 
@@ -121,60 +67,7 @@ public class KhuyenMaiDoiTuong_DAO {
         }
         return list;
     }
-    //    public boolean themKhuyenMaiDoiTuong(KhuyenMai km, DoiTuong doiTuong, double chietKhau) {
-//        Connection con = connectDB.getConnection();
-//        if (con == null) {
-//            connectDB.getConnection();
-//            con = connectDB.getConnection();
-//        }
-//
-//        String insertKM = """
-//        INSERT INTO KhuyenMai(maKhuyenMai, tenKhuyenMai, loaiKhuyenMai, thoiGianBatDau, thoiGianKetThuc, trangThai)
-//        VALUES (?, ?, ?, ?, ?, ?)
-//    """;
-//
-//        // ✅ KHÔNG cần maHoaDon — chỉ thêm thông tin khuyến mãi + đối tượng
-//        String insertCTKM = """
-//        INSERT INTO ChiTietKhuyenMai(maKhuyenMai, dieuKien, chietKhau, maHoaDon)
-//        VALUES (?, ?, ?, NULL)
-//    """;
-//
-//        try {
-//            con.setAutoCommit(false);
-//
-//            // --- 1️⃣ Thêm khuyến mãi
-//            try (PreparedStatement ps = con.prepareStatement(insertKM)) {
-//                ps.setString(1, km.getMaKhuyenMai());
-//                ps.setString(2, km.getTenKhuyenMai());
-//                ps.setString(3, km.getLoaiKhuyenMai());
-//                ps.setTimestamp(4, Timestamp.valueOf(km.getThoiGianBatDau()));
-//                ps.setTimestamp(5, Timestamp.valueOf(km.getThoiGianKetThuc()));
-//                ps.setBoolean(6, km.isTrangThai());
-//                ps.executeUpdate();
-//            }
-//
-//            // --- 2️⃣ Thêm chi tiết khuyến mãi (đối tượng + chiết khấu)
-//            try (PreparedStatement ps = con.prepareStatement(insertCTKM)) {
-//                ps.setString(1, km.getMaKhuyenMai());
-//                ps.setString(2, doiTuong.name());
-//                ps.setDouble(3, chietKhau);
-//                ps.executeUpdate();
-//            }
-//
-//            con.commit();
-//            con.setAutoCommit(true);
-//            return true;
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            try {
-//                con.rollback();
-//            } catch (SQLException ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-//        return false;
-//    }
+
     public boolean themKhuyenMaiDoiTuong(KhuyenMai km, DoiTuong doiTuong, double chietKhau) {
         Connection con = connectDB.getConnection();
         if (con == null) {
@@ -243,140 +136,195 @@ public class KhuyenMaiDoiTuong_DAO {
             return false;
         }
     }
-    public boolean capNhatKhuyenMai(String maCu, String ten, Date thoiGianBatDau, Date thoiGianKetThuc, double chietKhau) {
-        Connection con = connectDB.getConnection();
-        if (con == null) {
-            System.err.println("❌ Không thể cập nhật — Connection = null (chưa connect SQL)");
-            return false;
+
+public boolean capNhatKhuyenMaiDoiTuong(String maCu, String ten, Date thoiGianBatDau, Date thoiGianKetThuc, double chietKhau, String dieuKien) {
+    Connection con = connectDB.getConnection();
+    if (con == null) {
+        System.err.println("❌ Không thể cập nhật — Connection = null");
+        return false;
+    }
+
+    boolean success = false;
+
+    try {
+        con.setAutoCommit(false);
+
+        // --- Lấy ngày cũ từ DB ---
+        Date ngayBatDauCu = null;
+        Date ngayKetThucCu = null;
+        String sqlGetDates = "SELECT thoiGianBatDau, thoiGianKetThuc FROM KhuyenMai WHERE maKhuyenMai = ?";
+        try (PreparedStatement psGet = con.prepareStatement(sqlGetDates)) {
+            psGet.setString(1, maCu);
+            ResultSet rs = psGet.executeQuery();
+            if (rs.next()) {
+                ngayBatDauCu = rs.getDate("thoiGianBatDau");
+                ngayKetThucCu = rs.getDate("thoiGianKetThuc");
+            } else {
+                System.out.println("⚠️ Không tìm thấy mã khuyến mãi: " + maCu);
+                return false;
+            }
         }
 
-        PreparedStatement ps = null;
-        PreparedStatement psCT = null;
-        PreparedStatement psMa = null;
-        Statement st = null;
-        boolean success = false;
+        // --- Kiểm tra xem ngày có thay đổi không ---
+        boolean ngayThayDoi = !thoiGianBatDau.equals(ngayBatDauCu) || !thoiGianKetThuc.equals(ngayKetThucCu);
+        String maMoi = maCu;
 
-        try {
-            con.setAutoCommit(false); // ✅ Bắt đầu transaction
-            st = con.createStatement();
-
-            // 🔹 Sinh lại mã mới theo ngày bắt đầu
-            String maMoi = KhuyenMai.taoMaKhuyenMaiTheoNgay(thoiGianBatDau, 1);
-
-            // --- Nếu mã mới khác mã cũ → đổi mã trong cả 2 bảng ---
-            if (!maCu.equals(maMoi)) {
-                System.out.println("🔁 Đổi mã khuyến mãi: " + maCu + " → " + maMoi);
-
-                // ✅ Tạm tắt kiểm tra ràng buộc khóa ngoại
-                st.execute("ALTER TABLE ChiTietKhuyenMai NOCHECK CONSTRAINT ALL");
-
-                // ✅ Đổi mã trong bảng KhuyenMai trước (bảng chính)
-                String sqlUpdateKM = """
-                UPDATE KhuyenMai
-                SET maKhuyenMai = ?
-                WHERE maKhuyenMai = ?
-            """;
-                psMa = con.prepareStatement(sqlUpdateKM);
-                psMa.setString(1, maMoi);
-                psMa.setString(2, maCu);
-                int kmRows = psMa.executeUpdate();
-                System.out.println("🔹 Đổi mã trong KhuyenMai: " + kmRows + " dòng");
-
-                // ✅ Sau đó đổi mã trong bảng ChiTietKhuyenMai (bảng phụ)
-                String sqlUpdateCT = """
-                UPDATE ChiTietKhuyenMai
-                SET maKhuyenMai = ?
-                WHERE maKhuyenMai = ?
-            """;
-                psMa = con.prepareStatement(sqlUpdateCT);
-                psMa.setString(1, maMoi);
-                psMa.setString(2, maCu);
-                int ctRows = psMa.executeUpdate();
-                System.out.println("🔹 Đổi mã trong ChiTietKhuyenMai: " + ctRows + " dòng");
-
-                // ✅ Bật lại kiểm tra FK
-                st.execute("ALTER TABLE ChiTietKhuyenMai CHECK CONSTRAINT ALL");
-
-                // Dùng mã mới cho các bước tiếp theo
-                maCu = maMoi;
+        if (ngayThayDoi) {
+            // Sinh mã mới theo ngày, đảm bảo không trùng
+            int i = 1;
+            while (true) {
+                maMoi = KhuyenMai.taoMaKhuyenMaiTheoNgay(thoiGianBatDau, i);
+                String sqlCheck = "SELECT COUNT(*) FROM KhuyenMai WHERE maKhuyenMai = ?";
+                try (PreparedStatement psCheck = con.prepareStatement(sqlCheck)) {
+                    psCheck.setString(1, maMoi);
+                    ResultSet rsCheck = psCheck.executeQuery();
+                    if (rsCheck.next() && rsCheck.getInt(1) == 0) {
+                        break; // mã chưa tồn tại
+                    }
+                }
+                i++;
             }
 
-            // --- Cập nhật thông tin khuyến mãi ---
-            String sql = """
-UPDATE KhuyenMai
-SET tenKhuyenMai = ?, 
-    thoiGianBatDau = ?, 
-    thoiGianKetThuc = ?,
-    loaiKhuyenMai = N'Đối Tượng'
-WHERE maKhuyenMai = ?
-""";
+            System.out.println("🔁 Đổi mã khuyến mãi: " + maCu + " → " + maMoi);
 
+            try (Statement st = con.createStatement()) {
+                st.execute("ALTER TABLE ChiTietKhuyenMai NOCHECK CONSTRAINT ALL");
 
-            ps = con.prepareStatement(sql);
+                // Đổi mã trong KhuyenMai
+                try (PreparedStatement psUpdateKM = con.prepareStatement(
+                        "UPDATE KhuyenMai SET maKhuyenMai = ? WHERE maKhuyenMai = ?")) {
+                    psUpdateKM.setString(1, maMoi);
+                    psUpdateKM.setString(2, maCu);
+                    psUpdateKM.executeUpdate();
+                }
+
+                // Đổi mã trong ChiTietKhuyenMai
+                try (PreparedStatement psUpdateCT = con.prepareStatement(
+                        "UPDATE ChiTietKhuyenMai SET maKhuyenMai = ? WHERE maKhuyenMai = ?")) {
+                    psUpdateCT.setString(1, maMoi);
+                    psUpdateCT.setString(2, maCu);
+                    psUpdateCT.executeUpdate();
+                }
+
+                st.execute("ALTER TABLE ChiTietKhuyenMai CHECK CONSTRAINT ALL");
+            }
+
+            maCu = maMoi; // cập nhật mã mới cho các bước tiếp theo
+        }
+
+        // --- Cập nhật thông tin khuyến mãi trong KhuyenMai ---
+        String sqlUpdateKM = """
+            UPDATE KhuyenMai
+            SET tenKhuyenMai = ?, thoiGianBatDau = ?, thoiGianKetThuc = ?, loaiKhuyenMai = N'KMKH'
+            WHERE maKhuyenMai = ?
+        """;
+        try (PreparedStatement ps = con.prepareStatement(sqlUpdateKM)) {
             ps.setString(1, ten);
             ps.setDate(2, new java.sql.Date(thoiGianBatDau.getTime()));
             ps.setDate(3, new java.sql.Date(thoiGianKetThuc.getTime()));
             ps.setString(4, maCu);
-
-            int rows = ps.executeUpdate();
-            System.out.println("🔹 Cập nhật KhuyenMai: " + rows + " dòng");
-
-            if (rows > 0) {
-                // --- Cập nhật chiết khấu ---
-                String sqlCT = """
-                UPDATE ChiTietKhuyenMai
-                SET chietKhau = ?
-                WHERE maKhuyenMai = ?
-            """;
-
-                psCT = con.prepareStatement(sqlCT);
-                psCT.setDouble(1, chietKhau);
-                psCT.setString(2, maCu);
-
-                int rowsCT = psCT.executeUpdate();
-                System.out.println("🔹 Cập nhật ChiTietKhuyenMai: " + rowsCT + " dòng");
-
-                success = true;
-            } else {
-                System.out.println("⚠️ Không tìm thấy mã khuyến mãi để cập nhật: " + maCu);
-            }
-
-            con.commit(); // ✅ Commit transaction
-
-        } catch (SQLException e) {
-            try {
-                con.rollback();
-                System.err.println("⚠️ Rollback do lỗi khi cập nhật khuyến mãi.");
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            System.err.println("❌ Lỗi khi cập nhật khuyến mãi:");
-            e.printStackTrace();
-        } finally {
-            try {
-                if (psMa != null) psMa.close();
-                if (psCT != null) psCT.close();
-                if (ps != null) ps.close();
-                if (st != null) st.close();
-                con.setAutoCommit(true);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+            ps.executeUpdate();
         }
 
-        return success;
+        // --- Cập nhật chi tiết khuyến mãi trong ChiTietKhuyenMai ---
+        String sqlUpdateCT = "UPDATE ChiTietKhuyenMai SET chietKhau = ?, dieuKien = ? WHERE maKhuyenMai = ?";
+        try (PreparedStatement psCT = con.prepareStatement(sqlUpdateCT)) {
+            psCT.setDouble(1, chietKhau);
+            psCT.setString(2, dieuKien); // cập nhật dieuKien
+            psCT.setString(3, maCu);
+            psCT.executeUpdate();
+        }
+
+        con.commit();
+        success = true;
+
+    } catch (SQLException e) {
+        try {
+            con.rollback();
+            System.err.println("⚠️ Rollback do lỗi khi cập nhật khuyến mãi.");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        e.printStackTrace();
+    } finally {
+        try {
+            con.setAutoCommit(true);
+            con.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
-    public List<KhuyenMai> locKhuyenMaiTheoDoiTuong(String doiTuong) {
-        List<KhuyenMai> list = new ArrayList<>();
-        Connection con = connectDB.getConnection();
+    return success;
+}
 
-        if (con == null) {
-            connectDB.getConnection();
-            con = connectDB.getConnection();
-        }
+//    public List<KhuyenMai> locKhuyenMaiTheoDoiTuong(String doiTuong) {
+//        List<KhuyenMai> list = new ArrayList<>();
+//        Connection con = connectDB.getConnection();
+//
+//        if (con == null) {
+//            connectDB.getConnection();
+//            con = connectDB.getConnection();
+//        }
+//
+//        String sql = """
+//        SELECT
+//            KM.maKhuyenMai,
+//            KM.tenKhuyenMai,
+//            CTKM.dieuKien AS doiTuong,
+//            KM.thoiGianBatDau,
+//            KM.thoiGianKetThuc,
+//            CTKM.chietKhau,
+//            KM.trangThai
+//        FROM KhuyenMai KM
+//        JOIN ChiTietKhuyenMai CTKM ON KM.maKhuyenMai = CTKM.maKhuyenMai
+//    """;
+//
+//        // Nếu chọn đối tượng cụ thể, thêm điều kiện WHERE
+//        if (doiTuong != null && !doiTuong.equalsIgnoreCase("Tất cả")) {
+//            sql += " WHERE LTRIM(RTRIM(CTKM.dieuKien)) COLLATE Latin1_General_CI_AI LIKE ?";
+//        }
+//
+//        sql += " ORDER BY KM.thoiGianBatDau DESC";
+//
+//        try (PreparedStatement ps = con.prepareStatement(sql)) {
+//            if (doiTuong != null && !doiTuong.equalsIgnoreCase("Tất cả")) {
+//                ps.setString(1, "%" + doiTuong.trim() + "%");
+//            }
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next()) {
+//                KhuyenMai km = new KhuyenMai(
+//                        rs.getString("maKhuyenMai"),
+//                        rs.getString("tenKhuyenMai"),
+//                        "KMHD",
+//                        rs.getTimestamp("thoiGianBatDau").toLocalDateTime(),
+//                        rs.getTimestamp("thoiGianKetThuc").toLocalDateTime(),
+//                        rs.getBoolean("trangThai")
+//                );
+//                km.setChietKhau(rs.getDouble("chietKhau"));
+//                km.setDoiTuongApDung(rs.getString("doiTuong"));
+//                list.add(km);
+//            }
+//
+//            System.out.println("✅ Đã lọc được " + list.size() + " khuyến mãi cho đối tượng: " + doiTuong);
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return list;
+//    }
+public List<KhuyenMai> locKhuyenMaiTheoDoiTuong(String doiTuong, LocalDateTime fromDate, LocalDateTime toDate) {
+    List<KhuyenMai> list = new ArrayList<>();
+    Connection con = connectDB.getConnection();
 
-        String sql = """
+    if (con == null) {
+        con = connectDB.getConnection();
+    }
+
+    String sql = """
         SELECT 
             KM.maKhuyenMai,
             KM.tenKhuyenMai,
@@ -389,41 +337,76 @@ WHERE maKhuyenMai = ?
         JOIN ChiTietKhuyenMai CTKM ON KM.maKhuyenMai = CTKM.maKhuyenMai
     """;
 
-        // Nếu chọn đối tượng cụ thể, thêm điều kiện WHERE
+    boolean hasWhere = false;
+
+    // Lọc theo đối tượng
+    if (doiTuong != null && !doiTuong.equalsIgnoreCase("Tất cả")) {
+        sql += " WHERE LTRIM(RTRIM(CTKM.dieuKien)) COLLATE Latin1_General_CI_AI LIKE ?";
+        hasWhere = true;
+    }
+
+    // Lọc theo khoảng thời gian
+    if (fromDate != null) {
+        sql += hasWhere ? " AND KM.thoiGianBatDau >= ?" : " WHERE KM.thoiGianBatDau >= ?";
+        hasWhere = true;
+    }
+    if (toDate != null) {
+        sql += hasWhere ? " AND KM.thoiGianKetThuc <= ?" : " WHERE KM.thoiGianKetThuc <= ?";
+    }
+
+    sql += " ORDER BY KM.thoiGianBatDau DESC";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        int index = 1;
+
         if (doiTuong != null && !doiTuong.equalsIgnoreCase("Tất cả")) {
-            sql += " WHERE LTRIM(RTRIM(CTKM.dieuKien)) COLLATE Latin1_General_CI_AI LIKE ?";
+            ps.setString(index++, "%" + doiTuong.trim() + "%");
+        }
+        if (fromDate != null) {
+            ps.setTimestamp(index++, Timestamp.valueOf(fromDate));
+        }
+        if (toDate != null) {
+            ps.setTimestamp(index++, Timestamp.valueOf(toDate));
         }
 
-        sql += " ORDER BY KM.thoiGianBatDau DESC";
+        ResultSet rs = ps.executeQuery();
 
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            if (doiTuong != null && !doiTuong.equalsIgnoreCase("Tất cả")) {
-                ps.setString(1, "%" + doiTuong.trim() + "%");
-            }
+        while (rs.next()) {
+            KhuyenMai km = new KhuyenMai(
+                    rs.getString("maKhuyenMai"),
+                    rs.getString("tenKhuyenMai"),
+                    "KMHD",
+                    rs.getTimestamp("thoiGianBatDau").toLocalDateTime(),
+                    rs.getTimestamp("thoiGianKetThuc").toLocalDateTime(),
+                    rs.getBoolean("trangThai")
+            );
+            km.setChietKhau(rs.getDouble("chietKhau"));
+            km.setDoiTuongApDung(rs.getString("doiTuong"));
+            list.add(km);
+        }
 
+        System.out.println("✅ Đã lọc được " + list.size() + " khuyến mãi cho đối tượng: " + doiTuong);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return list;
+}
+
+    public boolean kiemTraMaTonTai(String ma) {
+        String sql = "SELECT COUNT(*) FROM KhuyenMai WHERE maKhuyenMai = ?";
+        try (Connection con = connectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, ma);
             ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                KhuyenMai km = new KhuyenMai(
-                        rs.getString("maKhuyenMai"),
-                        rs.getString("tenKhuyenMai"),
-                        "KMHD",
-                        rs.getTimestamp("thoiGianBatDau").toLocalDateTime(),
-                        rs.getTimestamp("thoiGianKetThuc").toLocalDateTime(),
-                        rs.getBoolean("trangThai")
-                );
-                km.setChietKhau(rs.getDouble("chietKhau"));
-                km.setDoiTuongApDung(rs.getString("doiTuong"));
-                list.add(km);
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // >0 nghĩa là trùng
             }
-
-            System.out.println("✅ Đã lọc được " + list.size() + " khuyến mãi cho đối tượng: " + doiTuong);
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return list;
+        return false;
     }
 
 }

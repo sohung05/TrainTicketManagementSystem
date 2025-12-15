@@ -8,10 +8,17 @@ import entity.DoiTuong;
 import java.awt.event.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
 import com.toedter.calendar.JDateChooser;
 
 
@@ -26,26 +33,39 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
     private boolean dangCapNhat = false;
     private DefaultTableModel model;
     private void loadTableData() {
-        model = (DefaultTableModel) jTable1.getModel();  // ✅ Dùng instance variable, không tạo local
-        model.setRowCount(0); // xóa dữ liệu cũ
+        model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
 
         KhuyenMaiDoiTuong_DAO dao = new KhuyenMaiDoiTuong_DAO();
         List<Object[]> dsKM = dao.getDanhSachKhuyenMaiDoiTuong();
-        
+
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        
+
+        java.time.format.DateTimeFormatter fmt =
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         for (Object[] row : dsKM) {
-            java.time.LocalDateTime thoiGianKetThuc = (java.time.LocalDateTime) row[4];
-            boolean trangThai = (boolean) row[6];
-            
-            // ✅ Kiểm tra hết hạn
-            if (thoiGianKetThuc.isBefore(now)) {
-                row[6] = "Hết hạn";
-            } else {
-                row[6] = trangThai ? "Hoạt động" : "Tạm ngưng";
-            }
-            
-            model.addRow(row);
+            java.time.LocalDateTime start = (java.time.LocalDateTime) row[3];
+            java.time.LocalDateTime end = (java.time.LocalDateTime) row[4];
+
+            boolean trangThaiBool = (boolean) row[6];
+
+            // Định dạng thời gian → chuỗi
+            String startFormatted = start.format(fmt);
+            String endFormatted = end.format(fmt);
+
+            // Tạo hàng mới để add vào JTable
+            Object[] newRow = new Object[]{
+                    row[0],               // Mã
+                    row[1],               // Tên
+                    row[2],               // Đối tượng
+                    startFormatted,       // Thời gian áp dụng
+                    endFormatted,         // Thời gian kết thúc
+                    row[5],               // Chiết khấu
+                    end.isBefore(now) ? "Hết hạn" : (trangThaiBool ? "Hoạt động" : "Tạm ngưng")
+            };
+
+            model.addRow(newRow);
         }
     }
 
@@ -72,46 +92,82 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
         Date end = jDateChooser2.getDate();
         String chietKhauStr = jTextField4.getText().trim();
 
+        if (ma == null || ma.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Mã khuyến mãi không được để trống!");
+            jTextField1.requestFocus();
+            return false;
+        }
         // --- Kiểm tra mã khuyến mãi ---
         if (ma.isEmpty() || !ma.matches("^KM\\d{8}\\d{2}$")) {
             JOptionPane.showMessageDialog(this,
-                    "❌ Mã khuyến mãi không hợp lệ!\nPhải có dạng: KMddMMyyyyXX");
+                    "Mã khuyến mãi không hợp lệ!\nPhải có dạng: KMddMMyyyyXX");
             jTextField1.requestFocus();
             return false;
         }
 
         // --- Kiểm tra tên ---
         if (ten.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "❌ Tên khuyến mãi không được để trống!");
+            JOptionPane.showMessageDialog(this, "Tên khuyến mãi không được để trống!");
+            jTextField2.requestFocus();
+            return false;
+        }
+        // Kiểm tra chữ cái đầu phải viết hoa
+        String firstChar = ten.substring(0, 1);
+        if (!firstChar.matches("[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯỲỴÝ]")) {
+            JOptionPane.showMessageDialog(this,
+                    "Chữ cái đầu của tên khuyến mãi phải viết hoa!");
             jTextField2.requestFocus();
             return false;
         }
 
+        String regex = "^Giảm\\s+\\d{1,3}%\\s+cho\\s+" +
+                "(Người\\s+[Ll]ớn|" +
+                "Sinh\\s+[Vv]iên|" +
+                "Trẻ\\s+[Ee]m|" +
+                "Người\\s+[Cc]ao\\s+[Tt]uổi)$";
+        if (!ten.matches(regex)) {
+            JOptionPane.showMessageDialog(this,
+                    "Tên khuyến mãi phải có dạng :\n" +
+                            "1. Giảm x% cho Người lớn\n" +
+                            "2. Giảm x% cho Sinh viên\n" +
+                            "3. Giảm x% cho Trẻ em\n" +
+                            "4. Giảm x% cho Người cao tuổi");
+            jTextField2.requestFocus();
+            return false;
+        }
+
+
         // --- Kiểm tra đối tượng ---
         if (doiTuongStr == null || doiTuongStr.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "❌ Vui lòng chọn đối tượng khuyến mãi!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn đối tượng khuyến mãi!");
             jComboBox1.requestFocus();
             return false;
         }
 
         // --- Kiểm tra ngày ---
         if (start == null) {
-            JOptionPane.showMessageDialog(this, "❌ Thời gian bắt đầu không được để trống!");
+            JOptionPane.showMessageDialog(this, "Thời gian bắt đầu không được để trống!");
             jDateChooser1.requestFocus();
             return false;
         }
         if (end == null) {
-            JOptionPane.showMessageDialog(this, "❌ Thời gian kết thúc không được để trống!");
+            JOptionPane.showMessageDialog(this, "Thời gian kết thúc không được để trống!");
             jDateChooser2.requestFocus();
             return false;
         }
         if (end.before(start)) {
-            JOptionPane.showMessageDialog(this, "❌ Thời gian kết thúc phải sau thời gian bắt đầu!");
+            JOptionPane.showMessageDialog(this, "Thời gian kết thúc phải sau thời gian bắt đầu!");
             return false;
         }
-// --- Kiểm tra chiết khấu ---
+        if (doiTuongStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Đối tượng không được để trống!");
+            jComboBox1.requestFocus();
+            return false;
+        }
+        // --- Kiểm tra chiết khấu ---
         if (chietKhauStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "❌ Chiết khấu không được để trống!");
+            JOptionPane.showMessageDialog(this, "Chiết khấu không được để trống!");
             jTextField4.requestFocus();
             return false;
         }
@@ -120,13 +176,13 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
         try {
             chietKhau = Double.parseDouble(chietKhauStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải là số hợp lệ!");
+            JOptionPane.showMessageDialog(this, "Chiết khấu phải là số hợp lệ!");
             jTextField4.requestFocus();
             return false;
         }
 
         if (chietKhau <= 0 || chietKhau > 100) {
-            JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải trong khoảng 0 - 100 (%)!");
+            JOptionPane.showMessageDialog(this, "Chiết khấu phải trong khoảng 0 - 100 (%)!");
             jTextField4.requestFocus();
             return false;
         }
@@ -136,41 +192,51 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
 
     private void initEvent() {
 
-        // Thêm
         jButton4.addActionListener(e -> {
-            if (!validateInput()) {
+            if (!validateInput()) { // Kiểm tra ràng buộc
                 return;
             }
 
             try {
+                // --- Lấy dữ liệu từ form ---
                 String ten = jTextField2.getText().trim();
                 String doiTuongStr = jComboBox1.getSelectedItem().toString().trim();
                 Date start = jDateChooser1.getDate();
                 Date end = jDateChooser2.getDate();
                 String chietKhauStr = jTextField4.getText().trim();
 
-                // --- Sinh mã tự động theo ngày bắt đầu ---
-                SimpleDateFormat sdfDate = new SimpleDateFormat("ddMMyyyy");
-                String datePart = sdfDate.format(start);
-                String ma = "KM" + datePart + (int) (Math.random() * 90 + 10); // ví dụ: KM2710202593
-
-                double chietKhau = Double.parseDouble(chietKhauStr);
-                if (chietKhau <= 0 || chietKhau > 100) {
-                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải trong khoảng 0 - 100 (%)");
+                // --- Kiểm tra chiết khấu ---
+                if (chietKhauStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu không được để trống!");
+                    jTextField4.requestFocus();
                     return;
                 }
 
-                // --- Tạo đối tượng khuyến mãi ---
-                KhuyenMai km = new KhuyenMai(
-                        ma,
-                        ten,
-                        "Đối tượng",
-                        new java.sql.Timestamp(start.getTime()).toLocalDateTime(),
-                        new java.sql.Timestamp(end.getTime()).toLocalDateTime(),
-                        true
-                );
+                double chietKhau;
+                try {
+                    chietKhau = Double.parseDouble(chietKhauStr);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải là số hợp lệ!");
+                    jTextField4.requestFocus();
+                    return;
+                }
 
-                // --- Chuyển từ ComboBox sang Enum DoiTuong ---
+                if (chietKhau <= 0 || chietKhau > 100) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải trong khoảng 0 - 100 (%)");
+                    jTextField4.requestFocus();
+                    return;
+                }
+
+                // Chuyển về dạng 0.x
+                chietKhau /= 100.0;
+
+                // --- Kiểm tra ngày ---
+                if (start == null || end == null) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Ngày bắt đầu hoặc kết thúc không hợp lệ!");
+                    return;
+                }
+
+                // --- Chuyển ComboBox sang Enum DoiTuong ---
                 DoiTuong doiTuong = switch (doiTuongStr) {
                     case "Sinh viên" -> DoiTuong.SinhVien;
                     case "Trẻ em" -> DoiTuong.TreEm;
@@ -179,96 +245,119 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
                     default -> throw new IllegalArgumentException("Đối tượng không hợp lệ: " + doiTuongStr);
                 };
 
-                // --- Gọi DAO để lưu vào DB ---
+                // --- DAO ---
                 KhuyenMaiDoiTuong_DAO dao = new KhuyenMaiDoiTuong_DAO();
-                boolean success = dao.themKhuyenMaiDoiTuong(km, doiTuong, chietKhau / 100.0); // đổi về dạng 0.x
+
+                // --- Sinh mã duy nhất ---
+                SimpleDateFormat sdfDate = new SimpleDateFormat("ddMMyyyy");
+                String datePart = sdfDate.format(start);
+                String ma;
+                int attempt = 0;
+                do {
+                    ma = "KM" + datePart + (int) (Math.random() * 90 + 10);
+                    System.out.println("DEBUG: Sinh mã mới = " + ma);
+                    attempt++;
+                    if (attempt > 100) { // tránh vòng lặp vô hạn
+                        JOptionPane.showMessageDialog(this, "⚠️ Không thể sinh mã duy nhất sau 100 lần thử!");
+                        return;
+                    }
+                } while (dao.kiemTraMaTonTai(ma)); // Kiểm tra trùng mã
+
+                System.out.println("DEBUG: Mã cuối cùng sử dụng = " + ma);
+
+                // --- Tạo đối tượng KhuyenMai ---
+                KhuyenMai km = new KhuyenMai(
+                        ma,
+                        ten,
+                        "KMKH",
+                        new java.sql.Timestamp(start.getTime()).toLocalDateTime(),
+                        new java.sql.Timestamp(end.getTime()).toLocalDateTime(),
+                        true
+                );
+
+                // --- Thêm vào DB ---
+                boolean success = dao.themKhuyenMaiDoiTuong(km, doiTuong, chietKhau);
 
                 if (success) {
                     JOptionPane.showMessageDialog(this, "✅ Thêm khuyến mãi thành công!");
-
-                    // ✅ Load lại toàn bộ dữ liệu từ database để bảng đồng bộ
-                    loadTableData();
-                    clearForm();
+                    loadTableData(); // Load lại JTable
+                    clearForm();     // Xóa form
                 } else {
                     JOptionPane.showMessageDialog(this, "❌ Thêm khuyến mãi thất bại!");
                 }
-
 
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "❌ Lỗi: " + ex.getMessage());
             }
         });
-        // Lọc
+       // Lọc
         jButton3.addActionListener(e -> {
-            String doiTuong = jComboBox1.getSelectedItem().toString().trim();
-            Date startDate = jDateChooser1.getDate();
-            Date endDate = jDateChooser2.getDate();
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+            jTable1.setRowSorter(sorter);
 
-            if (doiTuong.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn đối tượng cần lọc!");
-                return;
-            }
-            if (startDate == null || endDate == null) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn khoảng thời gian lọc!");
-                return;
-            }
-            if (endDate.before(startDate)) {
-                JOptionPane.showMessageDialog(this, "Ngày kết thúc phải sau ngày bắt đầu!");
+            Date fromDateValue = jDateChooser1.getDate();
+            Date toDateValue = jDateChooser2.getDate();
+
+            if (fromDateValue == null || toDateValue == null) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày bắt đầu và kết thúc!");
                 return;
             }
 
-            DefaultTableModel filteredModel = new DefaultTableModel(
-                    new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Đối tượng",
-                            "Thời gian áp dụng", "Thời gian kết thúc", "Chiết khấu", "Trạng thái"}, 0
-            );
+            LocalDate fromDate = fromDateValue.toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate toDate = toDateValue.toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if (fromDate.isAfter(toDate)) {
+                JOptionPane.showMessageDialog(this,
+                        "Thời gian kết thúc phải sau thời gian bắt đầu!");
+                return;
+            }
+            int colStart = 3;
+            int colEnd   = 4;
 
-            for (int i = 0; i < model.getRowCount(); i++) {
-                String dt = model.getValueAt(i, 2).toString();
-                String tgApDungStr = model.getValueAt(i, 3).toString();
-                String tgKetThucStr = model.getValueAt(i, 4).toString();
+            sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
+                @Override
+                public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
 
-                try {
-                    Date tgApDung = sdf.parse(tgApDungStr);
-                    Date tgKetThuc = sdf.parse(tgKetThucStr);
+                    try {
+                        String startStr = entry.getValue(colStart).toString();
+                        String endStr   = entry.getValue(colEnd).toString();
 
-                    boolean matchDoiTuong = dt.equalsIgnoreCase(doiTuong);
-                    boolean matchThoiGian =
-                            (tgApDung.before(endDate) || tgApDung.equals(endDate)) &&
-                                    (tgKetThuc.after(startDate) || tgKetThuc.equals(startDate));
+                        // ======= CHỈ LẤY NGÀY =======
+                        if (startStr.contains(" "))
+                            startStr = startStr.substring(0, startStr.indexOf(" "));
 
-                    if (matchDoiTuong && matchThoiGian) {
-                        Object[] row = new Object[model.getColumnCount()];
-                        for (int j = 0; j < model.getColumnCount(); j++) {
-                            row[j] = model.getValueAt(i, j);
-                        }
-                        filteredModel.addRow(row);
+                        if (endStr.contains(" "))
+                            endStr = endStr.substring(0, endStr.indexOf(" "));
+
+                        // Parse LocalDate
+                        LocalDate startDate = LocalDate.parse(startStr);
+                        LocalDate endDate   = LocalDate.parse(endStr);
+
+                        // Overlap
+                        return !endDate.isBefore(fromDate) && !startDate.isAfter(toDate);
+
+                    } catch (Exception ex) {
+                        return false;
                     }
-
-                } catch (ParseException ex) {
-                    ex.printStackTrace();
                 }
-            }
-
-            jTable1.setModel(filteredModel);
+            });
 
             JOptionPane.showMessageDialog(this,
-                    "Đã lọc được " + filteredModel.getRowCount() +
-                            " khuyến mãi cho đối tượng: " + doiTuong +
-                            " trong khoảng thời gian từ " + sdf.format(startDate) + " đến " + sdf.format(endDate));
+                    "Đã lọc dữ liệu từ " + fromDate + " đến " + toDate);
         });
 
-        /// --- SỰ KIỆN: Cập nhật khuyến mãi ---
+
+// Cập nhật
         jButton5.addActionListener(e -> {
-            if (!validateInput()) {
-                return;
-            }
+
 
             int row = jTable1.getSelectedRow();
             if (row == -1) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn một khuyến mãi để cập nhật!");
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một khuyến mãi để cập nhật!");
                 return;
             }
 
@@ -277,13 +366,17 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
 
             // Lấy dữ liệu mới từ form
             String tenMoi = jTextField2.getText().trim();
-            Date ngayBD = jDateChooser1.getDate();
-            Date ngayKT = jDateChooser2.getDate();
+            java.util.Date ngayBD = jDateChooser1.getDate();
+            java.util.Date ngayKT = jDateChooser2.getDate();
+            String doiTuongStr = jComboBox1.getSelectedItem().toString().trim();
             String chietKhauStr = jTextField4.getText().trim();
 
+            if (!validateInput()) {
+                return;
+            }
             // Kiểm tra nhập liệu
-            if (tenMoi.isEmpty() || ngayBD == null || ngayKT == null || chietKhauStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đầy đủ thông tin!");
+            if (tenMoi.isEmpty() || ngayBD == null || ngayKT == null || chietKhauStr.isEmpty() || doiTuongStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
                 return;
             }
 
@@ -291,42 +384,59 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
             try {
                 chietKhau = Double.parseDouble(chietKhauStr);
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải là số hợp lệ!");
+                JOptionPane.showMessageDialog(this, "Chiết khấu phải là số hợp lệ!");
                 return;
             }
 
             // Kiểm tra chiết khấu hợp lệ (0 < x ≤ 100)
             if (chietKhau <= 0 || chietKhau > 100) {
-                JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải trong khoảng 0 - 100 (%)!");
+                JOptionPane.showMessageDialog(this, "Chiết khấu phải trong khoảng 0 - 100 (%)!");
                 return;
             }
 
-            // Sinh mã khuyến mãi mới (theo ngày bắt đầu)
-            String maKMMoi = KhuyenMai.taoMaKhuyenMaiTheoNgay(ngayBD, 1);
+            // --- Chuyển ComboBox sang Enum DoiTuong ---
+            DoiTuong doiTuong;
+            try {
+                doiTuong = switch (doiTuongStr) {
+                    case "Sinh viên" -> DoiTuong.SinhVien;
+                    case "Trẻ em" -> DoiTuong.TreEm;
+                    case "Người lớn" -> DoiTuong.NguoiLon;
+                    case "Người cao tuổi" -> DoiTuong.NguoiCaoTuoi;
+                    default -> throw new IllegalArgumentException("Đối tượng không hợp lệ: " + doiTuongStr);
+                };
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+                return;
+            }
 
-            // Gọi DAO cập nhật
+            // --- Chuyển java.util.Date sang java.sql.Date ---
+            java.sql.Date sqlNgayBD = new java.sql.Date(ngayBD.getTime());
+            java.sql.Date sqlNgayKT = new java.sql.Date(ngayKT.getTime());
+
+            // Gọi DAO cập nhật (truyền Enum DoiTuong nếu DAO hỗ trợ, hoặc chuyển sang String)
             KhuyenMaiDoiTuong_DAO dao = new KhuyenMaiDoiTuong_DAO();
-            boolean result = dao.capNhatKhuyenMai(
+            boolean result = dao.capNhatKhuyenMaiDoiTuong(
                     maKMCu,
                     tenMoi,
-                    new java.sql.Date(ngayBD.getTime()),  // ✅ Convert java.util.Date → java.sql.Date
-                    new java.sql.Date(ngayKT.getTime()),
-                    chietKhau / 100.0  // ✅ Chia 100 để lưu dạng 0.25
+                    sqlNgayBD,
+                    sqlNgayKT,
+                    chietKhau / 100.0,
+                    doiTuong.name() // nếu DAO lưu dạng String
             );
 
             if (result) {
-                JOptionPane.showMessageDialog(this, "✅ Cập nhật khuyến mãi thành công!");
+                JOptionPane.showMessageDialog(this, "Cập nhật khuyến mãi thành công!");
                 loadTableData();
 
-                // Tự động chọn lại dòng mới
+                // Tự động chọn lại dòng đã cập nhật
                 for (int i = 0; i < jTable1.getRowCount(); i++) {
-                    if (jTable1.getValueAt(i, 0).toString().equals(maKMMoi)) {
+                    if (jTable1.getValueAt(i, 0).toString().equals(maKMCu)) {
                         jTable1.setRowSelectionInterval(i, i);
                         break;
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "❌ Cập nhật thất bại!");
+                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
             }
         });
 
@@ -337,7 +447,7 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
         jButton6.addActionListener(e -> {
             int row = jTable1.getSelectedRow();
             if (row == -1) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn khuyến mãi cần thay đổi trạng thái!");
+                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn khuyến mãi cần tạm ngưng!");
                 return;
             }
 
@@ -347,7 +457,7 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
             // ✅ Không cho phép thay đổi trạng thái nếu đã hết hạn
             if (currentStatus.equalsIgnoreCase("Hết hạn")) {
                 JOptionPane.showMessageDialog(this, 
-                    "❌ Không thể thay đổi trạng thái!\nKhuyến mãi này đã hết hạn.", 
+                    "Không thể thay đổi trạng thái!\nKhuyến mãi này đã hết hạn.",
                     "Thông báo", 
                     JOptionPane.WARNING_MESSAGE);
                 return;
@@ -371,7 +481,7 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, message);
                 loadTableData(); // ✅ làm mới dữ liệu từ SQL
             } else {
-                JOptionPane.showMessageDialog(this, "❌ Cập nhật trạng thái thất bại!");
+                JOptionPane.showMessageDialog(this, "Cập nhật trạng thái thất bại!");
             }
         });
 
@@ -412,7 +522,7 @@ public class Gui_KhuyenMaiDoiTuong extends javax.swing.JPanel {
                             // Nếu là String, parse với format đúng
                             String startStr = startObj.toString();
                             String endStr = endObj.toString();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             jDateChooser1.setDate(sdf.parse(startStr));
                             jDateChooser2.setDate(sdf.parse(endStr));
                         }
