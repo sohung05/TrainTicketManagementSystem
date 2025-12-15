@@ -4,6 +4,7 @@ import connectDB.connectDB;
 import entity.Ve;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Dashboard_DAO {
@@ -227,6 +228,36 @@ public class Dashboard_DAO {
         }
         return data;
     }
+    // === 6️⃣ THỐNG KÊ SỐ CHUYẾN THEO NGÀY (TRONG THÁNG) ===
+    public Map<Integer, Integer> getSoChuyenTrongNgay(LocalDate date) {
+        Map<Integer, Integer> data = new LinkedHashMap<>();
+
+        String sql = """
+        SELECT DAY(gioKhoiHanh) AS Ngay, COUNT(*) AS SoChuyen
+        FROM LichTrinh
+        WHERE MONTH(gioKhoiHanh) = ? AND YEAR(gioKhoiHanh) = ?
+        GROUP BY DAY(gioKhoiHanh)
+        ORDER BY Ngay
+    """;
+
+        try (Connection con = connectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, date.getMonthValue());
+            ps.setInt(2, date.getYear());
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                data.put(rs.getInt("Ngay"), rs.getInt("SoChuyen"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
 
 
 }

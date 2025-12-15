@@ -12,11 +12,13 @@ public class HoaDon {
     private LocalDateTime gioTao;
     private LocalDateTime ngayTao;
     private double tongTien;
-    private boolean trangThai; // true = đã trả, false = chưa trả
+    private boolean trangThai;
     private List<ChiTietHoaDon> danhSachChiTiet;
-    private String khuyenMai; // Tạm thời để hiển thị
+    private String khuyenMai;
 
-    // Constructor đầy đủ
+    // ======================
+    // 1) Constructor đầy đủ
+    // ======================
     public HoaDon(String maHoaDon, NhanVien nhanVien, KhachHang khachHang,
                   LocalDateTime gioTao, LocalDateTime ngayTao, boolean trangThai) {
         this.maHoaDon = maHoaDon;
@@ -28,12 +30,45 @@ public class HoaDon {
         this.danhSachChiTiet = new ArrayList<>();
     }
 
-    // Constructor mặc định
+    // ======================
+    // 2) Constructor mặc định
+    // ======================
     public HoaDon() {
         this("", null, null, LocalDateTime.now(), LocalDateTime.now(), true);
     }
 
-    // Getter/Setter
+    // ======================
+    // 3) Constructor DAO cần: new HoaDon(maHoaDon)
+    // ======================
+    public HoaDon(String maHoaDon) {
+        this.maHoaDon = maHoaDon;
+        this.danhSachChiTiet = new ArrayList<>();
+    }
+
+    // ======================
+    // 4) Constructor cho thống kê doanh thu
+    // ======================
+    public HoaDon(String maHoaDon, LocalDateTime ngayTao, double tongTien, boolean trangThai) {
+        this.maHoaDon = maHoaDon;
+        this.ngayTao = ngayTao;
+        this.tongTien = tongTien;
+        this.trangThai = trangThai;
+        this.danhSachChiTiet = new ArrayList<>();
+    }
+
+    // ======================
+    // 5) Constructor đơn giản cho bảng
+    // ======================
+    public HoaDon(String maHoaDon, LocalDateTime ngayTao, boolean trangThai) {
+        this.maHoaDon = maHoaDon;
+        this.ngayTao = ngayTao;
+        this.trangThai = trangThai;
+        this.danhSachChiTiet = new ArrayList<>();
+    }
+
+    // ======================
+    // Getter / Setter
+    // ======================
     public String getMaHoaDon() { return maHoaDon; }
     public void setMaHoaDon(String maHoaDon) { this.maHoaDon = maHoaDon; }
 
@@ -63,7 +98,9 @@ public class HoaDon {
 
     public void themChiTiet(ChiTietHoaDon cthd) { danhSachChiTiet.add(cthd); }
 
-    // ✅ Tính tổng tiền = tổng (giá vé * số lượng)
+    // ======================
+    // Các hàm tính toán
+    // ======================
     public double tinhTongTien() {
         double tong = 0;
         for (ChiTietHoaDon cthd : danhSachChiTiet) {
@@ -72,7 +109,6 @@ public class HoaDon {
         return tong;
     }
 
-    // ✅ Tính tổng giảm giá = tổng ((giá vé * % giảm) * số lượng)
     public double tinhTongGiamGia() {
         double tongGiam = 0;
         for (ChiTietHoaDon cthd : danhSachChiTiet) {
@@ -81,7 +117,6 @@ public class HoaDon {
         return tongGiam;
     }
 
-    // ✅ Tính thành tiền = tổng tiền - tổng giảm giá
     public double tinhThanhTien() {
         double tong = 0;
         for (ChiTietHoaDon cthd : danhSachChiTiet) {
@@ -90,12 +125,10 @@ public class HoaDon {
         return tong;
     }
 
-    // ✅ Kiểm tra hóa đơn đã trả chưa
     public boolean isDaTra() {
         return trangThai;
     }
 
-    // ✅ Tính tổng số vé trong hóa đơn
     public int getTongSoVe() {
         int tongVe = 0;
         for (ChiTietHoaDon cthd : danhSachChiTiet) {
@@ -107,11 +140,8 @@ public class HoaDon {
     @Override
     public String toString() {
         return "HoaDon [maHoaDon=" + maHoaDon +
-                ", nhanVien=" + (nhanVien != null ? nhanVien.getMaNhanVien() : "null") +
-                ", khachHang=" + (khachHang != null ? khachHang.getMaKH() : "null") +
                 ", ngayTao=" + ngayTao +
-                ", tongTien=" + tinhTongTien() +
-                ", tongGiam=" + tinhTongGiamGia() +
-                ", thanhTien=" + tinhThanhTien() + "]";
+                ", tongTien=" + tongTien +
+                ", trangThai=" + trangThai + "]";
     }
 }
