@@ -96,16 +96,20 @@ public class ChiTietHoaDon {
     }
 
     public double tinhThanhTien() {
-        // Vé trả / hủy → KHÔNG tính doanh thu
-        if (mucGiam < 0 || soLuong <= 0 || giaVe <= 0)
+        // Vé lỗi / vé trả / dữ liệu sai → không tính
+        if (soLuong <= 0 || giaVe <= 0)
             return 0;
 
-        double tienSauGiam = giaVe * (1 - mucGiam / 100.0);
+        // mức giảm là tiền
+        double tienSauGiam = giaVe - mucGiam;
 
-        if (tienSauGiam < 0) return 0;
+        // Không cho âm
+        if (tienSauGiam < 0)
+            tienSauGiam = 0;
 
         return tienSauGiam * soLuong;
     }
+
 
 
     @Override

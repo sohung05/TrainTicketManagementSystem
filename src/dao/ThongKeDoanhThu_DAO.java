@@ -81,11 +81,17 @@ public class ThongKeDoanhThu_DAO {
     // ==========================
     public double getTongDoanhThu(int thang, int nam) {
         String sql = """
-                SELECT SUM(ct.soLuong * ct.giaVe * (1 - ct.mucGiam / 100.0)) AS doanhThu
-                FROM HoaDon hd
-                JOIN ChiTietHoaDon ct ON hd.maHoaDon = ct.maHoaDon
-                WHERE MONTH(hd.ngayTao) = ? AND YEAR(hd.ngayTao) = ? AND hd.trangThai = 1
-            """;
+        SELECT COALESCE(SUM(
+            (ct.giaVe - ct.mucGiam) * ct.soLuong
+        ), 0) AS doanhThu
+        FROM HoaDon hd
+        JOIN ChiTietHoaDon ct ON hd.maHoaDon = ct.maHoaDon
+        WHERE MONTH(hd.ngayTao) = ?
+          AND YEAR(hd.ngayTao) = ?
+          AND hd.trangThai = 1
+          AND ct.soLuong > 0
+          AND ct.giaVe >= ct.mucGiam
+    """;
 
         try (Connection conn = connectDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -98,13 +104,13 @@ public class ThongKeDoanhThu_DAO {
                     return rs.getDouble("doanhThu");
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
+
+
 
     // ==========================
     // 4. TỔNG SỐ VÉ ĐÃ ĐẶT TRONG THÁNG
