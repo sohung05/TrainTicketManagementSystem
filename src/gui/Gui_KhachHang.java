@@ -93,7 +93,7 @@ public class Gui_KhachHang extends javax.swing.JPanel {
     }
 
     private boolean isValidHoTen(String hoTen) {
-        return hoTen.matches("([A-Z][a-z]*\\s?)+");
+        return hoTen.matches("([\\p{Lu}][\\p{Ll}\\s]*)+");
     }
 
     private boolean isValidEmail(String email) {

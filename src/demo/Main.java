@@ -1,5 +1,6 @@
 package demo;
 
+import entity.NhanVien;
 import gui.*;
 import gui.menu.component.Header;
 import gui.menu.component.Menu;
@@ -17,6 +18,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
+import util.SessionManager;
 
 
 public class Main extends javax.swing.JFrame {
@@ -31,6 +33,12 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         init();
         setExtendedState(getExtendedState() | javax.swing.JFrame.MAXIMIZED_BOTH);
+        NhanVien nv = SessionManager.getInstance().getNhanVienDangNhap();
+
+        // Truyền vào header
+        if (header != null && nv != null) {
+            header.setNhanVien(nv);
+        }
     }
 
     private void init() {
@@ -237,14 +245,7 @@ public class Main extends javax.swing.JFrame {
                 javax.swing.JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
-        
-        // Set session mặc định cho nhân viên admin (để test không cần login)
-        entity.NhanVien nvAdmin = new entity.NhanVien();
-        nvAdmin.setMaNhanVien("NV24030001");
-        nvAdmin.setHoTen("Nguyễn Văn An");
-        nvAdmin.setEmail("nva@railway.vn");
-        util.SessionManager.getInstance().setNhanVienDangNhap(nvAdmin);
-        System.out.println("✅ Đã set session cho nhân viên: " + nvAdmin.getMaNhanVien() + " - " + nvAdmin.getHoTen());
+
         
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

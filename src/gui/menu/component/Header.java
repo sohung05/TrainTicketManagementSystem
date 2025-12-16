@@ -1,11 +1,27 @@
 package gui.menu.component;
 
+import entity.NhanVien;
+
 import java.awt.event.ActionListener;
 
 public class Header extends javax.swing.JPanel {
 
     public Header() {
         initComponents();
+    }
+
+    public void setNhanVien(NhanVien nv) {
+        if (nv != null) {
+            // Hiển thị tên
+            lbUserName.setText(nv.getHoTen());
+
+            // Hiển thị chức vụ: 0 là Admin, 1 là Nhân Viên
+            if (nv.getChucVu() == 0) {
+                lbRole.setText("Admin");
+            } else {
+                lbRole.setText("Nhân Viên");
+            }
+        }
     }
 
     public void addMenuEvent(ActionListener event) {

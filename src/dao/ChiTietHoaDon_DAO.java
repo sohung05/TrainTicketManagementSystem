@@ -5,7 +5,8 @@
  */
 
 package dao;
-import connectDB.connectDB;
+
+import connectDB.connectDB;
 
 import entity.ChiTietHoaDon;
 import java.sql.*;
