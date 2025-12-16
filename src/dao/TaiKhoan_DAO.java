@@ -153,33 +153,70 @@ public class TaiKhoan_DAO {
         }
         return false;
     }
-    public TaiKhoan dangNhap(String tenTaiKhoan, String matKhau) {
-        String sql = "SELECT maNhanVien, userName, passWord FROM TaiKhoan WHERE userName = ? AND passWord = ?";
-        Connection con = connectDB.getConnection();
-        if (con == null) {
-            System.err.println("Không thể lấy connection trong dangNhap()");
-            return null;
+//    public TaiKhoan dangNhap(String tenTaiKhoan, String matKhau) {
+//        String sql = "SELECT maNhanVien, userName, passWord FROM TaiKhoan WHERE userName = ? AND passWord = ?";
+//        Connection con = connectDB.getConnection();
+//        if (con == null) {
+//            System.err.println("Không thể lấy connection trong dangNhap()");
+//            return null;
+//        }
+//
+//        try (PreparedStatement ps = con.prepareStatement(sql)) {
+//            ps.setString(1, tenTaiKhoan);
+//            ps.setString(2, matKhau); // nếu dùng hashed thì truyền hashed ở đây
+//            try (ResultSet rs = ps.executeQuery()) {
+//                if (rs.next()) {
+//                    TaiKhoan tk = new TaiKhoan();
+//                    tk.setMaNhanVien(rs.getString("maNhanVien"));
+//                    tk.setTenTaiKhoan(rs.getString("userName"));
+//                    tk.setMatKhau(rs.getString("passWord"));
+//                    return tk;
+//                }
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+
+    public boolean xacThuc(String tenTaiKhoan, String matKhau) {
+        return dangNhap(tenTaiKhoan, matKhau) != null;
+    }
+
+    public static class NhanVienInfo {
+        public String hoTen;
+        public int chucVu;
+
+        public NhanVienInfo(String hoTen, int chucVu) {
+            this.hoTen = hoTen;
+            this.chucVu = chucVu;
         }
+    }
+
+    public TaiKhoan dangNhap(String tenTaiKhoan, String matKhau) {
+        // SQL lấy thông tin tài khoản
+        String sql = "SELECT maNhanVien, userName, passWord FROM TaiKhoan WHERE userName = ? AND passWord = ?";
+
+        Connection con = connectDB.getConnection();
+        if (con == null) return null;
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, tenTaiKhoan);
-            ps.setString(2, matKhau); // nếu dùng hashed thì truyền hashed ở đây
+            ps.setString(2, matKhau);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     TaiKhoan tk = new TaiKhoan();
+                    // Map dữ liệu từ SQL vào Entity TaiKhoan
                     tk.setMaNhanVien(rs.getString("maNhanVien"));
                     tk.setTenTaiKhoan(rs.getString("userName"));
                     tk.setMatKhau(rs.getString("passWord"));
-                    return tk;
+                    return tk; // Trả về đối tượng TaiKhoan chuẩn
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public boolean xacThuc(String tenTaiKhoan, String matKhau) {
-        return dangNhap(tenTaiKhoan, matKhau) != null;
     }
 }
