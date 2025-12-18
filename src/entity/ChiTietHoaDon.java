@@ -95,15 +95,22 @@ public class ChiTietHoaDon {
         this.mucGiam = mucGiam;
     }
 
-    // ✅ Tính giá vé sau khi giảm
-    public double tinhTienVe() {
-        return giaVe - (giaVe * mucGiam / 100);
+    public double tinhThanhTien() {
+        // Vé lỗi / vé trả / dữ liệu sai → không tính
+        if (soLuong <= 0 || giaVe <= 0)
+            return 0;
+
+        // mức giảm là tiền
+        double tienSauGiam = giaVe - mucGiam;
+
+        // Không cho âm
+        if (tienSauGiam < 0)
+            tienSauGiam = 0;
+
+        return tienSauGiam * soLuong;
     }
 
-    // ✅ Tính tổng thành tiền cho vé
-    public double tinhThanhTien() {
-        return tinhTienVe() * soLuong;
-    }
+
 
     @Override
     public String toString() {

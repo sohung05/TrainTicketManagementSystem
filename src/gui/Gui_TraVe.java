@@ -6,8 +6,11 @@ package gui;
 
 import dao.HoaDon_DAO;
 import dao.Ve_DAO;
+import dao.ChiTietHoaDon_DAO;
 import entity.HoaDon;
 import entity.Ve;
+import entity.ChiTietHoaDon;
+import utils.ThermalPrinter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import java.text.NumberFormat;
@@ -23,6 +26,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
 
     private HoaDon_DAO hoaDonDAO;
     private Ve_DAO veDAO;
+    private ChiTietHoaDon_DAO chiTietHoaDonDAO;
     private DefaultTableModel modelHoaDon;
     private DefaultTableModel modelVe;
     private NumberFormat currencyFormat;
@@ -42,6 +46,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
     private void initDAO() {
         hoaDonDAO = new HoaDon_DAO();
         veDAO = new Ve_DAO();
+        chiTietHoaDonDAO = new ChiTietHoaDon_DAO();
     }
     
     private void initCustomComponents() {
@@ -518,6 +523,11 @@ public class Gui_TraVe extends javax.swing.JPanel {
 
         btnInHoaDon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/print.png"))); // NOI18N
         btnInHoaDon.setText("In Hóa Đơn");
+        btnInHoaDon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInHoaDonActionPerformed(evt);
+            }
+        });
 
         btnXoaTrang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/clear.png"))); // NOI18N
         btnXoaTrang.setText("Xóa trắng");
@@ -1057,7 +1067,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
     }//GEN-LAST:event_btnTraVeActionPerformed
 
     private void btnInVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInVeActionPerformed
-        // ⚡ IN VÉ - Mở Dialog_Ve với dữ liệu vé đã chọn
+        // ⚡ IN VÉ - In ra máy in nhiệt
         int selectedRow = jTable2.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(this,
@@ -1102,16 +1112,13 @@ public class Gui_TraVe extends javax.swing.JPanel {
             return;
         }
         
-        // Mở Dialog_Ve
-        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        Dialog_Ve dialogVe = new Dialog_Ve(parentFrame, false, veCanIn);
-        dialogVe.setVisible(true);
-        
-        System.out.println("✅ Đã mở Dialog_Ve cho vé: " + maVe);
+        // In vé (không hiển thị thông báo)
+        ThermalPrinter.printTicket(veCanIn);
+        System.out.println("✅ Đã gửi lệnh in vé: " + maVe);
     }//GEN-LAST:event_btnInVeActionPerformed
     
     private void btnInHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInHoaDonActionPerformed
-        // ⚡ IN HÓA ĐƠN - Mở Dialog_HoaDon và load dữ liệu từ database
+        // ⚡ IN HÓA ĐƠN - In ra máy in nhiệt
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(this,
@@ -1124,15 +1131,44 @@ public class Gui_TraVe extends javax.swing.JPanel {
         // Lấy mã hóa đơn
         String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
         
-        System.out.println("🖨️ Mở Dialog_HoaDon cho mã: " + maHoaDon);
+        System.out.println("🖨️ In hóa đơn: " + maHoaDon);
         
-        // Mở Dialog_HoaDon với constructor load từ database
-        // Constructor này sẽ tự động load toàn bộ thông tin hóa đơn và vé từ DB
-        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        Dialog_HoaDon dialogHoaDon = new Dialog_HoaDon(parentFrame, false, maHoaDon);
-        dialogHoaDon.setVisible(true);
+        // Load hóa đơn từ database
+        HoaDon hoaDon = hoaDonDAO.findByMaHoaDon(maHoaDon);
+        if (hoaDon == null) {
+            JOptionPane.showMessageDialog(this,
+                "Không tìm thấy thông tin hóa đơn!",
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
-        System.out.println("✅ Đã mở Dialog_HoaDon với đầy đủ thông tin vé");
+        // Load chi tiết hóa đơn và vé
+        List<ChiTietHoaDon> chiTietList = chiTietHoaDonDAO.findByMaHoaDon(maHoaDon);
+        
+        // Load thông tin vé cho mỗi chi tiết
+        for (ChiTietHoaDon cthd : chiTietList) {
+            Ve ve = veDAO.findByMaVe(cthd.getMaVe());
+            cthd.setVe(ve);
+        }
+        
+        // Set danh sách chi tiết vào hóa đơn (để tính tổng tiền)
+        hoaDon.setDanhSachChiTiet(chiTietList);
+        
+        // In hóa đơn (in trực tiếp không cần hỏi)
+        ThermalPrinter printer = new ThermalPrinter(hoaDon, chiTietList);
+        boolean success = printer.printInvoice(); // In trực tiếp ra máy mặc định
+        
+        if (!success) {
+            JOptionPane.showMessageDialog(this,
+                "❌ Lỗi khi in hóa đơn!\n" +
+                "- Kiểm tra máy in K58 đã được cài đặt chưa?\n" +
+                "- Kiểm tra kết nối USB/Bluetooth\n" +
+                "- Xem Console để biết chi tiết lỗi",
+                "Lỗi In",
+                JOptionPane.ERROR_MESSAGE);
+        }
+        // Không hiển thị thông báo thành công
     }//GEN-LAST:event_btnInHoaDonActionPerformed
     
     private void btnTimVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimVeActionPerformed
@@ -1221,7 +1257,51 @@ public class Gui_TraVe extends javax.swing.JPanel {
     }//GEN-LAST:event_btnTimVeActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        // ⚡ IN TẬP VÉ - In tất cả vé trong hóa đơn (không hiển thị thông báo, delay 2s giữa các vé)
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn hóa đơn cần in tập vé!",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
+        System.out.println("🖨️ In tập vé cho hóa đơn: " + maHoaDon);
+        
+        // Lấy danh sách vé từ database
+        List<Ve> danhSachVe = veDAO.findByMaHoaDon(maHoaDon);
+        
+        if (danhSachVe == null || danhSachVe.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Không có vé nào để in!",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // In từng vé với delay 2 giây
+        new Thread(() -> {
+            for (int i = 0; i < danhSachVe.size(); i++) {
+                Ve ve = danhSachVe.get(i);
+                System.out.println("🖨️ In vé " + (i + 1) + "/" + danhSachVe.size() + ": " + ve.getMaVe());
+                
+                ThermalPrinter.printTicket(ve);
+                
+                // Delay 2 giây trước khi in vé tiếp theo (trừ vé cuối cùng)
+                if (i < danhSachVe.size() - 1) {
+                    try {
+                        Thread.sleep(2000); // 2 giây
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            System.out.println("✅ Đã hoàn thành in " + danhSachVe.size() + " vé");
+        }).start();
+        
+        // Không hiển thị thông báo
     }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
