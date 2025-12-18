@@ -18,7 +18,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
-import util.SessionManager;
+import utils.SessionManager;
 
 
 public class Main extends javax.swing.JFrame {
