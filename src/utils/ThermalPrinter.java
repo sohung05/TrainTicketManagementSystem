@@ -520,7 +520,7 @@ public class ThermalPrinter implements Printable {
 
                     // ========== MÃ VÉ ==========
                     g2d.setFont(normalFont);
-                    g2d.drawString("Mã vé/TicketID: " + ve.getMaVe(), x, y);
+                    g2d.drawString("MãVé/TicketID: " + ve.getMaVe(), x, y);
                     y += lineHeight + 2;
 
                     // ========== GA ĐI - GA ĐẾN (lớn) ==========
