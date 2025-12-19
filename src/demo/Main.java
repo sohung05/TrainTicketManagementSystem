@@ -47,11 +47,35 @@ public class Main extends javax.swing.JFrame {
         menu = new Menu();
         header = new Header();
         main = new MainForm();
+        
+        // Lấy chức vụ từ session
+        NhanVien nv = SessionManager.getInstance().getNhanVienDangNhap();
+        int chucVu = (nv != null) ? nv.getChucVu() : 0; // Mặc định 0 = Quản lý
+        
+        // DEBUG: Hiển thị thông tin phân quyền
+        if (nv != null) {
+            System.out.println("👤 Đăng nhập: " + nv.getHoTen() + " | Chức vụ: " + chucVu + " (" + (chucVu == 0 ? "Quản lý" : "Nhân viên") + ")");
+        } else {
+            System.out.println("⚠️ Chưa login, dùng quyền mặc định: Quản lý");
+        }
+        
+        // Khởi tạo menu dựa trên chức vụ
+        menu.initMenuItemByRole(chucVu);
+        
         menu.addEvent(new EventMenuSelected() {
             @Override
             public void menuSelected(int menuIndex, int subMenuIndex) {
                 System.out.println("Menu Index : " + menuIndex + " SubMenu Index " + subMenuIndex);
-                switch (menuIndex) {
+                
+                // Nếu là Nhân viên (chucVu = 1), điều chỉnh menu index
+                int adjustedMenuIndex = menuIndex;
+                if (chucVu == 1 && menuIndex >= 3) {
+                    // Nhân viên không thấy menu 3 (Nhân Viên) và 4 (Khuyến Mãi)
+                    // Menu 3 (Thống Kê cho nhân viên) → thực tế là menu 5
+                    adjustedMenuIndex = menuIndex + 2;
+                }
+                
+                switch (adjustedMenuIndex) {
                     case 0: // Dashboard
                         if (subMenuIndex == 0 || subMenuIndex == -1) {
                             main.showForm(new Gui_Dashboard());
@@ -142,7 +166,7 @@ public class Main extends javax.swing.JFrame {
                 popup.setVisible(true);
             }
         });
-        menu.initMenuItem();
+        // menu.initMenuItem(); // ❌ BỎ: Đã init menu theo role ở trên rồi, không cần init lại
         bg.add(menu, "w 230!, spany 2");    // Span Y 2cell
         bg.add(header, "h 50!, wrap");
         bg.add(main, "w 100%, h 100%");

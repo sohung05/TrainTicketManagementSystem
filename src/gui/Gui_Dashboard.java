@@ -351,13 +351,13 @@ public class Gui_Dashboard extends JPanel {
         JComboBox<String> cboFilter = new JComboBox<>(new String[]{"Hôm nay", "Tuần này", "Tháng này"});
         cboFilter.setPreferredSize(new Dimension(120, 28));
         cboFilter.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        cboFilter.setSelectedIndex(1); // Mặc định "Tuần này"
+        cboFilter.setSelectedIndex(0); // Mặc định "Hôm nay"
 
         JDateChooser dateChooser = new JDateChooser();
         dateChooser.setPreferredSize(new Dimension(130, 28));
         dateChooser.setFont(new Font("SansSerif", Font.PLAIN, 12));
         dateChooser.setDateFormatString("dd/MM/yyyy");
-        dateChooser.setDate(new Date());
+        dateChooser.setDate(null); // Mặc định không chọn ngày (để người dùng tự chọn nếu muốn)
 
         JButton btnApply = new JButton("Áp dụng");
         btnApply.setPreferredSize(new Dimension(85, 28));
@@ -371,7 +371,8 @@ public class Gui_Dashboard extends JPanel {
         filterPanel.add(btnApply);
 
         // ================= TABLE =================
-        Map<String, Integer> soChoConTrong = dashboardDAO.getSoChoNgoiConTrongTheoTuyen();
+        // Mặc định load dữ liệu "Hôm nay"
+        Map<String, Integer> soChoConTrong = dashboardDAO.getSoChoNgoiConTrongTheoTuyen(LocalDate.now());
         JTable tuyenTable = createTuyenTable(soChoConTrong);
 
         scrollPaneTuyen = new JScrollPane(tuyenTable);
@@ -379,28 +380,31 @@ public class Gui_Dashboard extends JPanel {
 
         // ================= EVENT: BẤM ÁP DỤNG =================
         btnApply.addActionListener(e -> {
-            LocalDate ngayLoc = null;
-            int filterIndex = cboFilter.getSelectedIndex();
-
-            switch (filterIndex) {
-                case 0: // Hôm nay
-                    ngayLoc = LocalDate.now();
-                    break;
-                case 1: // Tuần này
-                    ngayLoc = LocalDate.now().minusDays(7);
-                    break;
-                case 2: // Tháng này
-                    ngayLoc = LocalDate.now().minusMonths(1);
-                    break;
-            }
-
-            // Nếu có chọn ngày cụ thể trong dateChooser
+            LocalDate ngayLoc;
+            
+            // Ưu tiên: Nếu người dùng chọn ngày trong date picker → dùng ngày đó
             if (dateChooser.getDate() != null) {
                 ngayLoc = dateChooser.getDate().toInstant()
                         .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                System.out.println("🔍 Lọc số chỗ trống | Chọn ngày: " + ngayLoc);
+            } else {
+                // Nếu không chọn ngày cụ thể → dùng combo box
+                int filterIndex = cboFilter.getSelectedIndex();
+                switch (filterIndex) {
+                    case 0: // Hôm nay
+                        ngayLoc = LocalDate.now();
+                        break;
+                    case 1: // Tuần này (tính từ hôm nay trở về trước 7 ngày)
+                        ngayLoc = LocalDate.now().minusDays(7);
+                        break;
+                    case 2: // Tháng này (tính từ hôm nay trở về trước 1 tháng)
+                        ngayLoc = LocalDate.now().minusMonths(1);
+                        break;
+                    default:
+                        ngayLoc = LocalDate.now();
+                }
+                System.out.println("🔍 Lọc số chỗ trống | Filter: " + cboFilter.getSelectedItem() + " | Ngày: " + ngayLoc);
             }
-
-            System.out.println("🔍 Lọc số chỗ trống | Filter: " + cboFilter.getSelectedItem() + " | Ngày: " + ngayLoc);
 
             // Reload bảng với ngày lọc
             Map<String, Integer> newData = dashboardDAO.getSoChoNgoiConTrongTheoTuyen(ngayLoc);
