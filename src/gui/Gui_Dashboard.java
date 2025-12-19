@@ -126,6 +126,7 @@ public class Gui_Dashboard extends JPanel {
             soVeDataset.addValue(soVeTheoThang.getOrDefault(thang, 0), "Số vé", String.valueOf(thang));
         }
 
+
         // ================= COMBO CHART (BAR + LINE) =================
         JFreeChart comboChart = ChartFactory.createBarChart(
                 "Xu hướng doanh thu & Số vé theo theo tháng " + nam,

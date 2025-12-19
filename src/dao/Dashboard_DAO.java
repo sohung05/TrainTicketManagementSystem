@@ -88,15 +88,19 @@ public class Dashboard_DAO {
         Map<Integer, Double> data = new LinkedHashMap<>();
 
         String sql = """
-            SELECT 
-                MONTH(hd.ngayTao) AS Thang,
-                SUM(cthd.giaVe * cthd.soLuong) AS DoanhThu
-            FROM HoaDon hd
-            JOIN ChiTietHoaDon cthd ON hd.maHoaDon = cthd.maHoaDon
-            WHERE YEAR(hd.ngayTao) = ?
-            GROUP BY MONTH(hd.ngayTao)
-            ORDER BY Thang
-        """;
+    SELECT 
+        MONTH(hd.ngayTao) AS Thang,
+        ISNULL(SUM(cthd.giaVe * cthd.soLuong), 0) AS DoanhThu
+    FROM HoaDon hd
+    JOIN ChiTietHoaDon cthd ON hd.maHoaDon = cthd.maHoaDon
+    JOIN Ve v ON v.maVe = cthd.maVe
+    WHERE YEAR(hd.ngayTao) = ?
+      AND hd.trangThai = 1     -- hóa đơn hợp lệ / đã thanh toán
+      AND v.trangThai = 1      -- loại vé đã trả
+    GROUP BY MONTH(hd.ngayTao)
+    ORDER BY Thang
+""";
+
 
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -151,16 +155,17 @@ public double getDoanhThuMotThang(int thang, int nam) {
         Map<Integer, Integer> data = new LinkedHashMap<>();
 
         String sql = """
-        SELECT MONTH(hd.ngayTao) AS Thang,
-                                         COUNT(DISTINCT v.maVe) AS SoVe
-                                  FROM HoaDon hd
-                                  JOIN ChiTietHoaDon cthd ON hd.maHoaDon = cthd.maHoaDon
-                                  JOIN Ve v ON cthd.maVe = v.maVe
-                                  WHERE YEAR(hd.ngayTao) = ?
-                                  GROUP BY MONTH(hd.ngayTao)
-                                  ORDER BY Thang
-                
-    """;
+    SELECT MONTH(hd.ngayTao) AS Thang,
+           COUNT(DISTINCT v.maVe) AS SoVe
+    FROM HoaDon hd
+    JOIN ChiTietHoaDon cthd ON hd.maHoaDon = cthd.maHoaDon
+    JOIN Ve v ON cthd.maVe = v.maVe
+    WHERE YEAR(hd.ngayTao) = ?
+      AND hd.trangThai = 1     -- hóa đơn hợp lệ / đã thanh toán
+      AND v.trangThai = 1      -- loại vé đã trả
+    GROUP BY MONTH(hd.ngayTao)
+    ORDER BY Thang
+""";
 
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -226,19 +231,22 @@ public int getSoVeBanMotThang(int thang, int nam) {
         Map<String, Double> data = new LinkedHashMap<>();
 
         String sql = """
-        SELECT 
-            t.maTuyen,
-            SUM(hd.tongTien) AS doanhThu
-        FROM Tuyen t
-        JOIN LichTrinh lt ON t.maTuyen = lt.maTuyen
-        JOIN Ve v ON lt.maLichTrinh = v.maLichTrinh
-        JOIN ChiTietHoaDon cthd ON v.maVe = cthd.maVe
-        JOIN HoaDon hd ON cthd.maHoaDon = hd.maHoaDon
-        WHERE MONTH(hd.gioTao) = 12
-          AND YEAR(hd.gioTao) = YEAR(GETDATE())
-        GROUP BY t.maTuyen
-        ORDER BY doanhThu DESC
-    """;
+    SELECT 
+        t.maTuyen,
+        SUM(cthd.giaVe * cthd.soLuong) AS doanhThu
+    FROM Tuyen t
+    JOIN LichTrinh lt ON t.maTuyen = lt.maTuyen
+    JOIN Ve v ON lt.maLichTrinh = v.maLichTrinh
+    JOIN ChiTietHoaDon cthd ON v.maVe = cthd.maVe
+    JOIN HoaDon hd ON cthd.maHoaDon = hd.maHoaDon
+    WHERE hd.trangThai = 1        -- hóa đơn hợp lệ
+      AND v.trangThai = 1         -- loại vé đã trả
+      AND MONTH(hd.gioTao) = 12
+      AND YEAR(hd.gioTao) = YEAR(GETDATE())
+    GROUP BY t.maTuyen
+    ORDER BY doanhThu DESC
+""";
+
 
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -259,52 +267,6 @@ public int getSoVeBanMotThang(int thang, int nam) {
     }
 
 
-    public Map<String, Double> getSoTuyenTheoThang() {
-        Map<String, Double> data = new HashMap<>();
-        String sqlThangNay = "SELECT COUNT(DISTINCT maLichTrinh) AS tuyen FROM Ve " +
-                "WHERE MONTH(ngayBan) = ? AND YEAR(ngayBan) = ?";
-        String sqlThangTruoc = "SELECT COUNT(DISTINCT maLichTrinh) AS tuyen FROM Ve " +
-                "WHERE MONTH(ngayBan) = ? AND YEAR(ngayBan) = ?";
-
-        LocalDate now = LocalDate.now();
-        int thangNay = now.getMonthValue();
-        int namNay = now.getYear();
-        int thangTruoc = thangNay == 1 ? 12 : thangNay - 1;
-        int namTruoc = thangNay == 1 ? namNay - 1 : namNay;
-
-        try (Connection con = getConnection();
-             PreparedStatement pst1 = con.prepareStatement(sqlThangNay);
-             PreparedStatement pst2 = con.prepareStatement(sqlThangTruoc)) {
-
-            // Tháng này
-            pst1.setInt(1, thangNay);
-            pst1.setInt(2, namNay);
-            try (ResultSet rs = pst1.executeQuery()) {
-                if (rs.next()) data.put("thangNay", rs.getDouble("tuyen"));
-            }
-
-            // Tháng trước
-            pst2.setInt(1, thangTruoc);
-            pst2.setInt(2, namTruoc);
-            try (ResultSet rs = pst2.executeQuery()) {
-                if (rs.next()) data.put("thangTruoc", rs.getDouble("tuyen"));
-            }
-
-            // Tính % thay đổi
-            double thangNayVal = data.getOrDefault("thangNay", 0.0);
-            double thangTruocVal = data.getOrDefault("thangTruoc", 0.0);
-            double pt = 0.0;
-            if (thangTruocVal != 0) {
-                pt = ((thangNayVal - thangTruocVal) / thangTruocVal) * 100;
-            }
-            data.put("pt", pt);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return data;
-    }
 
     public Map<String, Double> getThongKeNgay(LocalDate today) {
         Map<String, Double> thongKe = new LinkedHashMap<>();
