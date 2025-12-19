@@ -306,7 +306,7 @@ public class ThermalPrinter implements Printable {
 
             // "Lưu ý:" in đậm
             g2d.setFont(new Font("SansSerif", Font.BOLD, 6));
-            g2d.drawString("Luu y:", x, y);
+            g2d.drawString("Lưu ý:", x, y);
             y += 10;
 
             // Nội dung lưu ý in thường

@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.util.Locale;
 
 import java.util.Map;
+import com.toedter.calendar.JDateChooser;
+import java.util.Date;
 
 // JFreeChart
 import org.jfree.chart.ChartFactory;
@@ -48,12 +50,12 @@ public class Gui_Dashboard extends JPanel {
 
     private Dashboard_DAO dashboardDAO;
     private JPanel panelChart;
+    private JScrollPane scrollPaneTuyen; // Reference để update lại bảng
 
     public Gui_Dashboard() {
         setLayout(new BorderLayout());
         connectDB.getConnection();
         dashboardDAO = new Dashboard_DAO();
-
 
         // ================= PANEL THỐNG KÊ =================
 
@@ -284,18 +286,14 @@ public class Gui_Dashboard extends JPanel {
                 tk.getOrDefault("soVeBan", 0.0),
                 tk.getOrDefault("soVeTra", 0.0)
         );
-        Map<String, Integer> soChoConTrong = dashboardDAO.getSoChoNgoiConTrongTheoTuyen();
-        JTable tuyenTable = createTuyenTable(soChoConTrong);
-
-        JScrollPane scrollPane = new JScrollPane(tuyenTable);
-        scrollPane.setPreferredSize(new Dimension(400, 300));
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Số chỗ trống theo tuyến"));
+        // ================= PANEL BẢNG SỐ CHỖ TRỐNG =================
+        JPanel tuyenWrapPanel = createTuyenPanel();
 
 // Panel bên phải
         JPanel rightPanel = new JPanel(new BorderLayout(0, 10));
         rightPanel.setBackground(Color.WHITE);
         rightPanel.add(piePanel, BorderLayout.NORTH);
-        rightPanel.add(scrollPane, BorderLayout.CENTER);
+        rightPanel.add(tuyenWrapPanel, BorderLayout.CENTER);
 
 // ================= CHART PANEL =================
         ChartPanel tuyenChartPanel = new ChartPanel(chart);
@@ -338,6 +336,87 @@ public class Gui_Dashboard extends JPanel {
         card.add(v, BorderLayout.CENTER);
         return v;
     }
+    /**
+     * Tạo panel chứa filter + bảng số chỗ trống theo tuyến
+     */
+    private JPanel createTuyenPanel() {
+        JPanel wrapper = new JPanel(new BorderLayout(0, 5));
+        wrapper.setBackground(Color.WHITE);
+        wrapper.setBorder(BorderFactory.createTitledBorder("Số chỗ trống theo tuyến"));
+
+        // ================= FILTER PANEL =================
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
+        filterPanel.setBackground(Color.WHITE);
+
+        JComboBox<String> cboFilter = new JComboBox<>(new String[]{"Hôm nay", "Tuần này", "Tháng này"});
+        cboFilter.setPreferredSize(new Dimension(120, 28));
+        cboFilter.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        cboFilter.setSelectedIndex(1); // Mặc định "Tuần này"
+
+        JDateChooser dateChooser = new JDateChooser();
+        dateChooser.setPreferredSize(new Dimension(130, 28));
+        dateChooser.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        dateChooser.setDateFormatString("dd/MM/yyyy");
+        dateChooser.setDate(new Date());
+
+        JButton btnApply = new JButton("Áp dụng");
+        btnApply.setPreferredSize(new Dimension(85, 28));
+        btnApply.setBackground(new Color(0, 120, 215));
+        btnApply.setForeground(Color.WHITE);
+        btnApply.setFont(new Font("SansSerif", Font.BOLD, 12));
+        btnApply.setFocusPainted(false);
+
+        filterPanel.add(cboFilter);
+        filterPanel.add(dateChooser);
+        filterPanel.add(btnApply);
+
+        // ================= TABLE =================
+        Map<String, Integer> soChoConTrong = dashboardDAO.getSoChoNgoiConTrongTheoTuyen();
+        JTable tuyenTable = createTuyenTable(soChoConTrong);
+
+        scrollPaneTuyen = new JScrollPane(tuyenTable);
+        scrollPaneTuyen.setPreferredSize(new Dimension(400, 250));
+
+        // ================= EVENT: BẤM ÁP DỤNG =================
+        btnApply.addActionListener(e -> {
+            LocalDate ngayLoc = null;
+            int filterIndex = cboFilter.getSelectedIndex();
+
+            switch (filterIndex) {
+                case 0: // Hôm nay
+                    ngayLoc = LocalDate.now();
+                    break;
+                case 1: // Tuần này
+                    ngayLoc = LocalDate.now().minusDays(7);
+                    break;
+                case 2: // Tháng này
+                    ngayLoc = LocalDate.now().minusMonths(1);
+                    break;
+            }
+
+            // Nếu có chọn ngày cụ thể trong dateChooser
+            if (dateChooser.getDate() != null) {
+                ngayLoc = dateChooser.getDate().toInstant()
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            }
+
+            System.out.println("🔍 Lọc số chỗ trống | Filter: " + cboFilter.getSelectedItem() + " | Ngày: " + ngayLoc);
+
+            // Reload bảng với ngày lọc
+            Map<String, Integer> newData = dashboardDAO.getSoChoNgoiConTrongTheoTuyen(ngayLoc);
+            JTable newTable = createTuyenTable(newData);
+            scrollPaneTuyen.setViewportView(newTable);
+            scrollPaneTuyen.revalidate();
+            scrollPaneTuyen.repaint();
+        });
+
+        // ================= LAYOUT =================
+        wrapper.add(filterPanel, BorderLayout.NORTH);
+        wrapper.add(scrollPaneTuyen, BorderLayout.CENTER);
+
+        return wrapper;
+    }
+
     private JTable createTuyenTable(Map<String, Integer> soChoNgoiTheoTuyen) {
         String[] columns = {"Tuyến", "Số ghế trống"};
 

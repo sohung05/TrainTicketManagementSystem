@@ -99,6 +99,32 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
         
         // Thêm listener cho nút "Xóa"
         btnXoa.addActionListener(evt -> btnXoaActionPerformed(evt));
+        
+        // Thêm listener để tự động điền thông tin người đặt vé từ vé đầu tiên
+        setupAutoFillCustomerInfo();
+    }
+    
+    /**
+     * Tự động điền thông tin người đặt vé từ vé đầu tiên
+     */
+    private void setupAutoFillCustomerInfo() {
+        modelThongTinVe.addTableModelListener(e -> {
+            // Lấy thông tin từ dòng đầu tiên (row 0)
+            if (modelThongTinVe.getRowCount() > 0) {
+                String soGiayTo = modelThongTinVe.getValueAt(0, 0) != null ? 
+                                  modelThongTinVe.getValueAt(0, 0).toString() : "";
+                String hoTen = modelThongTinVe.getValueAt(0, 1) != null ? 
+                               modelThongTinVe.getValueAt(0, 1).toString() : "";
+                
+                // Chỉ tự động điền nếu các trường đang trống
+                if (txtCCCD.getText().trim().isEmpty()) {
+                    txtCCCD.setText(soGiayTo);
+                }
+                if (txtHoTen.getText().trim().isEmpty()) {
+                    txtHoTen.setText(hoTen);
+                }
+            }
+        });
     }
     
     /**

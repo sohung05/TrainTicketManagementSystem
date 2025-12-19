@@ -904,16 +904,16 @@ public class Gui_BanVe extends javax.swing.JPanel {
                     LoaiToa loaiToa = new LoaiToa("LTOA001", "Ngồi mềm điều hòa");
                     toa.setLoaiToa(loaiToa);
                 } else {
-                    LoaiToa loaiToa = new LoaiToa("LTOA002", "Giường nằm điều hòa");
+                    LoaiToa loaiToa = new LoaiToa("LTOA002", "Giường nằm khoang 6 điều hòa");
                     toa.setLoaiToa(loaiToa);
                 }
                 toa.setMaToa("FAKE-T" + String.format("%02d", i));
             } else if (i >= 6 && i <= 10) {
-                // Fix: Nếu toa 6-10 từ DB có tên sai (VIP, v.v.), override thành "Giường nằm điều hòa"
+                // Fix: Nếu toa 6-10 từ DB có tên sai (VIP, v.v.), override thành "Giường nằm khoang 6 điều hòa"
                 if (toa.getLoaiToa() != null) {
                     String tenLoai = toa.getLoaiToa().getTenLoaiToa();
                     if (tenLoai == null || !tenLoai.contains("Giường nằm")) {
-                        LoaiToa loaiToaMoi = new LoaiToa(toa.getLoaiToa().getMaLoaiToa(), "Giường nằm điều hòa");
+                        LoaiToa loaiToaMoi = new LoaiToa(toa.getLoaiToa().getMaLoaiToa(), "Giường nằm khoang 6 điều hòa");
                         toa.setLoaiToa(loaiToaMoi);
                     }
                 }
@@ -1182,20 +1182,23 @@ public class Gui_BanVe extends javax.swing.JPanel {
                     
                     // Set màu dựa trên trạng thái
                     if (daDat) {
-                        // Ghế đã được đặt => màu đỏ, không cho click
-                        btnGhe.setBackground(new Color(255, 102, 102));
+                        // Ghế đã được đặt => màu đỏ đậm full, không cho click
+                        btnGhe.setBackground(new Color(220, 53, 69));
+                        btnGhe.setForeground(Color.WHITE);
                         btnGhe.setEnabled(false);
-                        btnGhe.setBorder(BorderFactory.createLineBorder(new Color(200, 0, 0), 1));
+                        btnGhe.setBorder(BorderFactory.createLineBorder(new Color(180, 40, 55), 2));
                     } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi(), lt.getMaLichTrinh())) {
-                        // Ghế đang được giữ chỗ (15 phút) => màu VÀNG, không cho click
-                        btnGhe.setBackground(new Color(255, 255, 0));
+                        // Ghế đang được giữ chỗ (15 phút) => màu vàng đậm full, không cho click
+                        btnGhe.setBackground(new Color(255, 193, 7));
+                        btnGhe.setForeground(Color.WHITE);
                         btnGhe.setEnabled(false);
-                        btnGhe.setBorder(BorderFactory.createLineBorder(new Color(255, 204, 0), 2));
+                        btnGhe.setBorder(BorderFactory.createLineBorder(new Color(220, 165, 0), 2));
                         btnGhe.setToolTipText("Ghế đang được giữ chỗ (15 phút)");
                     } else if (kiemTraGheDangDuocChon(choFinal)) {
-                        // Ghế đang được chọn => màu xanh
-                        btnGhe.setBackground(new Color(153, 204, 255));
-                        btnGhe.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                        // Ghế đang được chọn => màu xanh đậm full
+                        btnGhe.setBackground(new Color(0, 120, 215));
+                        btnGhe.setForeground(Color.WHITE);
+                        btnGhe.setBorder(BorderFactory.createLineBorder(new Color(0, 100, 180), 2));
                         
                         // Click để bỏ chọn
                         btnGhe.addActionListener(e -> {
@@ -1291,20 +1294,23 @@ public class Gui_BanVe extends javax.swing.JPanel {
             
             // Set màu dựa trên trạng thái
             if (daDat) {
-                // Ghế đã được đặt => màu đỏ, không cho click
-                btnGhe.setBackground(new Color(255, 102, 102));
+                // Ghế đã được đặt => màu đỏ đậm full, không cho click
+                btnGhe.setBackground(new Color(220, 53, 69));
+                btnGhe.setForeground(Color.WHITE);
                 btnGhe.setEnabled(false);
-                btnGhe.setBorder(BorderFactory.createLineBorder(new Color(200, 0, 0), 1));
+                btnGhe.setBorder(BorderFactory.createLineBorder(new Color(180, 40, 55), 2));
             } else if (QuanLyGheGiuCho.kiemTraGheDangGiuCho(choNgoi.getMaChoNgoi(), lt.getMaLichTrinh())) {
-                // Ghế đang được giữ chỗ (5 phút) => màu VÀNG, không cho click
-                btnGhe.setBackground(new Color(255, 255, 0));
+                // Ghế đang được giữ chỗ (5 phút) => màu vàng đậm full, không cho click
+                btnGhe.setBackground(new Color(255, 193, 7));
+                btnGhe.setForeground(Color.WHITE);
                 btnGhe.setEnabled(false);
-                btnGhe.setBorder(BorderFactory.createLineBorder(new Color(255, 204, 0), 2));
+                btnGhe.setBorder(BorderFactory.createLineBorder(new Color(220, 165, 0), 2));
                 btnGhe.setToolTipText("Ghế đang được giữ chỗ (5 phút)");
             } else if (kiemTraGheDangDuocChon(choFinal)) {
-                // Ghế đang được chọn => màu xanh
-                btnGhe.setBackground(new Color(153, 204, 255));
-                btnGhe.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                // Ghế đang được chọn => màu xanh đậm full
+                btnGhe.setBackground(new Color(0, 120, 215));
+                btnGhe.setForeground(Color.WHITE);
+                btnGhe.setBorder(BorderFactory.createLineBorder(new Color(0, 100, 180), 2));
                 
                 // Click để bỏ chọn
                 btnGhe.addActionListener(e -> {
@@ -1362,21 +1368,23 @@ public class Gui_BanVe extends javax.swing.JPanel {
         boolean dangChon = kiemTraGheDangDuocChon(cho);
         
         if (daDat) {
-            // Ghế đã đặt - màu đỏ, disable
-            btn.setBackground(new Color(255, 51, 51));
+            // Ghế đã đặt - màu đỏ đậm full, disable
+            btn.setBackground(new Color(220, 53, 69));
             btn.setForeground(Color.WHITE);
             btn.setEnabled(false);
+            btn.setBorder(BorderFactory.createLineBorder(new Color(180, 40, 55), 2));
         } else if (dangGiuCho) {
-            // Ghế đang được giữ chỗ (15 phút) - màu VÀNG, disable
-            btn.setBackground(new Color(255, 255, 0));
-            btn.setForeground(Color.BLACK);
+            // Ghế đang được giữ chỗ (15 phút) - màu vàng đậm full, disable
+            btn.setBackground(new Color(255, 193, 7));
+            btn.setForeground(Color.WHITE);
             btn.setEnabled(false);
-            btn.setBorder(BorderFactory.createLineBorder(new Color(255, 204, 0), 2));
+            btn.setBorder(BorderFactory.createLineBorder(new Color(220, 165, 0), 2));
             btn.setToolTipText("Ghế đang được giữ chỗ (15 phút)");
         } else if (dangChon) {
-            // Ghế đang chọn - màu xanh
-            btn.setBackground(new Color(153, 204, 255));
-            btn.setForeground(Color.BLACK);
+            // Ghế đang chọn - màu xanh đậm full
+            btn.setBackground(new Color(0, 120, 215));
+            btn.setForeground(Color.WHITE);
+            btn.setBorder(BorderFactory.createLineBorder(new Color(0, 100, 180), 2));
         } else {
             // Ghế trống - màu trắng
             btn.setBackground(Color.WHITE);
