@@ -97,6 +97,7 @@ public class Gui_Dashboard extends JPanel {
         loadChart();
     }
 
+
     public void capNhatKhachHangMoi(Map<String, Double> thongKe, JLabel lblKhachHang) {
         // Lấy số khách hàng mới, nếu không có dữ liệu thì mặc định = 0
         double soKhachMoi = thongKe.getOrDefault("ptKhachHang", 0.0);

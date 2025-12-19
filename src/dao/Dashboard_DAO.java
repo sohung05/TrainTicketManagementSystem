@@ -12,80 +12,6 @@ import static connectDB.connectDB.getConnection;
 
 public class Dashboard_DAO {
 
-    // === 1️⃣ LẤY DANH SÁCH 10 VÉ GẦN ĐÂY ===
-    public List<Ve> getDanhSachVeGanDay() {
-        List<Ve> list = new ArrayList<>();
-        Connection con = getConnection();
-        if (con == null) {
-            System.err.println("❌ Không thể kết nối database trong Dashboard_DAO!");
-            return list;
-        }
-
-        String sql = """
-            SELECT TOP 10 maVe, tenKhachHang, soCCCD, thoiGianLenTau, giaVe
-            FROM Ve
-            ORDER BY thoiGianLenTau DESC
-        """;
-
-        try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Ve v = new Ve();
-                v.setMaVe(rs.getString("maVe"));
-                v.setTenKhachHang(rs.getString("tenKhachHang"));
-                v.setSoCCCD(rs.getString("soCCCD"));
-                Timestamp t = rs.getTimestamp("thoiGianLenTau");
-                if (t != null) v.setThoiGianLenTau(t.toLocalDateTime());
-                v.setGiaVe(rs.getDouble("giaVe"));
-                list.add(v);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // === 2️⃣ LẤY DANH SÁCH LỊCH TRÌNH GẦN ĐÂY ===
-    public List<Object[]> getLichTrinhGanDay() {
-        List<Object[]> list = new ArrayList<>();
-        Connection con = getConnection();
-        if (con == null) {
-            System.err.println("❌ Không thể kết nối CSDL trong getLichTrinhGanDay!");
-            return list;
-        }
-
-        String sql = """
-            SELECT TOP 10 
-                lt.maLichTrinh,
-                t.tenTuyen,
-                gaDi.tenGa AS gaDi,
-                lt.gioKhoiHanh,
-                lt.gioDenDuKien AS gioDen
-            FROM LichTrinh lt
-            JOIN Tuyen t ON lt.maTuyen = t.maTuyen
-            LEFT JOIN Ga gaDi ON lt.maGaDi = gaDi.maGa
-            ORDER BY lt.gioKhoiHanh DESC
-        """;
-
-        try (Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                list.add(new Object[]{
-                        rs.getString("maLichTrinh"),
-                        rs.getString("tenTuyen"),
-                        rs.getString("gaDi"),
-                        rs.getTimestamp("gioKhoiHanh"),
-                        rs.getTimestamp("gioDen")
-                });
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-
     public Map<String, Double> getThongKeTongQuan() {
         Map<String, Double> data = new HashMap<>();
 
@@ -190,13 +116,15 @@ public double getDoanhThuMotThang(int thang, int nam) {
     double doanhThu = 0;
 
     String sql = """
-        SELECT ISNULL(SUM(cthd.giaVe * cthd.soLuong), 0) AS DoanhThu
-        FROM HoaDon hd
-        JOIN ChiTietHoaDon cthd ON hd.maHoaDon = cthd.maHoaDon
-        WHERE MONTH(hd.ngayTao) = ?
-          AND YEAR(hd.ngayTao) = ?
-          AND hd.trangThai = 1
-    """;
+    SELECT ISNULL(SUM(cthd.giaVe * cthd.soLuong), 0) AS DoanhThu
+    FROM HoaDon hd
+    JOIN ChiTietHoaDon cthd ON hd.maHoaDon = cthd.maHoaDon
+    JOIN Ve v ON v.maVe = cthd.maVe
+    WHERE hd.trangThai = 1
+      AND v.trangThai = 1       -- chỉ tính vé chưa trả
+      AND MONTH(hd.ngayTao) = ?
+      AND YEAR(hd.ngayTao) = ?
+""";
 
     // Tạo connection mới riêng cho phương thức này
     try (Connection con = getConnection();
@@ -252,15 +180,16 @@ public double getDoanhThuMotThang(int thang, int nam) {
 
 public int getSoVeBanMotThang(int thang, int nam) {
     int soVe = 0;
-    String sql = """
-        SELECT COUNT(DISTINCT v.maVe)
-        FROM Ve v
-        JOIN ChiTietHoaDon ct ON ct.maVe = v.maVe
-        JOIN HoaDon hd ON hd.maHoaDon = ct.maHoaDon
-        WHERE hd.trangThai = 1
-          AND MONTH(hd.ngayTao) = ?
-          AND YEAR(hd.ngayTao) = ?
-    """;
+            String sql = """
+    SELECT COUNT(DISTINCT v.maVe)
+    FROM Ve v
+    JOIN ChiTietHoaDon ct ON ct.maVe = v.maVe
+    JOIN HoaDon hd ON hd.maHoaDon = ct.maHoaDon
+    WHERE hd.trangThai = 1        -- hóa đơn hợp lệ / đã thanh toán
+      AND v.trangThai = 1         -- chỉ tính vé chưa trả
+      AND MONTH(hd.ngayTao) = ?
+      AND YEAR(hd.ngayTao) = ?
+""";
 
     try (Connection con = getConnection();
          PreparedStatement ps = con.prepareStatement(sql)) {
