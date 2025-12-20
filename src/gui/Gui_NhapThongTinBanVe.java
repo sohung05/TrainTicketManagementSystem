@@ -448,6 +448,7 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
         txtHoTen = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
         btnTiepTucThanhToan = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(234, 243, 251));
 
@@ -562,7 +563,7 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
                 .addGroup(pnlNguoiDatVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtCCCD)
                     .addComponent(txtSDT, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 180, Short.MAX_VALUE)
                 .addGroup(pnlNguoiDatVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblHoTen)
                     .addComponent(lblEmail))
@@ -570,7 +571,7 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
                 .addGroup(pnlNguoiDatVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtHoTen)
                     .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(180, Short.MAX_VALUE))
         );
         pnlNguoiDatVeLayout.setVerticalGroup(
             pnlNguoiDatVeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -596,12 +597,15 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
 
         btnTiepTucThanhToan.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnTiepTucThanhToan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/payment.png"))); // NOI18N
-        btnTiepTucThanhToan.setText("Tiếp tục thanh toán");
+        btnTiepTucThanhToan.setText("Thanh toán tiền mặt");
         btnTiepTucThanhToan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTiepTucThanhToanActionPerformed(evt);
             }
         });
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/qr.png"))); // NOI18N
+        jButton1.setText("Thanh toán chuyển khoản");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -618,10 +622,12 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
                         .addComponent(btnQuayLai, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(470, 470, 470)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(129, 129, 129)
                 .addComponent(btnTiepTucThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(440, Short.MAX_VALUE))
+                .addGap(288, 288, 288))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
@@ -634,11 +640,13 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
                 .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQuayLai, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 643, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 642, Short.MAX_VALUE)
                 .addComponent(pnlNguoiDatVe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnTiepTucThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnTiepTucThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(93, 93, 93)
@@ -780,6 +788,7 @@ public class Gui_NhapThongTinBanVe extends javax.swing.JPanel {
     private javax.swing.JButton btnTiepTucThanhToan;
     private javax.swing.JButton btnXoa;
     private javax.swing.JButton btnXoaTatCa;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel lblCCCD;
     private javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblHoTen;
