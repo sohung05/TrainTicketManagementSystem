@@ -4,6 +4,8 @@
  */
 package gui;
 
+import utils.SessionManager;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.*;
