@@ -4,6 +4,8 @@
  */
 package gui;
 
+import utils.SessionManager;
+
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.*;
@@ -1024,7 +1026,7 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
             
             // Lấy nhân viên từ session
             entity.NhanVien nv = new entity.NhanVien();
-            nv.setMaNhanVien(util.SessionManager.getInstance().getMaNhanVienDangNhap());
+            nv.setMaNhanVien(SessionManager.getInstance().getMaNhanVienDangNhap());
             hoaDon.setNhanVien(nv);
             
             hoaDon.setKhachHang(kh);

@@ -117,7 +117,7 @@ public class Gui_TaiKhoan extends javax.swing.JPanel {
         txtThongTinNhanVien.setText(""); // reset
         txtTenNV.setText("");
         if (maNV == null || maNV.trim().isEmpty()) {
-            txtThongTinNhanVien.setText("Hãy nhập Mã nhân viên để tìm.");
+            txtThongTinNhanVien.setText("Vui lòng chọn nhân viên");
             return;
         }
         NhanVien nv = nhanVienDAO.getById(maNV.trim());
