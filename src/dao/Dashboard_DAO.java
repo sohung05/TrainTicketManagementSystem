@@ -301,66 +301,181 @@ public int getSoVeBanMotThang(int thang, int nam) {
         return thongKe;
     }
 
-    public double getSoKhuyenMaiSapHetHan(int soNgay) {
-        double soLuong = 0;
+    /**
+     * Lấy số chỗ trống theo tuyến (không filter)
+     */
+    public Map<String, Integer> getSoChoNgoiConTrongTheoTuyen() {
+        // Test: Kiểm tra có dữ liệu LichTrinh không
+        testDataAvailability();
+        return getSoChoNgoiConTrongTheoTuyen(null);
+    }
+    
+    /**
+     * Test xem có dữ liệu trong database không
+     */
+    private void testDataAvailability() {
+        try (Connection con = connectDB.getConnection();
+             Statement st = con.createStatement()) {
+            
+            // Đếm số lịch trình
+            ResultSet rs1 = st.executeQuery("SELECT COUNT(*) AS total FROM LichTrinh WHERE gioKhoiHanh >= GETDATE()");
+            if (rs1.next()) {
+                System.out.println("📊 Số lịch trình từ hôm nay: " + rs1.getInt("total"));
+            }
+            
+            // Đếm số ghế
+            ResultSet rs2 = st.executeQuery("SELECT COUNT(*) AS total FROM ChoNgoi");
+            if (rs2.next()) {
+                System.out.println("📊 Tổng số ghế: " + rs2.getInt("total"));
+            }
+            
+            // Đếm số vé đã bán
+            ResultSet rs3 = st.executeQuery("SELECT COUNT(*) AS total FROM Ve WHERE trangThai = 1");
+            if (rs3.next()) {
+                System.out.println("📊 Số vé đã bán (trangThai=1): " + rs3.getInt("total"));
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi test data: " + e.getMessage());
+        }
+    }
 
-        String sql = """
-        SELECT COUNT(*) 
-        FROM KhuyenMai
-        WHERE thoiGianKetThuc >= CAST(GETDATE() AS DATE)
-          AND thoiGianKetThuc <= DATEADD(DAY, ?, CAST(GETDATE() AS DATE))
-    """;
+    /**
+     * Lấy số chỗ trống theo tuyến (có filter theo ngày)
+     * @param tuNgay Nếu null thì lấy từ hôm nay trở đi
+     */
+    public Map<String, Integer> getSoChoNgoiConTrongTheoTuyen(java.time.LocalDate tuNgay) {
+        Map<String, Integer> data = new HashMap<>();
+        
+        // SQL mới: Tính chính xác số ghế trống = Tổng ghế - Ghế đã bán
+        // LƯU Ý: JOIN theo soHieuTau (LichTrinh → ChuyenTau → Toa)
+        String sql = "SELECT \n" +
+                "    g1.tenGa + ' - ' + g2.tenGa AS tuyen,\n" +
+                "    SUM(sub.tongGhe) - SUM(sub.gheDaBan) AS soChoTrong\n" +
+                "FROM (\n" +
+                "    SELECT \n" +
+                "        lt.maLichTrinh,\n" +
+                "        lt.maGaDi,\n" +
+                "        lt.maGaDen,\n" +
+                "        COUNT(DISTINCT c.maChoNgoi) AS tongGhe,\n" +
+                "        COUNT(DISTINCT CASE WHEN v.trangThai = 1 THEN v.maVe END) AS gheDaBan\n" +
+                "    FROM LichTrinh lt\n" +
+                "        JOIN ChuyenTau ct ON lt.soHieuTau = ct.soHieuTau\n" +
+                "        JOIN Toa t ON ct.soHieuTau = t.soHieuTau\n" +
+                "        JOIN ChoNgoi c ON t.maToa = c.maToa\n" +
+                "        LEFT JOIN Ve v ON v.maChoNgoi = c.maChoNgoi \n" +
+                "                       AND v.maLichTrinh = lt.maLichTrinh\n" +
+                "    WHERE lt.gioKhoiHanh >= ?\n" +
+                "    GROUP BY lt.maLichTrinh, lt.maGaDi, lt.maGaDen\n" +
+                ") AS sub\n" +
+                "    JOIN Ga g1 ON sub.maGaDi = g1.maGa\n" +
+                "    JOIN Ga g2 ON sub.maGaDen = g2.maGa\n" +
+                "GROUP BY g1.tenGa, g2.tenGa\n" +
+                "ORDER BY soChoTrong DESC";
 
-        try (Connection con = getConnection();
+        try (Connection con = connectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, soNgay);
-            ResultSet rs = ps.executeQuery();
+            // Nếu tuNgay là null, mặc định từ hôm nay
+            java.time.LocalDate ngayLoc = (tuNgay != null) ? tuNgay : java.time.LocalDate.now();
+            ps.setDate(1, java.sql.Date.valueOf(ngayLoc));
 
-            if (rs.next()) {
-                soLuong = rs.getDouble(1);
+            System.out.println("🔍 SQL Số chỗ trống - Ngày lọc: " + ngayLoc);
+
+            ResultSet rs = ps.executeQuery();
+            int count = 0;
+            while (rs.next()) {
+                String tuyen = rs.getString("tuyen");
+                int soChoTrong = rs.getInt("soChoTrong");
+                data.put(tuyen, soChoTrong);
+                count++;
+                System.out.println("   📊 " + tuyen + ": " + soChoTrong + " ghế trống");
+            }
+            
+            if (count == 0) {
+                System.out.println("⚠️ KHÔNG CÓ DỮ LIỆU! Thử phương án dự phòng...");
+                return getSoChoTrongSimple(ngayLoc);
+
             }
 
         } catch (SQLException e) {
+            System.err.println("❌ Lỗi SQL getSoChoNgoiConTrongTheoTuyen: " + e.getMessage());
             e.printStackTrace();
+            // Fallback: Thử cách đơn giản hơn
+            return getSoChoTrongSimple(tuNgay != null ? tuNgay : java.time.LocalDate.now());
         }
         return soLuong;
     }
 
 
-public Map<String, Integer> getSoChoNgoiConTrongTheoTuyen(int day, int month) {
-    Map<String, Integer> data = new HashMap<>();
+    /**
+     * Phương án dự phòng: Tính số chỗ trống theo cách đơn giản hơn
+     */
+    private Map<String, Integer> getSoChoTrongSimple(java.time.LocalDate ngayLoc) {
+        Map<String, Integer> data = new HashMap<>();
+        System.out.println("🔄 Dùng SQL đơn giản để tính số chỗ trống...");
+        
+        String sql = "SELECT \n" +
+                "    g1.tenGa + ' - ' + g2.tenGa AS tuyen,\n" +
+                "    COUNT(DISTINCT lt.maLichTrinh) AS soChuyenTau,\n" +
+                "    SUM(CASE WHEN v.maVe IS NULL THEN 1 ELSE 0 END) AS soChoTrong\n" +
+                "FROM LichTrinh lt\n" +
+                "    JOIN Ga g1 ON lt.maGaDi = g1.maGa\n" +
+                "    JOIN Ga g2 ON lt.maGaDen = g2.maGa\n" +
+                "    JOIN ChuyenTau ct ON lt.soHieuTau = ct.soHieuTau\n" +
+                "    JOIN Toa t ON ct.soHieuTau = t.soHieuTau\n" +
+                "    JOIN ChoNgoi c ON t.maToa = c.maToa\n" +
+                "    LEFT JOIN Ve v ON v.maChoNgoi = c.maChoNgoi \n" +
+                "                   AND v.maLichTrinh = lt.maLichTrinh \n" +
+                "                   AND v.trangThai = 1\n" +
+                "WHERE lt.gioKhoiHanh >= ?\n" +
+                "GROUP BY g1.tenGa, g2.tenGa\n" +
+                "HAVING COUNT(DISTINCT lt.maLichTrinh) > 0\n" +
+                "ORDER BY soChoTrong DESC";
+        
+        try (Connection con = connectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setDate(1, java.sql.Date.valueOf(ngayLoc));
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                String tuyen = rs.getString("tuyen");
+                int soChuyenTau = rs.getInt("soChuyenTau");
+                int soChoTrong = rs.getInt("soChoTrong");
+                data.put(tuyen, soChoTrong);
+                System.out.println("   📊 " + tuyen + " (" + soChuyenTau + " chuyến): " + soChoTrong + " ghế trống");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi SQL simple: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return data;
+    }
 
-    String sql =
-            "SELECT t.maTuyen, " +
-                    "       COUNT(DISTINCT c.maChoNgoi) AS soChoConTrong " +
-                    "FROM LichTrinh l " +
-                    "JOIN Tuyen t ON l.maTuyen = t.maTuyen " +
-                    "JOIN Toa toa ON l.soHieuTau = toa.soHieuTau " +
-                    "JOIN ChoNgoi c ON toa.maToa = c.maToa " +
-                    "WHERE l.trangThai = 1 " +
-                    "  AND DAY(l.gioKhoiHanh) = ? " +
-                    "  AND MONTH(l.gioKhoiHanh) = ? " +
-                    "  AND NOT EXISTS ( " +
-                    "      SELECT 1 FROM Ve v " +
-                    "      JOIN ChiTietHoaDon ct ON ct.maVe = v.maVe " +
-                    "      WHERE v.maChoNgoi = c.maChoNgoi " +
-                    "        AND v.maLichTrinh = l.maLichTrinh " +
-                    "  ) " +
-                    "GROUP BY t.maTuyen";
+    public Map<String, Integer> getGheTrongTheoTuyen(LocalDate from, LocalDate to) {
+        Map<String, Integer> gheTrongMap = new HashMap<>();
+        String sql = "SELECT lt.maTuyen, COUNT(cn.maChoNgoi) - COUNT(v.maVe) AS GheTrong " +
+                "FROM LichTrinh lt " +
+                "JOIN Toa t ON t.soHieuTau = lt.soHieuTau " +
+                "JOIN ChoNgoi cn ON cn.maToa = t.maToa " +
+                "LEFT JOIN Ve v ON v.maLichTrinh = lt.maLichTrinh AND v.maChoNgoi = cn.maChoNgoi AND v.trangThai = 1 " +
+                "WHERE lt.gioKhoiHanh BETWEEN ? AND ? " +
+                "GROUP BY lt.maTuyen " +
+                "ORDER BY lt.maTuyen";
+        try (Connection con = connectDB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(from));
+            ps.setDate(2, java.sql.Date.valueOf(to));
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                gheTrongMap.put(rs.getString("maTuyen"), rs.getInt("GheTrong"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
 
-    try (Connection con = getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-
-        ps.setInt(1, day);
-        ps.setInt(2, month);
-
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            data.put(
-                    rs.getString("maTuyen"),
-                    rs.getInt("soChoConTrong")
-            );
         }
 
     } catch (SQLException e) {

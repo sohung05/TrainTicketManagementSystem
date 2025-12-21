@@ -122,10 +122,10 @@ public class ThermalPrinter implements Printable {
 
             g2d.setFont(boldFont);
 
-            drawCenteredText(g2d, "CONG TY CO PHAN VAN TAI", y, (int) pageFormat.getImageableWidth());
+            drawCenteredText(g2d, "CÔNG TY CỔ PHẦN VẬN TẢI", y, (int) pageFormat.getImageableWidth());
             y += lineHeight;
 
-            drawCenteredText(g2d, "DUONG SAT SAI GON", y, (int) pageFormat.getImageableWidth());
+            drawCenteredText(g2d, "ĐƯỜNG SẮT HKTA", y, (int) pageFormat.getImageableWidth());
             y += lineHeight;
 
             // Thông tin liên hệ
@@ -144,10 +144,10 @@ public class ThermalPrinter implements Printable {
             y += lineHeight + 5;
 
             // ========================
-            // 2. TIÊU ĐỀ HÓA ĐƠN (giống Dialog_HoaDon)
+            // 2. TIÊU ĐỀ HÓA ĐƠN
             // ========================
             g2d.setFont(titleFont);
-            drawCenteredText(g2d, "HOA DON BAN HANG", y, (int) pageFormat.getImageableWidth());
+            drawCenteredText(g2d, "HÓA ĐƠN BÁN HÀNG", y, (int) pageFormat.getImageableWidth());
             y += lineHeight + 3;
 
             // ========================
@@ -181,7 +181,7 @@ public class ThermalPrinter implements Printable {
             y += lineHeight + 5;
 
             // ========================
-            // 4. TIÊU ĐỀ "Thông tin vé" (giống Dialog_HoaDon)
+            // 4. TIÊU ĐỀ "Thông tin vé"
             // ========================
             g2d.setFont(boldFont);
             g2d.drawString("Thong tin ve", x, y);
@@ -274,7 +274,7 @@ public class ThermalPrinter implements Printable {
                 double tongGiamGia = hoaDon.tinhTongGiamGia();
                 khuyenMaiStr = hoaDon.getKhuyenMai() + " (-" + formatMoneyFull(tongGiamGia) + " VND)";
             }
-            g2d.drawString("Khuyen mai: " + khuyenMaiStr, x, y);
+            g2d.drawString("khuyến mãi: " + khuyenMaiStr, x, y);
             y += lineHeight;
 
             // LẤY TỔNG TIỀN TỪ DATABASE (đã tính đúng rồi)
@@ -282,7 +282,7 @@ public class ThermalPrinter implements Printable {
             System.out.println("  - Tổng tiền từ DB: " + tongTien);
 
             g2d.setFont(normalFont);
-            String tongTienStr = "Tong tien: " + formatMoneyFull(tongTien) + " VND";
+            String tongTienStr = "Tổng tiền: " + formatMoneyFull(tongTien) + " VND";
             g2d.drawString(tongTienStr, x, y);
             y += lineHeight + 5;
 
@@ -306,7 +306,7 @@ public class ThermalPrinter implements Printable {
 
             // "Lưu ý:" in đậm
             g2d.setFont(new Font("SansSerif", Font.BOLD, 6));
-            g2d.drawString("Luu y:", x, y);
+            g2d.drawString("Lưu ý:", x, y);
             y += 10;
 
             // Nội dung lưu ý in thường
@@ -520,7 +520,7 @@ public class ThermalPrinter implements Printable {
 
                     // ========== MÃ VÉ ==========
                     g2d.setFont(normalFont);
-                    g2d.drawString("Mã vé/TicketID: " + ve.getMaVe(), x, y);
+                    g2d.drawString("MãVé/TicketID: " + ve.getMaVe(), x, y);
                     y += lineHeight + 2;
 
                     // ========== GA ĐI - GA ĐẾN (lớn) ==========

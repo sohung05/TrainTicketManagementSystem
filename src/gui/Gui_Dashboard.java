@@ -12,7 +12,13 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.util.List;
+
+import java.util.Locale;
+
+import java.util.Map;
+import com.toedter.calendar.JDateChooser;
+import java.util.Date;
+
 
 // JFreeChart
 import org.jfree.chart.ChartFactory;
@@ -42,6 +48,7 @@ public class Gui_Dashboard extends JPanel {
     private JLabel lblDoanhThu, lblSoVe, lblKhachHang, lblKhuyenMai;
     private Dashboard_DAO dashboardDAO;
     private JPanel panelChart;
+
     private JTable tuyenTable;
     private JSpinner spinnerNgay;
     private JSpinner spinnerThang;
@@ -273,6 +280,7 @@ public class Gui_Dashboard extends JPanel {
         );
 
 
+
         // ================= BẢNG SỐ CHỖ TRỐNG =================
         Map<String, Integer> soChoConTrong =
                 dashboardDAO.getSoChoNgoiConTrongTheoTuyen(
@@ -319,10 +327,12 @@ public class Gui_Dashboard extends JPanel {
         spinnerNgay.addChangeListener(dateChangeListener);
         spinnerThang.addChangeListener(dateChangeListener);
 
+
 // Panel bên phải
         JPanel rightPanel = new JPanel(new BorderLayout(0, 10));
         rightPanel.setBackground(Color.WHITE);
         rightPanel.add(piePanel, BorderLayout.NORTH);
+
         rightPanel.add(tablePanel, BorderLayout.CENTER);
 
 // ================= CHART PANEL =================
@@ -366,21 +376,104 @@ public class Gui_Dashboard extends JPanel {
         return v;
     }
 
-    private JTable createTuyenTable(Map<String, Integer> map) {
-        String[] cols = {"Tuyến","Số ghế trống"};
+    /**
+     * Tạo panel chứa filter + bảng số chỗ trống theo tuyến
+     */
+    private JPanel createTuyenPanel() {
+        JPanel wrapper = new JPanel(new BorderLayout(0, 5));
+        wrapper.setBackground(Color.WHITE);
+        wrapper.setBorder(BorderFactory.createTitledBorder("Số chỗ trống theo tuyến"));
 
-        modelTuyen = new DefaultTableModel(cols, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+        // ================= FILTER PANEL =================
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
+        filterPanel.setBackground(Color.WHITE);
+
+        JComboBox<String> cboFilter = new JComboBox<>(new String[]{"Hôm nay", "Tuần này", "Tháng này"});
+        cboFilter.setPreferredSize(new Dimension(120, 28));
+        cboFilter.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        cboFilter.setSelectedIndex(0); // Mặc định "Hôm nay"
+
+        JDateChooser dateChooser = new JDateChooser();
+        dateChooser.setPreferredSize(new Dimension(130, 28));
+        dateChooser.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        dateChooser.setDateFormatString("dd/MM/yyyy");
+        dateChooser.setDate(null); // Mặc định không chọn ngày (để người dùng tự chọn nếu muốn)
+
+        JButton btnApply = new JButton("Áp dụng");
+        btnApply.setPreferredSize(new Dimension(85, 28));
+        btnApply.setBackground(new Color(0, 120, 215));
+        btnApply.setForeground(Color.WHITE);
+        btnApply.setFont(new Font("SansSerif", Font.BOLD, 12));
+        btnApply.setFocusPainted(false);
+
+        filterPanel.add(cboFilter);
+        filterPanel.add(dateChooser);
+        filterPanel.add(btnApply);
+
+        // ================= TABLE =================
+        // Mặc định load dữ liệu "Hôm nay"
+        Map<String, Integer> soChoConTrong = dashboardDAO.getSoChoNgoiConTrongTheoTuyen(LocalDate.now());
+        JTable tuyenTable = createTuyenTable(soChoConTrong);
+
+        scrollPaneTuyen = new JScrollPane(tuyenTable);
+        scrollPaneTuyen.setPreferredSize(new Dimension(400, 250));
+
+        // ================= EVENT: BẤM ÁP DỤNG =================
+        btnApply.addActionListener(e -> {
+            LocalDate ngayLoc;
+            
+            // Ưu tiên: Nếu người dùng chọn ngày trong date picker → dùng ngày đó
+            if (dateChooser.getDate() != null) {
+                ngayLoc = dateChooser.getDate().toInstant()
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                System.out.println("🔍 Lọc số chỗ trống | Chọn ngày: " + ngayLoc);
+            } else {
+                // Nếu không chọn ngày cụ thể → dùng combo box
+                int filterIndex = cboFilter.getSelectedIndex();
+                switch (filterIndex) {
+                    case 0: // Hôm nay
+                        ngayLoc = LocalDate.now();
+                        break;
+                    case 1: // Tuần này (tính từ hôm nay trở về trước 7 ngày)
+                        ngayLoc = LocalDate.now().minusDays(7);
+                        break;
+                    case 2: // Tháng này (tính từ hôm nay trở về trước 1 tháng)
+                        ngayLoc = LocalDate.now().minusMonths(1);
+                        break;
+                    default:
+                        ngayLoc = LocalDate.now();
+                }
+                System.out.println("🔍 Lọc số chỗ trống | Filter: " + cboFilter.getSelectedItem() + " | Ngày: " + ngayLoc);
             }
-        };
 
-        for (Map.Entry<String, Integer> e : map.entrySet()) {
-            modelTuyen.addRow(new Object[]{
-                    e.getKey(),
-                    e.getValue()
-            });
+            // Reload bảng với ngày lọc
+            Map<String, Integer> newData = dashboardDAO.getSoChoNgoiConTrongTheoTuyen(ngayLoc);
+            JTable newTable = createTuyenTable(newData);
+            scrollPaneTuyen.setViewportView(newTable);
+            scrollPaneTuyen.revalidate();
+            scrollPaneTuyen.repaint();
+        });
+
+        // ================= LAYOUT =================
+        wrapper.add(filterPanel, BorderLayout.NORTH);
+        wrapper.add(scrollPaneTuyen, BorderLayout.CENTER);
+
+        return wrapper;
+    }
+
+    private JTable createTuyenTable(Map<String, Integer> soChoNgoiTheoTuyen) {
+        String[] columns = {"Tuyến", "Số ghế trống"};
+
+        // Lấy tất cả tuyến, sắp xếp giảm dần theo số ghế
+        List<Map.Entry<String, Integer>> allTuyen = soChoNgoiTheoTuyen.entrySet().stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
+                .toList();
+
+        Object[][] data = new Object[allTuyen.size()][2];
+        for (int i = 0; i < allTuyen.size(); i++) {
+            data[i][0] = allTuyen.get(i).getKey();
+            data[i][1] = allTuyen.get(i).getValue(); // số ghế trống
+
         }
 
         JTable table = new JTable(modelTuyen);

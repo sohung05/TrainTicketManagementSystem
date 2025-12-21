@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import utils.SessionManager;
+
 /**
  * Dialog thanh toán
  * @author PC
@@ -727,11 +729,15 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
             isNhapLai = false;
             isTreoDon = false;
             
-            // ⚡ Lưu parentFrame TRƯỚC KHI dispose (vì sau dispose sẽ mất)
+            // Lưu parentFrame trước khi dispose
             java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
             
             // Đóng dialog thanh toán
             dispose();
+            
+            // ⚡ MỞ DIALOG IN để hỏi người dùng
+            Dialog_In dialogIn = new Dialog_In(parentFrame, true, maHoaDon);
+            dialogIn.setVisible(true);
             
             // ⚡ RELOAD sơ đồ ghế để cập nhật ghế đã bán (màu đỏ)
             Gui_BanVe guiBanVeToReload = null;
@@ -786,7 +792,7 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 }
             }
             
-            // Reload sơ đồ ghế SAU KHI lưu database, TRƯỚC KHI mở Dialog_HoaDon
+            // Reload sơ đồ ghế SAU KHI lưu database
             // ⚡ Sử dụng invokeLater để đảm bảo reload sau khi database đã commit
             final Gui_BanVe finalGuiBanVeToReload = guiBanVeToReload;
             final boolean isFromDonTreo = (donTreo != null);
@@ -807,29 +813,6 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
                 System.out.println("⚠️ Không thể reload sơ đồ ghế vì Gui_BanVe chưa mở");
                 System.out.println("💡 Vé đã lưu vào database. Khi mở lại màn hình bán vé, ghế sẽ hiển thị màu đỏ.");
             }
-            
-            // Mở Dialog_HoaDon (NON-MODAL)
-            Dialog_HoaDon dialogHoaDon;
-            if (donTreo != null) {
-                // Xử lý từ đơn tạm → Dùng constructor nhận donTreo
-                dialogHoaDon = new Dialog_HoaDon(
-                    parentFrame,
-                    false, // ⚡ NON-MODAL: Không chặn luồng
-                    maHoaDon, cccd, hoTen, sdt, email,
-                    soLuongVe, tongTien, khuyenMai,
-                    donTreo
-                );
-            } else {
-                // Bán vé thường → Dùng constructor nhận previousGui
-                dialogHoaDon = new Dialog_HoaDon(
-                    parentFrame,
-                    false, // ⚡ NON-MODAL: Không chặn luồng
-                    maHoaDon, cccd, hoTen, sdt, email,
-                    soLuongVe, tongTien, khuyenMai,
-                    previousGui
-                );
-            }
-            dialogHoaDon.setVisible(true);
             
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
@@ -916,7 +899,7 @@ public class Diglog_ThanhToan extends javax.swing.JDialog {
     public boolean isTreoDon() {
         return isTreoDon;
     }
-
+    
     /**
      * @param args the command line arguments
      */

@@ -6,8 +6,12 @@ import java.awt.event.*;
 import com.toedter.calendar.JDateChooser;
 import java.util.Date;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import dao.Ga_DAO;
+import dao.LichTrinh_DAO;
 import entity.Ga;
+import entity.LichTrinh;
 
 /**
  * Giao diện nhập thông tin hành trình trước khi vào màn hình bán vé
@@ -23,12 +27,14 @@ public class Gui_NhapThongTinHanhTrinh extends JPanel {
     private JButton btnTimKiem;
     private ButtonGroup groupChieu;
     private Ga_DAO gaDAO;
+    private LichTrinh_DAO lichTrinhDAO;
     
     // Callback khi tìm kiếm
     private ThongTinHanhTrinhCallback callback;
     
     public Gui_NhapThongTinHanhTrinh() {
         gaDAO = new Ga_DAO();
+        lichTrinhDAO = new LichTrinh_DAO();
         initComponents();
         loadDanhSachGa();
     }
@@ -285,12 +291,41 @@ public class Gui_NhapThongTinHanhTrinh extends JPanel {
             return;
         }
         
-        // Callback để chuyển sang màn hình bán vé
-        if (callback != null) {
-            ThongTinHanhTrinh info = new ThongTinHanhTrinh(
-                gaDi, gaDen, ngayDi, ngayVe, motChieu
-            );
-            callback.onTimKiem(info);
+        // ⚡ KIỂM TRA XEM CÓ LỊCH TRÌNH PHÙHỢP KHÔNG
+        try {
+            // Convert Date to LocalDate
+            LocalDate localNgayDi = ngayDi.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            
+            // Tìm lịch trình
+            List<LichTrinh> danhSachLichTrinh = lichTrinhDAO.timLichTrinh(gaDi, gaDen, localNgayDi);
+            
+            if (danhSachLichTrinh == null || danhSachLichTrinh.isEmpty()) {
+                // ❌ KHÔNG TÌM THẤY CHUYẾN TÀU → THÔNG BÁO NGAY TẠI ĐÂY
+                JOptionPane.showMessageDialog(this, 
+                    "Không tìm thấy chuyến tàu nào phù hợp!\n" +
+                    "Ga đi: " + gaDi + "\n" +
+                    "Ga đến: " + gaDen + "\n" +
+                    "Ngày: " + localNgayDi + "\n\n" +
+                    "Vui lòng thử lại với thông tin khác.", 
+                    "Thông báo", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                return; // KHÔNG CHO VÀO Gui_BanVe
+            }
+            
+            // ✅ CÓ LỊCH TRÌNH → Callback để chuyển sang màn hình bán vé
+            System.out.println("✅ Tìm thấy " + danhSachLichTrinh.size() + " lịch trình phù hợp!");
+            if (callback != null) {
+                ThongTinHanhTrinh info = new ThongTinHanhTrinh(
+                    gaDi, gaDen, ngayDi, ngayVe, motChieu
+                );
+                callback.onTimKiem(info);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                "Lỗi khi tìm kiếm lịch trình: " + e.getMessage(),
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
     

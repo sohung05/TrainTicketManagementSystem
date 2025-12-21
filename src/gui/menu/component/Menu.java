@@ -60,6 +60,26 @@ public class Menu extends javax.swing.JPanel {
         addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/out.png")), "Đăng Xuất"));
 
     }
+    
+    /**
+     * Khởi tạo menu dựa trên chức vụ
+     * @param chucVu 0 = Quản lý (full quyền), 1 = Nhân viên (hạn chế)
+     */
+    public void initMenuItemByRole(int chucVu) {
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/dashboard.png")), "Dashboard"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/trainticket.png")), "Vé", "Bán Vé", "Trả Vé"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/customer.png")), "Khách Hàng"));
+        
+        // Chỉ Quản lý (chucVu = 0) mới thấy menu Nhân Viên và Khuyến Mãi
+        if (chucVu == 0) {
+            addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/employee.png")), "Nhân Viên"));
+            addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/sale.png")), "Khuyến Mãi", "Khuyến mãi theo hóa đơn", "Khuyến mãi theo đối tượng"));
+        }
+        
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/thongke.png")), "Thống Kê", "Doanh Thu", "Lượt Vé"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/help.png")), "Trợ Giúp"));
+        addMenu(new ModelMenu(new ImageIcon(getClass().getResource("/icon/out.png")), "Đăng Xuất"));
+    }
 
     private void addMenu(ModelMenu menu) {
         panel.add(new MenuItem(menu, getEventMenu(), event, panel.getComponentCount()), "h 40!");
