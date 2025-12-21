@@ -4,23 +4,20 @@ import dao.Dashboard_DAO;
 import connectDB.connectDB;
 
 import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.util.Locale;
-
-import java.util.Map;
+import java.util.List;
 
 // JFreeChart
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
@@ -28,7 +25,6 @@ import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
-
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.AreaRenderer;
@@ -43,42 +39,41 @@ import org.jfree.data.general.DefaultPieDataset;
 
 public class Gui_Dashboard extends JPanel {
 
-
-    private JLabel lblDoanhThu, lblSoVe, lblKhachHang;
-
+    private JLabel lblDoanhThu, lblSoVe, lblKhachHang, lblKhuyenMai;
     private Dashboard_DAO dashboardDAO;
     private JPanel panelChart;
+    private JTable tuyenTable;
+    private JSpinner spinnerNgay;
+    private JSpinner spinnerThang;
+    private DefaultTableModel modelTuyen;
+
 
     public Gui_Dashboard() {
         setLayout(new BorderLayout());
         connectDB.getConnection();
         dashboardDAO = new Dashboard_DAO();
 
-
         // ================= PANEL THỐNG KÊ =================
-
         JPanel panelStats = new JPanel(new GridLayout(1, 4, 20, 10));
         panelStats.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panelStats.setBackground(Color.WHITE);
 
-
         lblDoanhThu = createStatCard("Tổng doanh thu", "0",
-
                 new Color(230, 244, 234), new Color(46, 125, 50));
         lblSoVe = createStatCard("Vé đã bán", "0",
                 new Color(227, 242, 253), new Color(21, 101, 192));
+        lblKhuyenMai = createStatCard("Khuyến mãi sắp hết hạn", "0",
+                new Color(227, 252, 242), new Color(81, 197, 192));
         lblKhachHang = createStatCard("Khách hàng", "0",
                 new Color(255, 248, 225), new Color(245, 124, 0));
 
 
-
         panelStats.add(lblDoanhThu.getParent());
         panelStats.add(lblSoVe.getParent());
+        panelStats.add(lblKhuyenMai.getParent());
         panelStats.add(lblKhachHang.getParent());
 
-
         panelChart = new JPanel(new BorderLayout(20, 0));
-
         panelChart.setPreferredSize(new Dimension(900, 350));
         panelChart.setBackground(Color.WHITE);
         panelChart.setBorder(BorderFactory.createTitledBorder("Thống kê tổng quan"));
@@ -89,23 +84,20 @@ public class Gui_Dashboard extends JPanel {
         SwingUtilities.invokeLater(this::loadData);
     }
 
-
     // ================= LOAD DATA =================
     private void loadData() {
         Map<String, Double> thongKe = dashboardDAO.getThongKeTongQuan();
+        double soKmSapHetHan = dashboardDAO.getSoKhuyenMaiSapHetHan(7);
 
         lblDoanhThu.setText(String.format("%+.1f %% so với tháng trước", thongKe.getOrDefault("doanhThu", 0.0)));
         lblSoVe.setText(String.format("%+.1f %% so với tháng trước", thongKe.getOrDefault("ptVeBan", 0.0)));
-        lblKhachHang.setText(String.format("%+.0f khách hàng mới ", thongKe.getOrDefault("ptKhachHang", 0.0)));
-
+        lblKhuyenMai.setText(String.format("%.0f khuyến mãi", soKmSapHetHan));
+      //  lblKhachHang.setText(String.format("%+.0f khách hàng mới ", thongKe.getOrDefault("ptKhachHang", 0.0)));
 
         loadChart();
     }
-    /**
-     * Cập nhật số lượng khách hàng mới lên label
-     * @param thongKe Map chứa các số liệu thống kê
-     * @param lblKhachHang JLabel để hiển thị kết quả
-     */
+
+
     public void capNhatKhachHangMoi(Map<String, Double> thongKe, JLabel lblKhachHang) {
         // Lấy số khách hàng mới, nếu không có dữ liệu thì mặc định = 0
         double soKhachMoi = thongKe.getOrDefault("ptKhachHang", 0.0);
@@ -115,18 +107,14 @@ public class Gui_Dashboard extends JPanel {
     }
 
 
-    //=================================================================
-    //  LOAD BIỂU ĐỒ ĐÃ SỬA ĐẸP HƠN
-    //=================================================================
     private void loadChart() {
-
         int nam = LocalDate.now().getYear();
         LocalDate today = LocalDate.now();
 
         // ================= DATA =================
         Map<Integer, Double> doanhThuTheoThang = dashboardDAO.getDoanhThuTheoThang(nam);
         Map<Integer, Integer> soVeTheoThang = dashboardDAO.getSoVeTheoThang(nam);
-        Map<String, Double> thongKe = dashboardDAO.getThongKeNgay(today); // Ví dụ gọi DAO
+        Map<String, Double> thongKe = dashboardDAO.getThongKeNgay(today);
         capNhatKhachHangMoi(thongKe, lblKhachHang);
 
 
@@ -136,7 +124,6 @@ public class Gui_Dashboard extends JPanel {
         for (int thang = 1; thang <= 12; thang++) {
             doanhThuDataset.addValue(doanhThuTheoThang.getOrDefault(thang, 0.0), "Doanh thu", String.valueOf(thang));
             soVeDataset.addValue(soVeTheoThang.getOrDefault(thang, 0), "Số vé", String.valueOf(thang));
-
         }
 
 
@@ -201,18 +188,18 @@ public class Gui_Dashboard extends JPanel {
 
 // ================= DANH SÁCH TUYẾN ================
 
-                List<String> danhSachTuyen = Arrays.asList(
-                        "DN-HN",
-                        "HN-DN",
-                        "HN-HUE",
-                        "HN-SG",
-                        "HUE-HN",
-                        "NT-SG",
-                        "PT-SG",
-                        "SG-HN",
-                        "SG-NT",
-                        "SG-PT"
-                );
+        List<String> danhSachTuyen = Arrays.asList(
+                "DN-HN",
+                "HN-DN",
+                "HN-HUE",
+                "HN-SG",
+                "HUE-HN",
+                "NT-SG",
+                "PT-SG",
+                "SG-HN",
+                "SG-NT",
+                "SG-PT"
+        );
 
 // ================= LẤY DỮ LIỆU =================
         Map<String, Double> doanhThuTheoTuyen =
@@ -284,18 +271,59 @@ public class Gui_Dashboard extends JPanel {
                 tk.getOrDefault("soVeBan", 0.0),
                 tk.getOrDefault("soVeTra", 0.0)
         );
-        Map<String, Integer> soChoConTrong = dashboardDAO.getSoChoNgoiConTrongTheoTuyen();
-        JTable tuyenTable = createTuyenTable(soChoConTrong);
 
+
+        // ================= BẢNG SỐ CHỖ TRỐNG =================
+        Map<String, Integer> soChoConTrong =
+                dashboardDAO.getSoChoNgoiConTrongTheoTuyen(
+                        LocalDate.now().getDayOfMonth(),
+                        LocalDate.now().getMonthValue()
+                );
+
+        tuyenTable = createTuyenTable(soChoConTrong);
+
+// ===== TABLE =====
         JScrollPane scrollPane = new JScrollPane(tuyenTable);
-        scrollPane.setPreferredSize(new Dimension(400, 300));
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Số chỗ trống theo tuyến"));
+        scrollPane.setPreferredSize(new Dimension(400, 200));
+
+// ===== PANEL CHỨA NGÀY + THÁNG =====
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+// Spinner Ngày
+        spinnerNgay = new JSpinner(new SpinnerDateModel());
+        spinnerNgay.setEditor(new JSpinner.DateEditor(spinnerNgay, "dd"));
+
+// Spinner Tháng
+        spinnerThang = new JSpinner(new SpinnerDateModel());
+        spinnerThang.setEditor(new JSpinner.DateEditor(spinnerThang, "MM"));
+
+        headerPanel.add(new JLabel("Ngày:"));
+        headerPanel.add(spinnerNgay);
+        headerPanel.add(Box.createHorizontalStrut(10));
+        headerPanel.add(new JLabel("Tháng:"));
+        headerPanel.add(spinnerThang);
+
+        headerPanel.setPreferredSize(new Dimension(400, 35));
+        headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+
+// ===== PANEL CHÍNH =====
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBorder(
+                BorderFactory.createTitledBorder("Số chỗ trống theo tuyến")
+        );
+        tablePanel.add(headerPanel, BorderLayout.NORTH);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+// ===== LISTENER =====
+        ChangeListener dateChangeListener = e -> updateSoChoTrongTheoTuyen();
+        spinnerNgay.addChangeListener(dateChangeListener);
+        spinnerThang.addChangeListener(dateChangeListener);
 
 // Panel bên phải
         JPanel rightPanel = new JPanel(new BorderLayout(0, 10));
         rightPanel.setBackground(Color.WHITE);
         rightPanel.add(piePanel, BorderLayout.NORTH);
-        rightPanel.add(scrollPane, BorderLayout.CENTER);
+        rightPanel.add(tablePanel, BorderLayout.CENTER);
 
 // ================= CHART PANEL =================
         ChartPanel tuyenChartPanel = new ChartPanel(chart);
@@ -333,32 +361,31 @@ public class Gui_Dashboard extends JPanel {
         JLabel v = new JLabel(value, SwingConstants.CENTER);
         v.setFont(new Font("Segoe UI", Font.BOLD, 18));
         v.setForeground(fg);
-
         card.add(t, BorderLayout.NORTH);
         card.add(v, BorderLayout.CENTER);
         return v;
     }
-    private JTable createTuyenTable(Map<String, Integer> soChoNgoiTheoTuyen) {
-        String[] columns = {"Tuyến", "Số ghế trống"};
 
-        // Lấy tất cả tuyến, sắp xếp giảm dần theo số ghế
-        List<Map.Entry<String, Integer>> allTuyen = soChoNgoiTheoTuyen.entrySet().stream()
-                .sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
-                .toList();
+    private JTable createTuyenTable(Map<String, Integer> map) {
+        String[] cols = {"Tuyến","Số ghế trống"};
 
-        Object[][] data = new Object[allTuyen.size()][2];
-        for (int i = 0; i < allTuyen.size(); i++) {
-            data[i][0] = allTuyen.get(i).getKey();
-            data[i][1] = allTuyen.get(i).getValue(); // số ghế trống
+        modelTuyen = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
+            modelTuyen.addRow(new Object[]{
+                    e.getKey(),
+                    e.getValue()
+            });
         }
 
-        JTable table = new JTable(data, columns);
-        table.setFillsViewportHeight(true);
+        JTable table = new JTable(modelTuyen);
         table.setRowHeight(25);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setShowGrid(true);
-        table.setGridColor(Color.LIGHT_GRAY);
-
+        table.setFillsViewportHeight(true);
         return table;
     }
 
@@ -376,12 +403,48 @@ public class Gui_Dashboard extends JPanel {
         ChartPanel panel = new ChartPanel(chart);
         panel.setPreferredSize(new Dimension(400, 300));
 
-
         JPanel wrap = new JPanel(new BorderLayout());
         wrap.setBackground(Color.WHITE);
         wrap.add(panel);
         return wrap;
+    }
+    private void updateSoChoTrongTheoTuyen() {
+        Date ngay = (Date) spinnerNgay.getValue();
+        Date thang = (Date) spinnerThang.getValue();
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(ngay);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        cal.setTime(thang);
+        int month = cal.get(Calendar.MONTH) + 1;
+
+        modelTuyen.setRowCount(0);
+
+        Map<String, Integer> data =
+                dashboardDAO.getSoChoNgoiConTrongTheoTuyen(day, month);
+
+        for (Map.Entry<String, Integer> e : data.entrySet()) {
+            modelTuyen.addRow(new Object[]{
+                    e.getKey(),
+                    e.getValue()
+            });
+        }
+    }
+
+    private void loadTableSoChoTrong(int day, int month) {
+        DefaultTableModel model = (DefaultTableModel) tuyenTable.getModel();
+        model.setRowCount(0);
+
+        Map<String, Integer> data =
+                dashboardDAO.getSoChoNgoiConTrongTheoTuyen(day, month);
+
+        for (Map.Entry<String, Integer> entry : data.entrySet()) {
+            model.addRow(new Object[]{
+                    entry.getKey(),
+                    entry.getValue()
+            });
+        }
     }
 
 }
