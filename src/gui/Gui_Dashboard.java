@@ -88,6 +88,7 @@ public class Gui_Dashboard extends JPanel {
         add(panelStats, BorderLayout.NORTH);
         add(panelChart, BorderLayout.CENTER);
 
+
         SwingUtilities.invokeLater(this::loadData);
     }
 
@@ -504,6 +505,7 @@ public class Gui_Dashboard extends JPanel {
     private void updateSoChoTrongTheoTuyen() {
         Date ngay = (Date) spinnerNgay.getValue();
         Date thang = (Date) spinnerThang.getValue();
+
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(ngay);

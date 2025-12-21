@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.Date;
 
+
 import static connectDB.connectDB.getConnection;
 
 public class Dashboard_DAO {
@@ -454,6 +455,7 @@ public int getSoVeBanMotThang(int thang, int nam) {
         
         return data;
     }
+
 
     public Map<String, Integer> getGheTrongTheoTuyen(LocalDate from, LocalDate to) {
         Map<String, Integer> gheTrongMap = new HashMap<>();

@@ -164,5 +164,46 @@ public class Gui_ThongKeDoanhThu extends JPanel {
 
         return statsPanel;
 
+
+    // =================== CẬP NHẬT BẢNG ===================
+    private void capNhatBang(List<HoaDon> ds) {
+        tableModel.setRowCount(0);
+
+        for (HoaDon hd : ds) {
+            double tongTien = hd.getDanhSachChiTiet().stream()
+                    .mapToDouble(ChiTietHoaDon::tinhThanhTien)
+                    .sum();
+
+            tableModel.addRow(new Object[]{
+                    hd.getMaHoaDon(),
+                    hd.getNhanVien().getMaNhanVien(),
+                    hd.getKhachHang().getMaKH(),
+                    hd.getNgayTao(),
+                    hd.getGioTao(),
+                    String.format("%,.0f", tongTien)
+            });
+        }
+    }
+
+    // =================== CẬP NHẬT BIỂU ĐỒ ===================
+    private void capNhatBieuDo(List<HoaDon> ds) {
+        for (int i = 1; i <= 31; i++)
+            dataset.setValue(0, "Doanh thu", String.valueOf(i));
+
+        for (HoaDon hd : ds) {
+            if (hd.getNgayTao() == null) continue;
+
+            int day = hd.getNgayTao().getDayOfMonth();
+
+            double sum = hd.getDanhSachChiTiet().stream()
+                    .filter(ct -> ct.getMucGiam() >= 0) // loại vé trả
+                    .mapToDouble(ChiTietHoaDon::tinhThanhTien)
+                    .sum();
+
+
+            double old = dataset.getValue("Doanh thu", String.valueOf(day)).doubleValue();
+            dataset.setValue(old + sum, "Doanh thu", String.valueOf(day));
+        }
+
     }
 }
