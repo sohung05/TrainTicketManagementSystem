@@ -1,5 +1,6 @@
 package demo;
 
+import entity.NhanVien;
 import gui.*;
 import gui.menu.component.Header;
 import gui.menu.component.Menu;
@@ -17,6 +18,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
+import utils.SessionManager;
 
 
 public class Main extends javax.swing.JFrame {
@@ -31,6 +33,12 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         init();
         setExtendedState(getExtendedState() | javax.swing.JFrame.MAXIMIZED_BOTH);
+        NhanVien nv = SessionManager.getInstance().getNhanVienDangNhap();
+
+        // Truyền vào header
+        if (header != null && nv != null) {
+            header.setNhanVien(nv);
+        }
     }
 
     private void init() {
@@ -39,19 +47,47 @@ public class Main extends javax.swing.JFrame {
         menu = new Menu();
         header = new Header();
         main = new MainForm();
+        
+        // Lấy chức vụ từ session
+        NhanVien nv = SessionManager.getInstance().getNhanVienDangNhap();
+        int chucVu = (nv != null) ? nv.getChucVu() : 0; // Mặc định 0 = Quản lý
+        
+        // DEBUG: Hiển thị thông tin phân quyền
+        if (nv != null) {
+            System.out.println("👤 Đăng nhập: " + nv.getHoTen() + " | Chức vụ: " + chucVu + " (" + (chucVu == 0 ? "Quản lý" : "Nhân viên") + ")");
+        } else {
+            System.out.println("⚠️ Chưa login, dùng quyền mặc định: Quản lý");
+        }
+        
+        // ✅ QUAN TRỌNG: Phải SET EVENT TRƯỚC khi init menu!
         menu.addEvent(new EventMenuSelected() {
             @Override
             public void menuSelected(int menuIndex, int subMenuIndex) {
-                System.out.println("Menu Index : " + menuIndex + " SubMenu Index " + subMenuIndex);
-                switch (menuIndex) {
+                System.out.println("📍 Menu clicked - Index: " + menuIndex + " | SubMenu: " + subMenuIndex + " | ChucVu: " + chucVu);
+                
+                // Nếu là Nhân viên (chucVu = 1), điều chỉnh menu index
+                int adjustedMenuIndex = menuIndex;
+                if (chucVu == 1 && menuIndex >= 3) {
+                    // Nhân viên không thấy menu 3 (Nhân Viên) và 4 (Khuyến Mãi)
+                    // Menu 3 (Thống Kê cho nhân viên) → thực tế là menu 5
+                    adjustedMenuIndex = menuIndex + 2;
+                    System.out.println("   🔄 Điều chỉnh index: " + menuIndex + " → " + adjustedMenuIndex);
+                }
+                
+                System.out.println("   ✅ Xử lý case: " + adjustedMenuIndex);
+                switch (adjustedMenuIndex) {
                     case 0: // Dashboard
+                        System.out.println("      📊 Menu Dashboard");
                         if (subMenuIndex == 0 || subMenuIndex == -1) {
+                            System.out.println("      ✅ Mở Dashboard");
                             main.showForm(new Gui_Dashboard());
                         }
                         break;
                     case 1: // Vé
+                        System.out.println("      🎫 Menu Vé - SubIndex: " + subMenuIndex);
                         switch (subMenuIndex) {
                             case 0: // Bán Vé
+                                System.out.println("      ✅ Mở Bán Vé");
                                 // Tạo màn hình nhập thông tin hành trình
                                 Gui_NhapThongTinHanhTrinh guiNhapThongTin = new Gui_NhapThongTinHanhTrinh();
                                 
@@ -68,45 +104,68 @@ public class Main extends javax.swing.JFrame {
                                 main.showForm(guiNhapThongTin);
                                 break;
                             case 1: // Trả Vé
+                                System.out.println("      ✅ Mở Trả Vé");
                                 main.showForm(new Gui_TraVe());
                                 break;
                             case 2: // Đổi Vé
+                                System.out.println("      ✅ Mở Đổi Vé");
                                 main.showForm(new Gui_DoiVe());
+                                break;
+                            default:
+                                System.out.println("      ⚠️ SubIndex không hợp lệ: " + subMenuIndex);
                                 break;
                         }
                         break;
                     case 2: // Khách Hàng
+                        System.out.println("      👥 Menu Khách Hàng");
                         if (subMenuIndex == 0 || subMenuIndex == -1) {
+                            System.out.println("      ✅ Mở Khách Hàng");
                             main.showForm(new Gui_KhachHang());
                         }
                         break;
                     case 3: // Nhân Viên
+                        System.out.println("      👤 Menu Nhân Viên");
                         if (subMenuIndex == 0 || subMenuIndex == -1) {
+                            System.out.println("      ✅ Mở Nhân Viên");
                             main.showForm(new Gui_NhanVien());
                         }
                         break;
                     case 4: // Khuyễn Mãi
+                        System.out.println("      🎁 Menu Khuyến Mãi - SubIndex: " + subMenuIndex);
                         switch (subMenuIndex) {
                             case 0: // Khuyến mãi theo hóa đơn
+                                System.out.println("      ✅ Mở KM Hóa Đơn");
                                 main.showForm(new Gui_KhuyenMaiHoaDon());
                                 break;
                             case 1: // Khuyến mãi theo đối tượng
+                                System.out.println("      ✅ Mở KM Đối Tượng");
                                 main.showForm(new Gui_KhuyenMaiDoiTuong());
+                                break;
+                            default:
+                                System.out.println("      ⚠️ SubIndex không hợp lệ: " + subMenuIndex);
                                 break;
                         }
                         break;
                     case 5: // Thống Kê
+                        System.out.println("      📊 Menu Thống Kê - SubIndex: " + subMenuIndex);
                         switch (subMenuIndex) {
                             case 0: // Doanh Thu
+                                System.out.println("      ✅ Mở TK Doanh Thu");
                                 main.showForm(new Gui_ThongKeDoanhThu());
                                 break;
                             case 1: // Lượt Vé
+                                System.out.println("      ✅ Mở TK Lượt Vé");
                                 main.showForm(new Gui_ThongKeLuotVe());
+                                break;
+                            default:
+                                System.out.println("      ⚠️ SubIndex không hợp lệ: " + subMenuIndex);
                                 break;
                         }
                         break;
                     case 6: // Trợ Giúp
-                        if (subMenuIndex == 0) {
+                        System.out.println("      ❓ Menu Trợ Giúp");
+                        if (subMenuIndex == 0 || subMenuIndex == -1) {
+                            System.out.println("      ✅ Mở Trợ Giúp");
                             try {
                                 java.awt.Desktop.getDesktop().browse(new java.net.URI("https://example.com/help"));
                             } catch (Exception e) {
@@ -115,14 +174,33 @@ public class Main extends javax.swing.JFrame {
                         }
                         break;
                     case 7: // Đăng Xuất
-                        if (subMenuIndex == 0) {
-                            System.exit(0); // Thoát ứng dụng
+                        System.out.println("      🚪 Menu Đăng Xuất");
+                        if (subMenuIndex == 0 || subMenuIndex == -1) {
+                            System.out.println("      ✅ Đăng xuất - Quay lại màn hình đăng nhập");
+                            
+                            // Clear session
+                            utils.SessionManager.getInstance().logout();
+                            
+                            // Mở lại màn hình đăng nhập
+                            javax.swing.SwingUtilities.invokeLater(() -> {
+                                LoginFrame loginFrame = new LoginFrame();
+                                loginFrame.setVisible(true);
+                            });
+                            
+                            // Đóng màn hình chính hiện tại
+                            javax.swing.SwingUtilities.getWindowAncestor(main).dispose();
                         }
                         break;
-
+                    default:
+                        System.out.println("      ❌ Menu không hợp lệ: " + adjustedMenuIndex);
+                        break;
                 }
             }
         });
+        
+        // ✅ QUAN TRỌNG: Init menu SAU khi đã set event!
+        menu.initMenuItemByRole(chucVu);
+        
         menu.addEventShowPopup(new EventShowPopupMenu() {
             @Override
             public void showPopup(Component com) {
@@ -134,7 +212,7 @@ public class Main extends javax.swing.JFrame {
                 popup.setVisible(true);
             }
         });
-        menu.initMenuItem();
+        // menu.initMenuItem(); // ❌ BỎ: Đã init menu theo role ở trên rồi, không cần init lại
         bg.add(menu, "w 230!, spany 2");    // Span Y 2cell
         bg.add(header, "h 50!, wrap");
         bg.add(main, "w 100%, h 100%");
@@ -237,14 +315,7 @@ public class Main extends javax.swing.JFrame {
                 javax.swing.JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
-        
-        // Set session mặc định cho nhân viên admin (để test không cần login)
-        entity.NhanVien nvAdmin = new entity.NhanVien();
-        nvAdmin.setMaNhanVien("NV24030001");
-        nvAdmin.setHoTen("Nguyễn Văn An");
-        nvAdmin.setEmail("nva@railway.vn");
-        util.SessionManager.getInstance().setNhanVienDangNhap(nvAdmin);
-        System.out.println("✅ Đã set session cho nhân viên: " + nvAdmin.getMaNhanVien() + " - " + nvAdmin.getHoTen());
+
         
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

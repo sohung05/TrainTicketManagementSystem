@@ -1,8 +1,7 @@
 package gui;
 
-import dao.ThongKeDoanhThu_DAO;
-import entity.HoaDon;
-import entity.ChiTietHoaDon;
+
+import com.toedter.calendar.JDateChooser;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -14,29 +13,22 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.List;
+
 
 public class Gui_ThongKeDoanhThu extends JPanel {
 
     private JLabel lblDoanhThu, lblSoHoaDon, lblHoaDonTra, lblSoVeTra;
-
     private JTable table;
     private DefaultTableModel tableModel;
-
-    private JComboBox<String> cbThang, cbNam;
-
-    private DefaultCategoryDataset dataset;
-    private ChartPanel chartPanel;
-
-    private final ThongKeDoanhThu_DAO tkDAO = new ThongKeDoanhThu_DAO();
 
     public Gui_ThongKeDoanhThu() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
+        // =================== PANEL LỌC ĐƯA LÊN TRÊN CÙNG ===================
         add(createFilterPanel(), BorderLayout.NORTH);
 
+        // =================== PANEL CHỨA 4 CARD + BIỂU ĐỒ + BẢNG ===================
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(Color.WHITE);
 
@@ -46,18 +38,22 @@ public class Gui_ThongKeDoanhThu extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
     }
 
-    // ===================  PANEL 4 CARD ===================
+    // =================== 4 CARD THỐNG KÊ (MÀU TRẮNG - CHỮ XÁM) ===================
     private JPanel createStatCardsPanel() {
         JPanel panelStats = new JPanel(new GridLayout(1, 4, 20, 10));
         panelStats.setBorder(new EmptyBorder(10, 20, 10, 20));
         panelStats.setBackground(Color.WHITE);
 
-        Color textGray = new Color(60, 60, 60);
+        Color textGray = new Color(60, 60, 60); // Xám đậm
 
-        lblDoanhThu = createStatCard("Tổng doanh thu trong tháng", "0 ₫", Color.WHITE, textGray);
-        lblSoHoaDon = createStatCard("Số hóa đơn trong tháng", "0", Color.WHITE, textGray);
-        lblHoaDonTra = createStatCard("Số hóa đơn trả", "0", Color.WHITE, textGray);
-        lblSoVeTra = createStatCard("Số vé trả", "0", Color.WHITE, textGray);
+        lblDoanhThu = createStatCard("Tổng doanh thu trong tháng", "0 ₫",
+                Color.WHITE, textGray);
+        lblSoHoaDon = createStatCard("Số hóa đơn trong tháng", "0",
+                Color.WHITE, textGray);
+        lblHoaDonTra = createStatCard("Số hóa đơn trả", "0",
+                Color.WHITE, textGray);
+        lblSoVeTra = createStatCard("Số vé trả", "0",
+                Color.WHITE, textGray);
 
         panelStats.add(lblDoanhThu.getParent());
         panelStats.add(lblSoHoaDon.getParent());
@@ -68,7 +64,9 @@ public class Gui_ThongKeDoanhThu extends JPanel {
     }
 
     private JLabel createStatCard(String title, String value, Color bg, Color textColor) {
-        JPanel panel = new JPanel(new BorderLayout());
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         panel.setBackground(bg);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200, 200, 200)),
@@ -90,21 +88,20 @@ public class Gui_ThongKeDoanhThu extends JPanel {
         return lblValue;
     }
 
-    // =================== PANEL LỌC ===================
+    // =================== PANEL LỌC (TRÊN ĐẦU) ===================
     private JPanel createFilterPanel() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBorder(BorderFactory.createTitledBorder("Lọc"));
         p.setBackground(Color.WHITE);
 
         String[] months = {"01","02","03","04","05","06","07","08","09","10","11","12"};
-        cbThang = new JComboBox<>(months);
+        JComboBox<String> cbThang = new JComboBox<>(months);
 
         String[] years = new String[51];
         for (int i = 0; i <= 50; i++) years[i] = String.valueOf(2020 + i);
-        cbNam = new JComboBox<>(years);
+        JComboBox<String> cbNam = new JComboBox<>(years);
 
         JButton btnLoc = new JButton("Lọc");
-        btnLoc.addActionListener(this::thucHienLoc);
 
         p.add(new JLabel("Tháng:"));
         p.add(cbThang);
@@ -121,74 +118,52 @@ public class Gui_ThongKeDoanhThu extends JPanel {
         statsPanel.setBackground(Color.WHITE);
 
         // ===== BIỂU ĐỒ =====
-        dataset = new DefaultCategoryDataset();
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        for (int i = 1; i <= 31; i++)
-            dataset.addValue(0, "Doanh thu", String.valueOf(i));
+        for (int day = 1; day <= 31; day++) {
+            dataset.addValue(0, "Doanh thu", String.valueOf(day));
+        }
 
         JFreeChart barChart = ChartFactory.createBarChart(
-                "Doanh thu theo ngày",
+                "Doanh thu theo ngày - Tháng 12/2025",
                 "Ngày",
-                "Doanh thu (VNĐ)",
+                "Doanh thu",
                 dataset
         );
 
-        CategoryPlot plot = barChart.getCategoryPlot();
-        plot.setBackgroundPaint(Color.WHITE);
-        plot.setRangeGridlinePaint(Color.GRAY);
+         // Nền tổng thể chart
+        barChart.setBackgroundPaint(Color.WHITE);
 
-        chartPanel = new ChartPanel(barChart);
+         // Lấy plot để chỉnh nền vùng hiển thị cột
+        CategoryPlot plot = barChart.getCategoryPlot();
+        plot.setBackgroundPaint(Color.WHITE);      // nền vùng cột
+        plot.setRangeGridlinePaint(Color.GRAY); // màu lưới ngang
+
+        ChartPanel chartPanel = new ChartPanel(barChart);
 
         JPanel chartWrapper = new JPanel(new BorderLayout());
+       // chartWrapper.setBorder(BorderFactory.createTitledBorder("Doanh thu các ngày trong tháng"));
         chartWrapper.setPreferredSize(new Dimension(1000, 350));
         chartWrapper.add(chartPanel, BorderLayout.CENTER);
 
         statsPanel.add(chartWrapper, BorderLayout.NORTH);
 
+
         // ===== BẢNG =====
-        String[] cols = {"Mã hóa đơn", "Mã nhân viên", "Mã khách hàng", "Ngày tạo", "Giờ tạo", "Tổng tiền"};
+        String[] cols = {"Mã hóa đơn", "Mã nhân viên", "Mã khách hàng",
+                "Ngày tạo", "Giờ tạo", "Tổng tiền"};
+
         tableModel = new DefaultTableModel(cols, 0);
         table = new JTable(tableModel);
 
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(1000, 200));
         scrollPane.setBorder(BorderFactory.createTitledBorder("Thông tin hóa đơn"));
 
         statsPanel.add(scrollPane, BorderLayout.CENTER);
 
         return statsPanel;
-    }
 
-    // =================== SỰ KIỆN LỌC ===================
-    private void thucHienLoc(ActionEvent e) {
-        int thang = Integer.parseInt(cbThang.getSelectedItem().toString());
-        int nam = Integer.parseInt(cbNam.getSelectedItem().toString());
-
-        List<HoaDon> dsHD = tkDAO.loadHoaDonTheoThangNam(thang, nam);
-
-        capNhat4Card(dsHD, thang, nam);
-        capNhatBang(dsHD);
-        capNhatBieuDo(dsHD);
-    }
-
-    // =================== CẬP NHẬT 4 CARD ===================
-    private void capNhat4Card(List<HoaDon> ds, int thang, int nam) {
-        lblSoHoaDon.setText(String.valueOf(ds.size()));
-
-        long hoaDonTra = ds.stream().filter(h -> !h.isTrangThai()).count();
-        lblHoaDonTra.setText(String.valueOf(hoaDonTra));
-
-        int soVeTra = 0;
-        for (HoaDon hd : ds) {
-            for (ChiTietHoaDon ct : hd.getDanhSachChiTiet()) {
-                if (ct.getMucGiam() == -1)      // tuỳ bạn định nghĩa vé trả như nào
-                    soVeTra++;
-            }
-        }
-        lblSoVeTra.setText(String.valueOf(soVeTra));
-
-        double tongDT = tkDAO.getTongDoanhThu(thang, nam);
-        lblDoanhThu.setText(String.format("%,.0f ₫", tongDT));
-    }
 
     // =================== CẬP NHẬT BẢNG ===================
     private void capNhatBang(List<HoaDon> ds) {
@@ -229,5 +204,6 @@ public class Gui_ThongKeDoanhThu extends JPanel {
             double old = dataset.getValue("Doanh thu", String.valueOf(day)).doubleValue();
             dataset.setValue(old + sum, "Doanh thu", String.valueOf(day));
         }
+
     }
 }

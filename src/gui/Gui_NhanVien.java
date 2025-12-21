@@ -59,8 +59,10 @@ public class Gui_NhanVien extends javax.swing.JPanel {
                     String gioiTinh = String.valueOf(modelNhanVien.getValueAt(modelRow, 4));
                     if ("Nam".equalsIgnoreCase(gioiTinh)) {
                         radNam.setSelected(true);
+                        radNu.setSelected(false);
                     } else {
                         radNu.setSelected(true);
+                        radNam.setSelected(false);
                     }
                     txtDiaChi.setText(String.valueOf(modelNhanVien.getValueAt(modelRow, 5)));
                     txtEmail.setText(String.valueOf(modelNhanVien.getValueAt(modelRow, 6)));
@@ -170,9 +172,8 @@ public class Gui_NhanVien extends javax.swing.JPanel {
             txtDiaChi.requestFocus();
             return false;
         }
-        // Ràng buộc: Không chứa kí tự đặc biệt ngoại trừ ( , )
-        if (!diaChi.matches("^[a-zA-Z0-9\\s,/-]*$")) { // Cho phép chữ, số, khoảng trắng, dấu phẩy, gạch chéo, gạch nối
-            JOptionPane.showMessageDialog(this, "Địa chỉ không hợp lệ! (Chỉ cho phép: chữ, số, khoảng trắng, ',', '/', '-').", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (!diaChi.matches("^[\\p{L}0-9\\s,./-]+$")) {
+            JOptionPane.showMessageDialog(this, "Địa chỉ chứa ký tự đặc biệt không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             txtDiaChi.requestFocus();
             return false;
         }
@@ -223,7 +224,6 @@ public class Gui_NhanVien extends javax.swing.JPanel {
         nv.setChucVu(1); // 1 = Nhân viên (mặc định)
         nv.setTrangThai(trangThai);
         nv.setNgaySinh(ngaySinh);
-        // Ngày vào làm sẽ được gán trong btnThemActionPerformed
         nv.setNgayVaoLam(null);
         nv.setGioiTinh(gioiTinh);
 

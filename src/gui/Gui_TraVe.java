@@ -6,8 +6,11 @@ package gui;
 
 import dao.HoaDon_DAO;
 import dao.Ve_DAO;
+import dao.ChiTietHoaDon_DAO;
 import entity.HoaDon;
 import entity.Ve;
+import entity.ChiTietHoaDon;
+import utils.ThermalPrinter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import java.text.NumberFormat;
@@ -23,6 +26,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
 
     private HoaDon_DAO hoaDonDAO;
     private Ve_DAO veDAO;
+    private ChiTietHoaDon_DAO chiTietHoaDonDAO;
     private DefaultTableModel modelHoaDon;
     private DefaultTableModel modelVe;
     private NumberFormat currencyFormat;
@@ -42,6 +46,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
     private void initDAO() {
         hoaDonDAO = new HoaDon_DAO();
         veDAO = new Ve_DAO();
+        chiTietHoaDonDAO = new ChiTietHoaDon_DAO();
     }
     
     private void initCustomComponents() {
@@ -337,6 +342,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
         btnTimVe = new javax.swing.JButton();
         btnInVe = new javax.swing.JButton();
         btnTraVe = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(234, 243, 251));
 
@@ -459,22 +465,23 @@ public class Gui_TraVe extends javax.swing.JPanel {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel11)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -562,6 +569,14 @@ public class Gui_TraVe extends javax.swing.JPanel {
             }
         });
 
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon/document-management.png"))); // NOI18N
+        jButton1.setText("In tập vé");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -593,13 +608,15 @@ public class Gui_TraVe extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(btnTimVe)
-                                .addGap(27, 27, 27)
-                                .addComponent(btnInVe)
+                                .addGap(46, 46, 46)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnInVe, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnTimVe, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnTraVe)
-                                .addGap(18, 18, 18)))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnTraVe, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton1))
+                                .addGap(51, 51, 51)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -623,14 +640,17 @@ public class Gui_TraVe extends javax.swing.JPanel {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnTimVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnTraVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnInVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnTraVe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -1047,7 +1067,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
     }//GEN-LAST:event_btnTraVeActionPerformed
 
     private void btnInVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInVeActionPerformed
-        // ⚡ IN VÉ - Mở Dialog_Ve với dữ liệu vé đã chọn
+        // ⚡ IN VÉ - In ra máy in nhiệt
         int selectedRow = jTable2.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(this,
@@ -1092,16 +1112,13 @@ public class Gui_TraVe extends javax.swing.JPanel {
             return;
         }
         
-        // Mở Dialog_Ve
-        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        Dialog_Ve dialogVe = new Dialog_Ve(parentFrame, false, veCanIn);
-        dialogVe.setVisible(true);
-        
-        System.out.println("✅ Đã mở Dialog_Ve cho vé: " + maVe);
+        // In vé (không hiển thị thông báo)
+        ThermalPrinter.printTicket(veCanIn);
+        System.out.println("✅ Đã gửi lệnh in vé: " + maVe);
     }//GEN-LAST:event_btnInVeActionPerformed
     
     private void btnInHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInHoaDonActionPerformed
-        // ⚡ IN HÓA ĐƠN - Mở Dialog_HoaDon và load dữ liệu từ database
+        // ⚡ IN HÓA ĐƠN - In ra máy in nhiệt
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow < 0) {
             JOptionPane.showMessageDialog(this,
@@ -1114,15 +1131,44 @@ public class Gui_TraVe extends javax.swing.JPanel {
         // Lấy mã hóa đơn
         String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
         
-        System.out.println("🖨️ Mở Dialog_HoaDon cho mã: " + maHoaDon);
+        System.out.println("🖨️ In hóa đơn: " + maHoaDon);
         
-        // Mở Dialog_HoaDon với constructor load từ database
-        // Constructor này sẽ tự động load toàn bộ thông tin hóa đơn và vé từ DB
-        java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        Dialog_HoaDon dialogHoaDon = new Dialog_HoaDon(parentFrame, false, maHoaDon);
-        dialogHoaDon.setVisible(true);
+        // Load hóa đơn từ database
+        HoaDon hoaDon = hoaDonDAO.findByMaHoaDon(maHoaDon);
+        if (hoaDon == null) {
+            JOptionPane.showMessageDialog(this,
+                "Không tìm thấy thông tin hóa đơn!",
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
-        System.out.println("✅ Đã mở Dialog_HoaDon với đầy đủ thông tin vé");
+        // Load chi tiết hóa đơn và vé
+        List<ChiTietHoaDon> chiTietList = chiTietHoaDonDAO.findByMaHoaDon(maHoaDon);
+        
+        // Load thông tin vé cho mỗi chi tiết
+        for (ChiTietHoaDon cthd : chiTietList) {
+            Ve ve = veDAO.findByMaVe(cthd.getMaVe());
+            cthd.setVe(ve);
+        }
+        
+        // Set danh sách chi tiết vào hóa đơn (để tính tổng tiền)
+        hoaDon.setDanhSachChiTiet(chiTietList);
+        
+        // In hóa đơn (in trực tiếp không cần hỏi)
+        ThermalPrinter printer = new ThermalPrinter(hoaDon, chiTietList);
+        boolean success = printer.printInvoice(); // In trực tiếp ra máy mặc định
+        
+        if (!success) {
+            JOptionPane.showMessageDialog(this,
+                "❌ Lỗi khi in hóa đơn!\n" +
+                "- Kiểm tra máy in K58 đã được cài đặt chưa?\n" +
+                "- Kiểm tra kết nối USB/Bluetooth\n" +
+                "- Xem Console để biết chi tiết lỗi",
+                "Lỗi In",
+                JOptionPane.ERROR_MESSAGE);
+        }
+        // Không hiển thị thông báo thành công
     }//GEN-LAST:event_btnInHoaDonActionPerformed
     
     private void btnTimVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimVeActionPerformed
@@ -1210,6 +1256,54 @@ public class Gui_TraVe extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnTimVeActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // ⚡ IN TẬP VÉ - In tất cả vé trong hóa đơn (không hiển thị thông báo, delay 2s giữa các vé)
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this,
+                "Vui lòng chọn hóa đơn cần in tập vé!",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        String maHoaDon = modelHoaDon.getValueAt(selectedRow, 0).toString();
+        System.out.println("🖨️ In tập vé cho hóa đơn: " + maHoaDon);
+        
+        // Lấy danh sách vé từ database
+        List<Ve> danhSachVe = veDAO.findByMaHoaDon(maHoaDon);
+        
+        if (danhSachVe == null || danhSachVe.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Không có vé nào để in!",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // In từng vé với delay 2 giây
+        new Thread(() -> {
+            for (int i = 0; i < danhSachVe.size(); i++) {
+                Ve ve = danhSachVe.get(i);
+                System.out.println("🖨️ In vé " + (i + 1) + "/" + danhSachVe.size() + ": " + ve.getMaVe());
+                
+                ThermalPrinter.printTicket(ve);
+                
+                // Delay 2 giây trước khi in vé tiếp theo (trừ vé cuối cùng)
+                if (i < danhSachVe.size() - 1) {
+                    try {
+                        Thread.sleep(2000); // 2 giây
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            System.out.println("✅ Đã hoàn thành in " + danhSachVe.size() + " vé");
+        }).start();
+        
+        // Không hiển thị thông báo
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInHoaDon;
     private javax.swing.JButton btnInVe;
@@ -1218,6 +1312,7 @@ public class Gui_TraVe extends javax.swing.JPanel {
     private javax.swing.JButton btnTraTapVe;
     private javax.swing.JButton btnTraVe;
     private javax.swing.JButton btnXoaTrang;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

@@ -19,8 +19,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,52 +73,96 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
     private boolean validateInput() {
         String ma = jTextField1.getText().trim();
         String ten = jTextField2.getText().trim();
+        String soVeStr = jTextField3.getText().trim();
         Date start = jDateChooser1.getDate();
         Date end = jDateChooser2.getDate();
         String chietKhauStr = jTextField4.getText().trim();
 
+        if (ma == null || ma.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Mã khuyến mãi không được để trống!");
+            jTextField1.requestFocus();
+            return false;
+        }
+
         // --- Kiểm tra mã khuyến mãi ---
         if (ma.isEmpty() || !ma.matches("^KM\\d{8}\\d{2}$")) {
             JOptionPane.showMessageDialog(this,
-                    "❌ Mã khuyến mãi không hợp lệ!\nPhải có dạng: KMddMMyyyyXX");
+                    "Mã khuyến mãi không hợp lệ!\nPhải có dạng: KMddMMyyyyXX");
             jTextField1.requestFocus();
             return false;
         }
 
         // --- Kiểm tra tên ---
         if (ten.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "❌ Tên khuyến mãi không được để trống!");
+            JOptionPane.showMessageDialog(this, "Tên khuyến mãi không được để trống!");
             jTextField2.requestFocus();
+            return false;
+        }
+
+        // Kiểm tra chữ cái đầu phải viết hoa
+        String firstChar = ten.substring(0, 1);
+        if (!firstChar.matches("[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯỲỴÝ]")) {
+            JOptionPane.showMessageDialog(this,
+                    "Chữ cái đầu của tên khuyến mãi phải viết hoa!");
+            jTextField2.requestFocus();
+            return false;
+        }
+
+        String regex = "^Giảm\\s+\\d{1,3}%\\s+khi\\s+đặt\\s+từ\\s+(\\d+\\s*-\\s*\\d+|\\d+)\\s+vé$";
+
+        if (!ten.matches(regex)) {
+            JOptionPane.showMessageDialog(this,
+                    "Tên khuyến mãi có dạng : \n" +
+                            "1. Giảm x% khi đặt từ x vé\n" +
+                            "2. Giảm x% khi đặt từ x - y vé");
+            jTextField2.requestFocus();
+            return false;
+        }
+
+        if (soVeStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Số vé không được để trống!");
+            return false;
+        }
+        if (!soVeStr.matches(("^(≥\\s*)?(\\d+)(\\s*-\\s*\\d+)?\\s*v[eé]$"))) {
+            JOptionPane.showMessageDialog(this,
+                    "Số vé phải có dạng: 'số + 'vé'");
             return false;
         }
 
         // --- Kiểm tra ngày ---
         if (start == null) {
-            JOptionPane.showMessageDialog(this, "❌ Thời gian bắt đầu không được để trống!");
+            JOptionPane.showMessageDialog(this, "Thời gian bắt đầu không được để trống!");
             jDateChooser1.requestFocus();
             return false;
         }
         if (end == null) {
-            JOptionPane.showMessageDialog(this, "❌ Thời gian kết thúc không được để trống!");
+            JOptionPane.showMessageDialog(this, "Thời gian kết thúc không được để trống!");
             jDateChooser2.requestFocus();
             return false;
         }
         if (end.before(start)) {
-            JOptionPane.showMessageDialog(this, "❌ Thời gian kết thúc phải sau thời gian bắt đầu!");
+            JOptionPane.showMessageDialog(this, "Thời gian kết thúc phải sau thời gian bắt đầu!");
             return false;
         }
 
-        // --- Kiểm tra chiết khấu ---
+        if (chietKhauStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Chiết khấu không được để trống!");
+            jTextField4.requestFocus();
+            return false;
+        }
+
         double chietKhau;
         try {
             chietKhau = Double.parseDouble(chietKhauStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải là số!");
+            JOptionPane.showMessageDialog(this, "Chiết khấu phải là số!");
             jTextField4.requestFocus();
             return false;
         }
+
         if (chietKhau <= 0 || chietKhau > 100) {
-            JOptionPane.showMessageDialog(this, "❌ Chiết khấu phải trong khoảng 0 - 100 (%)");
+            JOptionPane.showMessageDialog(this, "Chiết khấu phải trong khoảng 0 - 100 (%)");
             jTextField4.requestFocus();
             return false;
         }
@@ -134,6 +181,56 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
     }
 
     private void initEvent() {
+        // --- SỰ KIỆN: TÌM KIẾM DANH SÁCH THEO TÊN
+        jButton1.addActionListener(e -> {
+            String keyword = jTextField2.getText().trim().toLowerCase();
+            if (keyword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên khuyến mãi để tìm kiếm!");
+                return;
+            }
+
+            DefaultTableModel filteredModel = new DefaultTableModel(
+                    new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Đối tượng",
+                            "Thời gian áp dụng", "Thời gian kết thúc",
+                            "Chiết khấu", "Trạng thái"}, 0
+            );
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                String ten = model.getValueAt(i, 1).toString().toLowerCase();
+
+                if (ten.contains(keyword)) {
+                    Object[] row = new Object[model.getColumnCount()];
+                    for (int j = 0; j < model.getColumnCount(); j++) {
+                        row[j] = model.getValueAt(i, j);
+                    }
+                    filteredModel.addRow(row);
+                }
+            }
+
+            if (filteredModel.getRowCount() > 0) {
+                jTable1.setModel(filteredModel);
+                JOptionPane.showMessageDialog(this,
+                        "Đã tìm thấy " + filteredModel.getRowCount() +
+                                " khuyến mãi có tên chứa: " + keyword);
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy khuyến mãi nào phù hợp!");
+            }
+        });
+
+// --- SỰ KIỆN: CHỌN NGÀY BẮT ĐẦU → TỰ SINH MÃ ---
+        jDateChooser1.addPropertyChangeListener("date", evt -> {
+            Date ngayBatDau = jDateChooser1.getDate();
+            if (ngayBatDau != null) {
+                try {
+                    String maTuDong = KhuyenMai.taoMaKhuyenMaiTheoNgay(ngayBatDau, demKhuyenMai++);
+                    jTextField1.setText(maTuDong);
+                    jTextField1.setEditable(false);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "❌ Lỗi sinh mã: " + ex.getMessage());
+                }
+            }
+        });
         // SỰ KIỆN: Thêm khuyến mãi hóa đơn
         jButton4.addActionListener(e -> {
             if (!validateInput()) {
@@ -142,39 +239,33 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
             try {
                 // === LẤY DỮ LIỆU TỪ FORM ===
                 String tenKM = jTextField2.getText().trim();
-                String soVeStr = jTextField3.getText().trim();
+                String soVeStr = jTextField3.getText().trim();   // SỐ VÉ LÀ CHUỖI
                 String chietKhauStr = jTextField4.getText().trim();
                 Date ngayBatDau = jDateChooser1.getDate();
                 Date ngayKetThuc = jDateChooser2.getDate();
 
-                int soVe;
                 double chietKhau;
 
                 try {
-                    soVe = Integer.parseInt(soVeStr);
+
                     chietKhau = Double.parseDouble(chietKhauStr);
 
-                    if (soVe <= 0) {
-                        JOptionPane.showMessageDialog(this, "⚠️ Số vé phải lớn hơn 0!");
-                        return;
-                    }
-
                     if (chietKhau <= 0 || chietKhau > 100) {
-                        JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải trong khoảng 0 - 100 (%)!");
+                        JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải nằm trong khoảng 0 - 100 (%)!");
                         return;
                     }
 
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "⚠️ Số vé hoặc chiết khấu phải là số hợp lệ!");
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải là số hợp lệ!");
                     return;
                 }
 
                 // === SINH MÃ TỰ ĐỘNG ===
                 SimpleDateFormat sdfDate = new SimpleDateFormat("ddMMyyyy");
                 String datePart = sdfDate.format(ngayBatDau);
-                String maKM = "KMHD" + datePart + (int) (Math.random() * 90 + 10);
+                String maKM = "KM" + datePart + (int) (Math.random() * 90 + 10);
 
-                // === TẠO ĐỐI TƯỢNG KHuyến Mãi ===
+                // === TẠO ĐỐI TƯỢNG KHUYẾN MÃI ===
                 KhuyenMai km = new KhuyenMai(
                         maKM,
                         tenKM,
@@ -183,23 +274,25 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
                         new Timestamp(ngayKetThuc.getTime()).toLocalDateTime(),
                         true
                 );
-                km.setSoVe(soVe);
-                km.setChietKhau(chietKhau / 100.0); // lưu dạng 0.x, đã validate > 0
+
+                int soVe = Integer.parseInt(soVeStr);
+                km.setSoVe(soVe);                 // LƯU CHUỖI
+                km.setChietKhau(chietKhau / 100.0);  // lưu dạng 0.x
 
                 // === GỌI DAO LƯU VÀO CSDL ===
                 KhuyenMaiHoaDon_DAO dao = new KhuyenMaiHoaDon_DAO();
-                boolean success = dao.themKhuyenMai(km); // gọi phương thức mới không gán hóa đơn
+                boolean success = dao.themKhuyenMaiHoaDon(km, soVeStr, chietKhau / 100.0);
 
                 if (success) {
                     // === HIỂN THỊ LÊN BẢNG ===
-                    SimpleDateFormat sdfISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    SimpleDateFormat sdfISO = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     model.addRow(new Object[]{
                             maKM,
                             tenKM,
-                            soVe,
+                            soVeStr,                          // CHUỖI
                             sdfISO.format(ngayBatDau),
                             sdfISO.format(ngayKetThuc),
-                            chietKhau, // hiển thị %
+                            chietKhau,                        // dạng %
                             "Hoạt động"
                     });
 
@@ -214,62 +307,57 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
                 JOptionPane.showMessageDialog(this, "❌ Lỗi khi thêm khuyến mãi: " + ex.getMessage());
             }
         });
-
+// SỰ KIỆN : LỌC KHUYẾN MÃI THEO NGÀY THÁNG
         jButton3.addActionListener(e -> {
-            String keyword = jTextField2.getText().trim();
-            Date startDate = jDateChooser1.getDate();
-            Date endDate = jDateChooser2.getDate();
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
             jTable1.setRowSorter(sorter);
 
-            List<RowFilter<Object, Object>> filters = new ArrayList<>();
+            // Lấy ngày từ JDateChooser
+            Date fromDateValue = jDateChooser1.getDate();
+            Date toDateValue = jDateChooser2.getDate();
 
-            // --- 1️⃣ Lọc theo tên khuyến mãi ---
-            if (!keyword.isEmpty()) {
-                filters.add(RowFilter.regexFilter("(?i)" + Pattern.quote(keyword), 1)); // cột 1 = tên khuyến mãi
+            if (fromDateValue == null || toDateValue == null) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày bắt đầu và kết thúc!");
+                return;
             }
 
-            // --- 2️⃣ Lọc theo khoảng thời gian ---
-            if (startDate != null && endDate != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                filters.add(new RowFilter<>() {
-                    @Override
-                    public boolean include(Entry<? extends Object, ? extends Object> entry) {
-                        try {
-                            String ngayBDStr = entry.getStringValue(3); // cột 3 = Thời gian áp dụng
-                            String ngayKTStr = entry.getStringValue(4); // cột 4 = Thời gian kết thúc
+            LocalDate fromDate = fromDateValue.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate toDate = toDateValue.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-                            Date ngayBD = sdf.parse(ngayBDStr);
-                            Date ngayKT = sdf.parse(ngayKTStr);
+            if (fromDate.isAfter(toDate)) {
+                JOptionPane.showMessageDialog(this,
+                        "Thời gian kết thúc phải sau thời gian bắt đầu!");
+                return;
+            }
 
-                            // Giữ các khuyến mãi có khoảng thời gian giao với khoảng lọc
-                            return !(ngayKT.before(startDate) || ngayBD.after(endDate));
-                        } catch (Exception ex) {
-                            return false;
-                        }
+            int colStart = 3; // cột ngày bắt đầu của dữ liệu
+            int colEnd   = 4; // cột ngày kết thúc của dữ liệu
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
+                @Override
+                public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
+                    try {
+                        String startStr = entry.getValue(colStart).toString().split(" ")[0];
+                        String endStr   = entry.getValue(colEnd).toString().split(" ")[0];
+
+                        LocalDate startDate = LocalDate.parse(startStr, dateFormatter);
+                        LocalDate endDate   = LocalDate.parse(endStr, dateFormatter);
+
+                        // Chỉ lọc nếu toàn bộ khoảng nằm trong khoảng chọn
+                        return !startDate.isBefore(fromDate) && !endDate.isAfter(toDate);
+
+                    } catch (Exception ex) {
+                        return false;
                     }
-                });
-            }
-
-            // --- 3️⃣ Áp dụng bộ lọc ---
-            if (filters.isEmpty()) {
-                sorter.setRowFilter(null);
-                JOptionPane.showMessageDialog(this, "Hiển thị tất cả khuyến mãi!");
-            } else {
-                sorter.setRowFilter(RowFilter.andFilter(filters));
-                String msg = "Đã lọc theo ";
-                if (!keyword.isEmpty()) msg += "tên \"" + keyword + "\" ";
-                if (startDate != null && endDate != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    msg += "và khoảng thời gian từ " + sdf.format(startDate) + " đến " + sdf.format(endDate);
                 }
-                JOptionPane.showMessageDialog(this, msg.trim() + "!");
-            }
+            });
+
+            JOptionPane.showMessageDialog(this, "Đã lọc dữ liệu từ " + fromDate + " đến " + toDate);
         });
-
-
+// Cập nhật khuyến mãi
         jButton5.addActionListener(e -> {
             int row = jTable1.getSelectedRow();
             if (row == -1) {
@@ -278,39 +366,72 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
             }
 
             try {
-                String maKMCu = (String) model.getValueAt(row, 0); // mã khuyến mãi cũ
-                String maKMMoi = jTextField1.getText().trim();     // mã mới
-                String ten = jTextField2.getText().trim();         // tên khuyến mãi
-                int soVe = Integer.parseInt(jTextField3.getText().trim()); // ✅ đúng: parse số vé
-                double chietKhau = Double.parseDouble(jTextField4.getText().trim());
+                String maKMCu = (String) jTable1.getValueAt(row, 0);
+                String maKMMoi = jTextField1.getText().trim();
+                String ten = jTextField2.getText().trim();
+                String dieuKien = jTextField3.getText().trim();
+                String chietKhauStr = jTextField4.getText().trim();
+
+                if (!validateInput()) {
+                    return;
+                }
+                // --- Kiểm tra chiết khấu ---
+                if (chietKhauStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu không được để trống!");
+                    jTextField4.requestFocus();
+                    return;
+                }
+
+                double chietKhau;
+                try {
+                    chietKhau = Double.parseDouble(chietKhauStr);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải là số hợp lệ!");
+                    jTextField4.requestFocus();
+                    return;
+                }
+
+                if (chietKhau <= 0 || chietKhau > 100) {
+                    JOptionPane.showMessageDialog(this, "⚠️ Chiết khấu phải nằm trong khoảng 0 - 100 (%)!");
+                    jTextField4.requestFocus();
+                    return;
+                }
+
+                // Nếu nhập 25 → 0.25
+                if (chietKhau > 1) {
+                    chietKhau /= 100.0;
+                }
+
+                // --- Kiểm tra ngày ---
+                if (jDateChooser1.getDate() == null || jDateChooser2.getDate() == null) {
+                    JOptionPane.showMessageDialog(this, "Ngày bắt đầu hoặc kết thúc không hợp lệ!");
+                    return;
+                }
 
                 java.sql.Date sqlStart = new java.sql.Date(jDateChooser1.getDate().getTime());
                 java.sql.Date sqlEnd = new java.sql.Date(jDateChooser2.getDate().getTime());
 
                 KhuyenMaiHoaDon_DAO dao = new KhuyenMaiHoaDon_DAO();
-                boolean ok = dao.capNhatKhuyenMaiHoaDon(maKMCu, maKMMoi, ten, sqlStart, sqlEnd, chietKhau);
+                boolean ok = dao.capNhatKhuyenMaiHoaDon(maKMCu, maKMMoi, ten, sqlStart, sqlEnd, chietKhau, dieuKien);
 
                 if (ok) {
-                    JOptionPane.showMessageDialog(this, "✅ Cập nhật khuyến mãi thành công!");
-                    model.setValueAt(maKMMoi, row, 0);
-                    model.setValueAt(ten, row, 1);
-                    model.setValueAt(soVe, row, 2);
+                    JOptionPane.showMessageDialog(this, "Cập nhật khuyến mãi thành công!");
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    model.setValueAt(sdf.format(sqlStart), row, 3);
-                    model.setValueAt(sdf.format(sqlEnd), row, 4);
-                    model.setValueAt(chietKhau, row, 5);
+                    jTable1.setValueAt(maKMMoi, row, 0);
+                    jTable1.setValueAt(ten, row, 1);
+                    jTable1.setValueAt(dieuKien, row, 2);
+                    jTable1.setValueAt(sdf.format(sqlStart), row, 3);
+                    jTable1.setValueAt(sdf.format(sqlEnd), row, 4);
+                    jTable1.setValueAt(chietKhau, row, 5);
                 } else {
-                    JOptionPane.showMessageDialog(this, "⚠️ Không có dòng nào được cập nhật!");
+                    JOptionPane.showMessageDialog(this, "Không có dòng nào được cập nhật!");
                 }
 
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "⚠️ Số vé hoặc chiết khấu không hợp lệ!");
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "❌ Lỗi khi cập nhật: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật: " + ex.getMessage());
             }
         });
-
 
         // SỰ KIỆN: Xóa trắng form
         jButton2.addActionListener(e -> clearForm());
@@ -319,7 +440,7 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
         jButton6.addActionListener(e -> {
             int row = jTable1.getSelectedRow();
             if (row == -1) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn khuyến mãi cần thay đổi trạng thái!");
+                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn khuyến mãi cần tạm ngưng!");
                 return;
             }
 
@@ -328,9 +449,9 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
 
             // ✅ Không cho phép thay đổi trạng thái nếu đã hết hạn
             if (currentStatus.equalsIgnoreCase("Hết hạn")) {
-                JOptionPane.showMessageDialog(this, 
-                    "❌ Không thể thay đổi trạng thái!\nKhuyến mãi này đã hết hạn.", 
-                    "Thông báo", 
+                JOptionPane.showMessageDialog(this,
+                    "❌ Không thể thay đổi trạng thái!\nKhuyến mãi này đã hết hạn.",
+                    "Thông báo",
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -366,7 +487,7 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
                     jTextField1.setText(model.getValueAt(row, 0).toString());
                     jTextField2.setText(model.getValueAt(row, 1).toString());
                     jTextField3.setText(model.getValueAt(row, 2).toString());
-                    
+
                     // ✅ Chiết khấu: nhân 100 để hiển thị (DB lưu 0.09, hiển thị 9)
                     double chietKhau = Double.parseDouble(model.getValueAt(row, 5).toString());
                     jTextField4.setText(String.format("%.0f", chietKhau * 100));
@@ -387,57 +508,8 @@ public class Gui_KhuyenMaiHoaDon extends JPanel {
             }
         });
 
-
-        // --- SỰ KIỆN: TÌM KIẾM DANH SÁCH PHÙ HỢP ---
-        jButton1.addActionListener(e -> {
-            String keyword = jTextField2.getText().trim().toLowerCase();
-            if (keyword.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập tên khuyến mãi để tìm kiếm!");
-                return;
-            }
-
-            DefaultTableModel filteredModel = new DefaultTableModel(
-                    new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Đối tượng",
-                            "Thời gian áp dụng", "Thời gian kết thúc", "Chiết khấu", "Trạng thái"}, 0
-            );
-
-            for (int i = 0; i < model.getRowCount(); i++) {
-                String ten = model.getValueAt(i, 1).toString().toLowerCase();
-                if (ten.contains(keyword)) {
-                    Object[] row = new Object[model.getColumnCount()];
-                    for (int j = 0; j < model.getColumnCount(); j++) {
-                        row[j] = model.getValueAt(i, j);
-                    }
-                    filteredModel.addRow(row);
-                }
-            }
-
-            if (filteredModel.getRowCount() > 0) {
-                jTable1.setModel(filteredModel);
-                JOptionPane.showMessageDialog(this,
-                        "Đã tìm thấy " + filteredModel.getRowCount() +
-                                " khuyến mãi có tên chứa: " + keyword);
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy khuyến mãi nào phù hợp!");
-            }
-        });
-
-
-        // 🔹 Khi người dùng chọn ngày bắt đầu → tự sinh mã
-        jDateChooser1.addPropertyChangeListener("date", evt -> {
-            Date ngayBatDau = jDateChooser1.getDate();
-            if (ngayBatDau != null) {
-                try {
-                    String maTuDong = KhuyenMai.taoMaKhuyenMaiTheoNgay(ngayBatDau, demKhuyenMai++);
-                    jTextField1.setText(maTuDong);
-                    jTextField1.setEditable(false);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "❌ Lỗi sinh mã: " + ex.getMessage());
-                }
-            }
-        });
-    }
-    private void resetTable() {
+}
+        private void resetTable() {
         try {
             model.setRowCount(0); // xóa dữ liệu cũ
             KhuyenMaiHoaDon_DAO dao = new KhuyenMaiHoaDon_DAO();

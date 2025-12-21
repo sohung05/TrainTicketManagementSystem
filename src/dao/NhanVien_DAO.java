@@ -67,7 +67,7 @@ public class NhanVien_DAO {
             ps.setString(4, nv.getSDT());
             ps.setString(5, nv.getEmail());
             ps.setString(6, nv.getDiaChi());
-            ps.setInt(7, nv.getChucVu());  // ✅ Đổi từ setString(getLoaiNV) → setInt(getChucVu)
+            ps.setInt(7, nv.getChucVu());
             ps.setBoolean(8, nv.isTrangThai());
             ps.setDate(9, (nv.getNgaySinh() != null) ? Date.valueOf(nv.getNgaySinh()) : null);
 
